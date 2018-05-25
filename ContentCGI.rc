@@ -1,0 +1,65 @@
+#!/bin/sh
+
+# FreeBSD rc-script for auto-starting/stopping the ContentCGI daemon
+#
+#  Created by Dr. Rolf Jansen on 2018-05-19.
+#  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
+#
+#  Redistribution and use in source and binary forms, with or without modification,
+#  are permitted provided that the following conditions are met:
+#
+#  1. Redistributions of source code must retain the above copyright notice,
+#     this list of conditions and the following disclaimer.
+#
+#  2. Redistributions in binary form must reproduce the above copyright notice,
+#     this list of conditions and the following disclaimer in the documentation
+#     and/or other materials provided with the distribution.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+#  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#  WARRANTIES OF MERCHANTABILITYAND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+#  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+#  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+#  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+#  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+#  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+#  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+#  OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#  PROVIDE: ContentCGI
+#  REQUIRE: LOGIN
+#  KEYWORD: shutdown
+#
+#  Add the following lines to /etc/rc.conf to enable the ContentCGI daemon:
+#     ContentCGI_enable="YES"
+#
+#  optional:
+#     ContentCGI_user="root"
+#     ContentCGI_group="wheel"
+#
+#  Don't use spaces in the following path argumments:
+#     ContentCGI_flags="-w /usr/local/www/ContentCGI/webroot"
+#     ContentCGI_pidfile="/var/run/ContentCGI.pid"
+
+. /etc/rc.subr
+
+name=ContentCGI
+rcvar=ContentCGI_enable
+
+load_rc_config $name
+
+: ${ContentCGI_enable:="NO"}
+: ${ContentCGI_user:="root"}
+: ${ContentCGI_group:="wheel"}
+: ${ContentCGI_flags="-w /usr/local/www/ContentCGI/webroot"}
+: ${ContentCGI_pidfile:="/var/run/ContentCGI.pid"}
+
+pidfile="${ContentCGI_pidfile}"
+if [ "$pidfile" != "/var/run/ContentCGI.pid" ]; then
+   ContentCGI_flags="${ContentCGI_flags} -p $pidfile"
+fi
+
+command="/usr/local/bin/ContentCGI"
+command_args=""
+
+run_rc_command "$1"
