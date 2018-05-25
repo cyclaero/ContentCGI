@@ -1,0 +1,3 @@
+[submodule "ContentTools"]
+	path = ContentTools
+	url = https://github.com/GetmeUK/ContentTools
