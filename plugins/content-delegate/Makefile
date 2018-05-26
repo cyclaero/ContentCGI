@@ -79,6 +79,8 @@ install: $(PRODUCT)
 	mkdir -p     "$(PLUGINS)/$(PROJECT)"
 	strip -x -o  "$(PLUGINS)/$(PROJECT)/$(PRODUCT)" $(PRODUCT)
 	cp -p $(PROJECT).html "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p $(PROJECT).ico  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
 	printf '\n\n' | cat ../../ContentTools/build/content-tools.min.css - $(PROJECT).css > "$(PLUGINS)/$(PROJECT)/$(PROJECT).css" 2>/dev/null ||:
 	printf '\n\n' | cat ../../ContentTools/build/content-tools.min.js  - $(PROJECT).js  > "$(PLUGINS)/$(PROJECT)/$(PROJECT).js"  2>/dev/null ||:
-	cp -p $(PROJECT).ico  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -pr ../../ContentTools/build/images "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+
