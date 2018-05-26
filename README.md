@@ -2,7 +2,10 @@
 Extensible FastCGI Daemon for FreeBSD
 
 
-### Building and installation
+### Building and installation on FreeBSD
+
+    pkg install libojc2
+    pkg install icu
 
     git clone https://github.com/cyclaero/ContentCGI.git
     cd ContentCGI
