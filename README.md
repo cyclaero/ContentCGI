@@ -2,7 +2,7 @@
 Extensible FastCGI Daemon for FreeBSD
 
 
-## Building and installation
+### Building and installation
 
     git clone https://github.com/cyclaero/ContentCGI.git
     cd ContentCGI
