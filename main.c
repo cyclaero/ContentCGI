@@ -200,7 +200,7 @@ static void loadPlugins(const char *dir, size_t len)
                               struct dirent *iep, ibp;
                               if (idp = opendir(imagdir))
                               {
-                                 Value value = {{.p = NULL}, dynamic*Data, 0, 0, 0, NULL};
+                                 Value value = {{.p = NULL}, dynamic*Data, 0, 0, NULL};
 
                                  while (readdir_r(idp, &ibp, &iep) == no_error && iep)
                                     if (iep->d_name[0] != '.' && (iep->d_type == DT_REG || iep->d_type == DT_LNK))
