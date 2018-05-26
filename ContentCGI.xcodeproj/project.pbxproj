@@ -16,8 +16,6 @@
 		7E324E6420B61A60001E29F9 /* cycalc.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E324E6320B61A23001E29F9 /* cycalc.m */; };
 		7E324E6C20B6292A001E29F9 /* CyObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EE882A220AC9F2900CD24F3 /* CyObject.m */; };
 		7E324E7B20B6296A001E29F9 /* content-delegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EE8829D20AC9F2900CD24F3 /* content-delegate.m */; };
-		7E324E8920B62BD9001E29F9 /* libcyobj.so in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E324E8820B62BD9001E29F9 /* libcyobj.so */; };
-		7E324E8A20B62BE5001E29F9 /* libcyobj.so in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E324E8820B62BD9001E29F9 /* libcyobj.so */; };
 		7E5069DA209FE0CB00D15F5A /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5069D9209FE0CB00D15F5A /* libicucore.dylib */; };
 		7E9433A520B6F64D00855520 /* delegate-utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7E324E5C20B616E8001E29F9 /* delegate-utils.c */; };
 		7E9433A620B6F65600855520 /* delegate-utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7E324E5C20B616E8001E29F9 /* delegate-utils.c */; };
@@ -28,6 +26,8 @@
 		7EBD78F620AE188E0035901F /* hello-delegate.ico in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EBD78C020ADAC660035901F /* hello-delegate.ico */; };
 		7EBD790720AE19500035901F /* content-delegate.html in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EE8829A20AC9F2900CD24F3 /* content-delegate.html */; };
 		7EC6FA6314F2FB9700B07421 /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7EC6FA6214F2FB9700B07421 /* utils.c */; };
+		7EE7B83A20B913B100D6DBCB /* libcyobj.so in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E324E8820B62BD9001E29F9 /* libcyobj.so */; };
+		7EE7B83B20B913B700D6DBCB /* libcyobj.so in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E324E8820B62BD9001E29F9 /* libcyobj.so */; };
 		7EFCFEE520B348C300B3D759 /* content-delegate.ico in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EE8829B20AC9F2900CD24F3 /* content-delegate.ico */; };
 		7EFDF50420A4681A006BACAF /* connection.c in Sources */ = {isa = PBXBuildFile; fileRef = 7EFDF50320A4681A006BACAF /* connection.c */; };
 		7EFDF50720A46832006BACAF /* interim.c in Sources */ = {isa = PBXBuildFile; fileRef = 7EFDF50620A46832006BACAF /* interim.c */; };
@@ -122,7 +122,7 @@
 		7E324E6220B61A23001E29F9 /* cycalc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cycalc.h; sourceTree = "<group>"; };
 		7E324E6320B61A23001E29F9 /* cycalc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = cycalc.m; sourceTree = "<group>"; };
 		7E324E7920B6292A001E29F9 /* libcyobj.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libcyobj.so; sourceTree = BUILT_PRODUCTS_DIR; };
-		7E324E8820B62BD9001E29F9 /* libcyobj.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcyobj.so; sourceTree = "<group>"; };
+		7E324E8820B62BD9001E29F9 /* libcyobj.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcyobj.so; path = plugins/libcyobj.so; sourceTree = "<group>"; };
 		7E5069D9209FE0CB00D15F5A /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = /usr/lib/libicucore.dylib; sourceTree = "<absolute>"; };
 		7E5725F720B1173A009D5008 /* ContentCGI.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rc; lineEnding = 0; path = ContentCGI.rc; sourceTree = "<group>"; };
 		7EB7356B20A2534C00D73FC1 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
@@ -377,7 +377,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7E324E8920B62BD9001E29F9 /* libcyobj.so in Frameworks */,
+				7EE7B83B20B913B700D6DBCB /* libcyobj.so in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -385,7 +385,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7E324E8A20B62BE5001E29F9 /* libcyobj.so in Frameworks */,
+				7EE7B83A20B913B100D6DBCB /* libcyobj.so in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,7 +425,7 @@
 				7EE8829720AC9F2900CD24F3 /* plugins */,
 				7ED60C6320B4574F00B8A8C4 /* ContentIcon */,
 				7EB7356A20A2534C00D73FC1 /* ContentTools */,
-				7EE307CA209E83980037022B /* Libraries */,
+				7EE307CA209E83980037022B /* Frameworks */,
 				7E2F1B8720A5DBC500B7B848 /* Products */,
 			);
 			name = ContentCGI;
@@ -910,14 +910,15 @@
 			path = ContentIcon;
 			sourceTree = "<group>";
 		};
-		7EE307CA209E83980037022B /* Libraries */ = {
+		7EE307CA209E83980037022B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7E324E8820B62BD9001E29F9 /* libcyobj.so */,
 				7EFDF50820A471C3006BACAF /* libcrypto.dylib */,
 				7EFDF50A20A471CC006BACAF /* libssl.dylib */,
 				7E5069D9209FE0CB00D15F5A /* libicucore.dylib */,
 			);
-			name = Libraries;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		7EE8829720AC9F2900CD24F3 /* plugins */ = {
@@ -929,7 +930,6 @@
 				7EE882A120AC9F2900CD24F3 /* CyObject.h */,
 				7EE882A220AC9F2900CD24F3 /* CyObject.m */,
 				7EE882A420AC9F2900CD24F3 /* Makefile */,
-				7E324E8820B62BD9001E29F9 /* libcyobj.so */,
 				7E324E6020B61A23001E29F9 /* CyCalc */,
 				7EBD78BD20ADAC660035901F /* hello-delegate */,
 				7EE8829820AC9F2900CD24F3 /* content-delegate */,
@@ -984,6 +984,7 @@
 				7E324E6A20B6292A001E29F9 /* Sources */,
 				7E324E6F20B6292A001E29F9 /* Frameworks */,
 				7E324E7020B6292A001E29F9 /* Headers */,
+				7EE7B83220B90E2300D6DBCB /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1091,15 +1092,31 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/plugins/content-delegate/content-delegate.js",
+				"$(SRCROOT)/plugins/$(PRODUCT_NAME)/$(PRODUCT_NAME).js",
 				"$(SRCROOT)/ContentTools/build/content-tools.min.js",
 			);
 			outputPaths = (
-				"$(INSTALL_DIR)/content-delegate.js",
+				"$(INSTALL_DIR)/$(PRODUCT_NAME).js",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "printf '\\n\\n' | cat $SRCROOT/ContentTools/build/content-tools.min.js - $SRCROOT/plugins/content-delegate/content-delegate.js > $INSTALL_DIR/content-delegate.js";
+			shellScript = "printf '\\n\\n' | cat $SRCROOT/ContentTools/build/content-tools.min.js - $SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.js > $INSTALL_DIR/$PRODUCT_NAME.js";
+			showEnvVarsInLog = 0;
+		};
+		7EE7B83220B90E2300D6DBCB /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(INSTALL_DIR)/$(PRODUCT_NAME).$(EXECUTABLE_EXTENSION)",
+				"$(SRCROOT)/plugins/$(PRODUCT_NAME).$(EXECUTABLE_EXTENSION)",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm -rf $SRCROOT/plugins/$PRODUCT_NAME.$EXECUTABLE_EXTENSION\nln -s $INSTALL_DIR/$PRODUCT_NAME.$EXECUTABLE_EXTENSION $SRCROOT/plugins/$PRODUCT_NAME.$EXECUTABLE_EXTENSION";
 			showEnvVarsInLog = 0;
 		};
 		7EFCFEE420B346B900B3D759 /* ShellScript */ = {
@@ -1108,15 +1125,15 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/plugins/content-delegate/content-delegate.css",
+				"$(SRCROOT)/plugins/$(PRODUCT_NAME)/$(PRODUCT_NAME).css",
 				"$(SRCROOT)/ContentTools/build/content-tools.min.css",
 			);
 			outputPaths = (
-				"$(INSTALL_DIR)/content-delegate.css",
+				"$(INSTALL_DIR)/$(PRODUCT_NAME).css",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "printf '\\n\\n' | cat $SRCROOT/ContentTools/build/content-tools.min.css - $SRCROOT/plugins/content-delegate/content-delegate.css > $INSTALL_DIR/content-delegate.css";
+			shellScript = "printf '\\n\\n' | cat $SRCROOT/ContentTools/build/content-tools.min.css - $SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.css > $INSTALL_DIR/$PRODUCT_NAME.css";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1357,6 +1374,10 @@
 					/usr/local/include,
 				);
 				INSTALL_PATH = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/plugins",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
 			};
@@ -1378,6 +1399,10 @@
 					/usr/local/include,
 				);
 				INSTALL_PATH = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/plugins",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -1398,6 +1423,10 @@
 					/usr/local/include,
 				);
 				INSTALL_PATH = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/plugins",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
 			};
@@ -1419,6 +1448,10 @@
 					/usr/local/include,
 				);
 				INSTALL_PATH = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/plugins",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
