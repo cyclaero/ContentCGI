@@ -29,7 +29,7 @@
 #   make install clean
 #   make clean debug
 
-PLUGINS = $(HOME)/plugins
+PLUGINS = $(HOME)/plugins/ContentCGI
 
 CC = clang
 

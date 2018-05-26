@@ -329,7 +329,7 @@
 		7EBD78C020ADAC660035901F /* hello-delegate.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = "hello-delegate.ico"; sourceTree = "<group>"; };
 		7EBD78C120ADAC660035901F /* hello-delegate.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; lineEnding = 0; path = "hello-delegate.js"; sourceTree = "<group>"; };
 		7EBD78C220ADAC660035901F /* hello-delegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = "hello-delegate.m"; sourceTree = "<group>"; };
-		7EBD78C320ADAC660035901F /* Makefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; lineEnding = 0; path = Makefile; sourceTree = "<group>"; };
+		7EBD78C320ADAC660035901F /* Makefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; lineEnding = 0; path = Makefile; sourceTree = "<group>"; usesTabs = 1; };
 		7EBD78E420AE0F660035901F /* hello-delegate.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "hello-delegate.so"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7EBD790620AE18EC0035901F /* content-delegate.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "content-delegate.so"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7EC6FA6114F2FB9700B07421 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = utils.h; sourceTree = "<group>"; };
@@ -350,7 +350,7 @@
 		7EE8829B20AC9F2900CD24F3 /* content-delegate.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = "content-delegate.ico"; sourceTree = "<group>"; };
 		7EE8829C20AC9F2900CD24F3 /* content-delegate.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; lineEnding = 0; path = "content-delegate.js"; sourceTree = "<group>"; };
 		7EE8829D20AC9F2900CD24F3 /* content-delegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = "content-delegate.m"; sourceTree = "<group>"; };
-		7EE8829E20AC9F2900CD24F3 /* Makefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; lineEnding = 0; path = Makefile; sourceTree = "<group>"; };
+		7EE8829E20AC9F2900CD24F3 /* Makefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; lineEnding = 0; path = Makefile; sourceTree = "<group>"; usesTabs = 1; };
 		7EE882A120AC9F2900CD24F3 /* CyObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = CyObject.h; sourceTree = "<group>"; };
 		7EE882A220AC9F2900CD24F3 /* CyObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CyObject.m; sourceTree = "<group>"; };
 		7EE882A320AC9F2900CD24F3 /* exports.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = exports.h; sourceTree = "<group>"; };

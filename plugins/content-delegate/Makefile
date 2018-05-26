@@ -51,23 +51,25 @@ CFLAGS += -std=c11 -fpic -fvisibility=hidden -fstrict-aliasing -fno-common -fobj
           -I/usr/local/include -I../
 LDFLAGS = -shared -L/usr/local/lib -lm -lpthread -lobjc -rpath $(PLUGINS) -L$(PLUGINS) -lcyobj
 
-SOURCES = $(PROJECT).m
-OBJECTS = $(SOURCES:.m=.o)
-PRODUCT = $(PROJECT).so
+SOURCESm = $(PROJECT).m
+OBJECTSm = $(SOURCESm:.m=.o)
+SOURCESc = ../delegate-utils.c
+OBJECTSc = $(SOURCESc:.c=.o)
+PRODUCT  = $(PROJECT).so
 
-all: $(HEADERS) $(SOURCES) $(OBJECTS) $(PRODUCT)
+all: $(HEADERS) $(SOURCESm) $(SOURCESc) $(OBJECTSm) $(OBJECTSc) $(PRODUCT)
 
 depend:
 	$(CC) $(CFLAGS) -E -MM *.m > .depend
 
-$(PRODUCT): $(OBJECTS)
-	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+$(PRODUCT): $(OBJECTSm) $(OBJECTSc)
+	$(CC) $(OBJECTSm) $(OBJECTSc) $(LDFLAGS) -o $@
 
-$(OBJECTS): Makefile
+$(OBJECTSm) $(OBJECTSc): Makefile
 	$(CC) $(CFLAGS) $< -c -o $@
 
 clean:
-	rm -rf *.o $(PRODUCT)
+	rm -rf *.o ../delegate-utils.o $(PRODUCT)
 
 debug: all
 
@@ -76,7 +78,7 @@ update: clean all
 install: $(PRODUCT)
 	mkdir -p     "$(PLUGINS)/$(PROJECT)"
 	strip -x -o  "$(PLUGINS)/$(PROJECT)/$(PRODUCT)" $(PRODUCT)
-	cp -p *.css  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
-	cp -p *.js   "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
-	cp -p *.html "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
-	cp -p *.ico  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p $(PROJECT).html "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	printf '\n\n' | cat ../../ContentTools/build/content-tools.min.css - $(PROJECT).css > "$(PLUGINS)/$(PROJECT)/$(PROJECT).css" 2>/dev/null ||:
+	printf '\n\n' | cat ../../ContentTools/build/content-tools.min.js  - $(PROJECT).js  > "$(PLUGINS)/$(PROJECT)/$(PROJECT).js"  2>/dev/null ||:
+	cp -p $(PROJECT).ico  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:

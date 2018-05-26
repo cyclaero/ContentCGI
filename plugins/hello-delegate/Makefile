@@ -48,26 +48,28 @@ CFLAGS += -fsigned-char
 
 CFLAGS += -std=c11 -fpic -fvisibility=hidden -fstrict-aliasing -fno-common -fobjc-nonfragile-abi \
           -Wno-multichar -Wno-parentheses -Wno-empty-body -Wno-switch -Wno-deprecated-declarations -Wshorten-64-to-32 \
-          -I/usr/local/include -I../
+          -I/usr/local/include -I../ -I../CyCalc/
 LDFLAGS = -shared -L/usr/local/lib -lm -lpthread -lobjc -rpath $(PLUGINS) -L$(PLUGINS) -lcyobj
 
-SOURCES = $(PROJECT).m ../CyCalc/cycalc.m
-OBJECTS = $(SOURCES:.m=.o)
-PRODUCT = $(PROJECT).so
+SOURCESm = $(PROJECT).m ../CyCalc/cycalc.m
+OBJECTSm = $(SOURCESm:.m=.o)
+SOURCESc = ../delegate-utils.c
+OBJECTSc = $(SOURCESc:.c=.o)
+PRODUCT  = $(PROJECT).so
 
-all: $(HEADERS) $(SOURCES) $(OBJECTS) $(PRODUCT)
+all: $(HEADERS) $(SOURCESm) $(SOURCESc) $(OBJECTSm) $(OBJECTSc) $(PRODUCT)
 
 depend:
 	$(CC) $(CFLAGS) -E -MM *.m > .depend
 
-$(PRODUCT): $(OBJECTS)
-	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+$(PRODUCT): $(OBJECTSm) $(OBJECTSc)
+	$(CC) $(OBJECTSm) $(OBJECTSc) $(LDFLAGS) -o $@
 
-$(OBJECTS): Makefile
+$(OBJECTSm) $(OBJECTSc): Makefile
 	$(CC) $(CFLAGS) $< -c -o $@
 
 clean:
-	rm -rf *.o ../CyCalc/*.o $(PRODUCT)
+	rm -rf *.o ../delegate-utils.o ../CyCalc/cycalc.o $(PRODUCT)
 
 debug: all
 
@@ -76,7 +78,7 @@ update: clean all
 install: $(PRODUCT)
 	mkdir -p     "$(PLUGINS)/$(PROJECT)"
 	strip -x -o  "$(PLUGINS)/$(PROJECT)/$(PRODUCT)" $(PRODUCT)
-	cp -p *.css  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
-	cp -p *.js   "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
-	cp -p *.html "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
-	cp -p *.ico  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p $(PROJECT).html "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p $(PROJECT).css  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p $(PROJECT).js   "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p $(PROJECT).ico  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
