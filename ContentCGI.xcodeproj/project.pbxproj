@@ -123,7 +123,7 @@
 		7E324E6320B61A23001E29F9 /* cycalc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = cycalc.m; sourceTree = "<group>"; };
 		7E324E7920B6292A001E29F9 /* libcyobj.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libcyobj.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E324E8820B62BD9001E29F9 /* libcyobj.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcyobj.so; sourceTree = "<group>"; };
-		7E5069D9209FE0CB00D15F5A /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = ../../../../../usr/lib/libicucore.dylib; sourceTree = "<group>"; };
+		7E5069D9209FE0CB00D15F5A /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = /usr/lib/libicucore.dylib; sourceTree = "<absolute>"; };
 		7E5725F720B1173A009D5008 /* ContentCGI.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rc; lineEnding = 0; path = ContentCGI.rc; sourceTree = "<group>"; };
 		7EB7356B20A2534C00D73FC1 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		7EB7356C20A2534C00D73FC1 /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
@@ -359,8 +359,8 @@
 		7EFDF50320A4681A006BACAF /* connection.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = connection.c; sourceTree = "<group>"; };
 		7EFDF50520A4682B006BACAF /* interim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = interim.h; sourceTree = "<group>"; };
 		7EFDF50620A46832006BACAF /* interim.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = interim.c; sourceTree = "<group>"; };
-		7EFDF50820A471C3006BACAF /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = ../../../../../usr/local/lib/libcrypto.dylib; sourceTree = "<group>"; };
-		7EFDF50A20A471CC006BACAF /* libssl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libssl.dylib; path = ../../../../../usr/local/lib/libssl.dylib; sourceTree = "<group>"; };
+		7EFDF50820A471C3006BACAF /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = /usr/local/lib/libcrypto.dylib; sourceTree = "<absolute>"; };
+		7EFDF50A20A471CC006BACAF /* libssl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libssl.dylib; path = /usr/local/lib/libssl.dylib; sourceTree = "<absolute>"; };
 		7EFDF50C20A4902C006BACAF /* firstresponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = firstresponder.h; sourceTree = "<group>"; };
 		7EFDF50D20A49075006BACAF /* firstresponder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = firstresponder.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
