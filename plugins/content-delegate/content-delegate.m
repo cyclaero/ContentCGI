@@ -212,7 +212,7 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
 
             // GET method
             if (cmp4(method, "GET")
-             && (content = allocate((contlen = st.st_size + 58 + 44 + 63)+1, default_align, false))
+             && (content = allocate((contlen = st.st_size + 58 + 39 + 63)+1, default_align, false))
              && (file = fopen(filep, "r")))
             {
                int32_t loext = FourLoChars(spec);
@@ -245,7 +245,7 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
                      {
                         memcpy(content+n, q, p-q);                                                    m -= p-q, n += p-q;
                           cpy6(content+n, p),                                                   p += 6, m -= 6, n += 6;
-                        memcpy(content+n, "<DIV data-editable data-name=\"main-content\">", 44);                n += 44;
+                        memcpy(content+n, "<DIV data-editable data-name=\"content\">", 39);                     n += 39;
                         memcpy(content+n, p, m);                                                                n += m;
 
                         if (!(l = st.st_size - l) || fread(content+n, l, 1, file) == 1)
