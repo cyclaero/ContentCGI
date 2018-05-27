@@ -166,22 +166,20 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
     && (cmp4(method = node->value.s, "GET") || cmp5(method, "POST"))       // only respond to GET or POST requests
     && cmp7(entity, "/admin/"))                                            // only be reponsible for everything below the /admin/ path
    {
-      int   ml  = el -= 7;
-      char *msg = strcpy(alloca(el+4), entity += 7);
+      if (*(entity += 7) != '\0')
+         el -= 7;
+      else
+         el = 10, entity = "index.html";
 
-      char  indexFile[] = "index.html";
       char *spec = NULL;
+      char  *msg = strcpy(alloca(el+4), entity);
+      int dl, ml = el;
 
       if (cmp7(msg, "images/"))
-         spec = msg + 7, msg = "images:::";
-
+         spec = msg+7, msg = "images:::";
       else
       {
-         if (!*msg)
-            msg = indexFile,  ml = sizeof(indexFile) - 1;
-
-         int dl = domlen(msg);
-         if (dl != ml)
+         if ((dl = domlen(msg)) != ml)
          {
             msg[ml = dl] = '\0';
             spec = entity+ml+1;
