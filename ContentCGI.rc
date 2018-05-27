@@ -26,20 +26,21 @@
 #  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 #  OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-#  PROVIDE: ContentCGI
-#  REQUIRE: LOGIN
-#  KEYWORD: shutdown
 #
-#  Add the following lines to /etc/rc.conf to enable the ContentCGI daemon:
-#     ContentCGI_enable="YES"
+# PROVIDE: ContentCGI
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
 #
-#  optional:
-#     ContentCGI_user="root"
-#     ContentCGI_group="wheel"
+# Add the following lines to /etc/rc.conf to enable the ContentCGI daemon:
+#    ContentCGI_enable="YES"
 #
-#  Don't use spaces in the following path argumments:
-#     ContentCGI_flags="-w /usr/local/www/ContentCGI/webroot"
-#     ContentCGI_pidfile="/var/run/ContentCGI.pid"
+# optional:
+#    ContentCGI_user="root"
+#    ContentCGI_group="wheel"
+#
+# Don't use spaces in the following path argumments:
+#    ContentCGI_flags="-w /usr/local/www/ContentCGI/webroot"
+#    ContentCGI_pidfile="/var/run/ContentCGI.pid"
 
 . /etc/rc.subr
 
