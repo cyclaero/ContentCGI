@@ -387,7 +387,7 @@ char *httpETag(char *etag, struct stat *st, boolean quotes)
       uuid_t   uuid_bin;
       uint32_t rc;
       uuid_create(&uuid_bin, &rc);
-      if (rc == uuid_s_ok && (uuid_str = allocate(37, false)))
+      if (rc == uuid_s_ok && (uuid_str = allocate(37, default_align, false)))
          snprintf(uuid_str, 37, "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
                   uuid_bin.time_low, uuid_bin.time_mid, uuid_bin.time_hi_and_version,
                   uuid_bin.clock_seq_hi_and_reserved, uuid_bin.clock_seq_low,
