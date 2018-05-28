@@ -1,11 +1,13 @@
 /* Editor CSS of the Content Responder Delegate by Dr. Rolf Jansen */
 
-/* Center (default) */
-[data-editable] iframe,
-[data-editable] image,
-[data-editable] [data-ce-tag=img],
-[data-editable] img,
-[data-editable] video {
+.ct-widget.ct-ignition { top:0px !important; left:0px !important; }
+
+/* Center align) */
+[data-editable] .align-center iframe,
+[data-editable] .align-center image,
+[data-editable] .align-center [data-ce-tag=img],
+[data-editable] .align-center img,
+[data-editable] .align-center video {
    clear: both;
    display: block;
    margin-left: auto;
@@ -21,7 +23,7 @@
 }
 
 /* Right align */
-[data-editable].align-right {
+[data-editable] .align-right {
    clear: initial;
    float: right;
    margin-left: 0.5em;
