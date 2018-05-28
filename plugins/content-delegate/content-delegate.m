@@ -214,35 +214,57 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
              && (file = fopen(filep, "r")))
             {
                int32_t loext = FourLoChars(spec);
-               if (loext == 'html' && spec[4] == '\0' || loext == 'htm\0')
+               if ((loext == 'html' && spec[4] == '\0' || loext == 'htm\0')
+                && !cmp6(entity, "index."))
                {
                   content[contlen] = '\0';
 
-                  llong i, l, m, n;
-                  char *p, *q, b[256]; b[255] = 0;
+                  llong i, k, l, m, n;
+                  char *p, *q, b[256]; cpy6(b, "******"); b[255] = 0;
 
                   // inject the LINK tag of our content.css directly after the HEAD tag.
-                  for (p = NULL, q = b, l = 0, n = 0; (l += m = fread(b, 1, sizeof(b)-1, file)) && !(p = strcasestr(b, "<HEAD>")); n += m)
+                  for (p = NULL, q = b+6, l = 0, n = 0; ((l += m = fread(q, 1, sizeof(b)-7, file)), m) && !(p = strcasestr(b, "<HEAD>")); cpy6(b, q+m-6), n += m)
                      memcpy(content+n, q, m);
+                  cpy6(b, q+m-6);
 
                   if (p)
                   {
-                     memcpy(content+n, q, p-q);                                                       m -= p-q, n += p-q;
-                       cpy6(content+n, p),                                                      p += 6, m -= 6, n += 6;
+                     if (p == q)
+                          cpy6(content+n, p),                                                   p += 6, m -= 6, n += 6;
+
+                     else if (p < q)
+                          cpy6(content+n+(k = p-q), p),                                 k += 6, p += 6, m -= k, n += k;
+
+                     else // (p > q)
+                     {
+                        memcpy(content+n, q, k = p-q),                                                  m -= k, n += k;
+                          cpy6(content+n, p),                                                   p += 6, m -= 6, n += 6;
+                     }
+
                      memcpy(content+n, "<LINK rel=\"stylesheet\" href=\"content.css\" type=\"text/css\">", 58); n += 58;
 
                      // inject the DIV marker tag of the editibale content directly after the BODY tag.
                      if (!(p = strcasestr(q = p, "<BODY>")))
                      {
                         memcpy(content+n, q, m);                                                                n += m;
-                        for (p = NULL; q = b, (l += m = fread(b, 1, sizeof(b)-1, file)) && !(p = strcasestr(b, "<BODY>")); n += m)
+                        for (p = NULL; q = b+6, ((l += m = fread(q, 1, sizeof(b)-7, file)), m) && !(p = strcasestr(b, "<BODY>")); cpy6(b, q+m-6), n += m)
                            memcpy(content+n, q, m);
                      }
 
                      if (p)
                      {
-                        memcpy(content+n, q, p-q);                                                    m -= p-q, n += p-q;
-                          cpy6(content+n, p),                                                   p += 6, m -= 6, n += 6;
+                        if (p == q)
+                             cpy6(content+n, p),                                                p += 6, m -= 6, n += 6;
+
+                        else if (p < q)
+                             cpy6(content+n+(k = p-q), p),                              k += 6, p += 6, m -= k, n += k;
+
+                        else // (p > q)
+                        {
+                           memcpy(content+n, q, k = p-q),                                               m -= k, n += k;
+                             cpy6(content+n, p),                                                p += 6, m -= 6, n += 6;
+                        }
+
                         memcpy(content+n, "<DIV data-editable data-name=\"content\">", 39);                     n += 39;
                         memcpy(content+n, p, m);                                                                n += m;
 
@@ -257,9 +279,7 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
 
                            if (l >= 6)
                            {
-                              l -= 6;
-                              m = n - l;
-                              for (p = content+l, q = content+l+63, i = 0; i < m; i++)
+                              for (l -= 6, m = n-l, p = content+l, q = content+l+63, i = 0; i < m; i++)
                                  q[i] = p[i];
                               memcpy(content+l, "</DIV><SCRIPT type=\"text/javascript\" src=\"content.js\"></SCRIPT>", 63); n += 63;
 
@@ -314,22 +334,34 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
 
                      int32_t loex = FourLoChars(spec);
                      if ((loex == 'html' && spec[4] == '\0' || loex == 'htm\0')
+                      && !cmp6(entity, "index.")
                       && (content = allocate((contlen = st.st_size + replen)+1, default_align, false))
                       && (file = fopen(filep, "r")))
                      {
-                        llong l, m, n;
-                        char *p, *q, b[256]; b[255] = 0;
+                        llong k, l, m, n;
+                        char *p, *q, b[256]; cpy6(b, "******"); b[255] = 0;
 
                         // extract the HEAD section of the HTML document
-                        for (p = NULL, q = b, l = 0, n = 0; (l += m = fread(b, 1, sizeof(b)-1, file)) && !(p = strcasestr(b, "<BODY>")); n += m)
+                        for (p = NULL, q = b+6, l = 0, n = 0; ((l += m = fread(q, 1, sizeof(b)-7, file)), m) && !(p = strcasestr(b, "<BODY>")); cpy6(b, q+m-6), n += m)
                            memcpy(content+n, q, m);
+                        cpy6(b, q+m-6);
                         fclose(file);
 
                         if (p
                          && (file = fopen(filep, "w")))
                         {
-                           memcpy(content+n, q, p-q);             n += p-q;
-                             cpy7(content+n, "<BODY>\n");         n += 7;
+                           if (p == q)
+                                cpy7(content+n, "<BODY>\n"),           n += 7;
+
+                           else if (p < q)
+                                cpy7(content+n+(k = p-q), "<BODY>\n"), k += 7, n += k;
+
+                           else // (p > q)
+                           {
+                              memcpy(content+n, q, k = p-q),           n += k;
+                                cpy7(content+n, "<BODY>\n"),           n += 7;
+                           }
+
                            memcpy(content+n, replace, replen);    n += replen;
                             cpy16(content+n, "</BODY></HTML>\n"); n += 15;
 
