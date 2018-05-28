@@ -111,6 +111,7 @@
 
 /* Begin PBXFileReference section */
 		08FB7796FE84155DC02AAC07 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = main.c; sourceTree = "<group>"; };
+		7E02668F20BC3C52004C92F9 /* webroot */ = {isa = PBXFileReference; lastKnownFileType = folder; path = webroot; sourceTree = "<group>"; };
 		7E20156120B24587000FC68A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; lineEnding = 0; path = README.md; sourceTree = "<group>"; };
 		7E20156220B245D0000FC68A /* apache-vhost.conf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; lineEnding = 0; path = "apache-vhost.conf"; sourceTree = "<group>"; };
 		7E2F1B8620A5DBC500B7B848 /* ContentCGI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ContentCGI; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -427,6 +428,7 @@
 				7EB7356A20A2534C00D73FC1 /* ContentTools */,
 				7EE307CA209E83980037022B /* Frameworks */,
 				7E2F1B8720A5DBC500B7B848 /* Products */,
+				7E02668F20BC3C52004C92F9 /* webroot */,
 			);
 			name = ContentCGI;
 			sourceTree = "<group>";
