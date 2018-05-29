@@ -214,8 +214,7 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
              && (file = fopen(filep, "r")))
             {
                int32_t loext = FourLoChars(spec);
-               if ((loext == 'html' && spec[4] == '\0' || loext == 'htm\0')
-                && !cmp6(entity, "index."))
+               if (loext == 'html' && spec[4] == '\0' || loext == 'htm\0')
                {
                   content[contlen] = '\0';
 
@@ -286,19 +285,23 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
                               response->contlen = n;
                               response->content = content;
                               rc = 200;
+                              goto finish;
                            }
                         }
                      }
                   }
+
+                  rewind(file);
                }
 
-               else if (fread(content, st.st_size, 1, file) == 1)
+               if (fread(content, st.st_size, 1, file) == 1)
                {
                   response->contlen = st.st_size;
                   response->content = content;
                   rc = 200;
                }
 
+            finish:
                if (rc == 200)
                {
                   response->contdyn = true;
@@ -334,7 +337,6 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
 
                      int32_t loex = FourLoChars(spec);
                      if ((loex == 'html' && spec[4] == '\0' || loex == 'htm\0')
-                      && !cmp6(entity, "index.")
                       && (content = allocate((contlen = st.st_size + replen)+1, default_align, false))
                       && (file = fopen(filep, "r")))
                      {
