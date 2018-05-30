@@ -210,7 +210,7 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
 
             // GET method
             if (cmp4(method, "GET")
-             && (content = allocate((contlen = st.st_size + 58 + 39 + 63)+1, default_align, false))
+             && (content = allocate((contlen = st.st_size + 65 + 39 + 70)+1, default_align, false))
              && (file = fopen(filep, "r")))
             {
                int32_t loext = FourLoChars(spec);
@@ -240,7 +240,7 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
                           cpy6(content+n, p),                                                   p += 6, m -= 6, n += 6;
                      }
 
-                     memcpy(content+n, "<LINK rel=\"stylesheet\" href=\"content.css\" type=\"text/css\">", 58); n += 58;
+                     memcpy(content+n, "<LINK rel=\"stylesheet\" href=\"/admin/content.css\" type=\"text/css\">", 65); n += 65;
 
                      // inject the DIV marker tag of the editibale content directly after the BODY tag.
                      if (!(p = strcasestr(q = p, "<BODY>")))
@@ -278,9 +278,9 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
 
                            if (l >= 6)
                            {
-                              for (l -= 6, m = n-l, p = content+l, q = content+l+63, i = 0; i < m; i++)
+                              for (l -= 6, m = n-l, p = content+l, q = content+l+70, i = 0; i < m; i++)
                                  q[i] = p[i];
-                              memcpy(content+l, "</DIV><SCRIPT type=\"text/javascript\" src=\"content.js\"></SCRIPT>", 63); n += 63;
+                              memcpy(content+l, "</DIV><SCRIPT type=\"text/javascript\" src=\"/admin/content.js\"></SCRIPT>", 70); n += 70;
 
                               response->contlen = n;
                               response->content = content;
