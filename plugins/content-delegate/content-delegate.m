@@ -219,12 +219,12 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
                   content[contlen] = '\0';
 
                   llong i, k, l, m, n;
-                  char *p, *q, b[256]; cpy6(b, "******"); b[255] = 0;
+                  char *p, *q, b[512]; cpy8(b, "********"); b[511] = 0;
 
                   // inject the LINK tag of our content.css directly after the HEAD tag.
-                  for (p = NULL, q = b+6, l = 0, n = 0; ((l += m = fread(q, 1, sizeof(b)-7, file)), m) && !(p = strcasestr(b, "<HEAD>")); cpy6(b, q+m-6), n += m)
+                  for (p = NULL, q = b+8, l = 0, n = 0; ((l += m = fread(q, 1, sizeof(b)-9, file)), m) && !(p = strcasestr(b+2, "<HEAD>")); cpy8(b, q+m-8), n += m)
                      memcpy(content+n, q, m);
-                  cpy6(b, q+m-6);
+                  cpy8(b, q+m-8);
 
                   if (p)
                   {
@@ -242,26 +242,26 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
 
                      memcpy(content+n, "<LINK rel=\"stylesheet\" href=\"/admin/content.css\" type=\"text/css\">", 65); n += 65;
 
-                     // inject the DIV marker tag of the editibale content directly after the BODY tag.
-                     if (!(p = strcasestr(q = p, "<BODY>")))
+                     // inject the DIV marker tag of the editibale content directly after the <!--e--> tag.
+                     if (!(p = strstr(q = p, "<!--e-->")))
                      {
                         memcpy(content+n, q, m);                                                                n += m;
-                        for (p = NULL; q = b+6, ((l += m = fread(q, 1, sizeof(b)-7, file)), m) && !(p = strcasestr(b, "<BODY>")); cpy6(b, q+m-6), n += m)
+                        for (p = NULL; q = b+8, ((l += m = fread(q, 1, sizeof(b)-9, file)), m) && !(p = strstr(b, "<!--e-->")); cpy8(b, q+m-8), n += m)
                            memcpy(content+n, q, m);
                      }
 
                      if (p)
                      {
                         if (p == q)
-                             cpy6(content+n, p),                                                p += 6, m -= 6, n += 6;
+                             cpy8(content+n, p),                                                p += 8, m -= 8, n += 8;
 
                         else if (p < q)
-                             cpy6(content+n+(k = p-q), p),                              k += 6, p += 6, m -= k, n += k;
+                             cpy8(content+n+(k = p-q), p),                              k += 8, p += 8, m -= k, n += k;
 
                         else // (p > q)
                         {
                            memcpy(content+n, q, k = p-q),                                               m -= k, n += k;
-                             cpy6(content+n, p),                                                p += 6, m -= 6, n += 6;
+                             cpy8(content+n, p),                                                p += 8, m -= 8, n += 8;
                         }
 
                         memcpy(content+n, "<DIV data-editable data-name=\"content\">", 39);                     n += 39;
@@ -271,14 +271,14 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
                         {
                            n += l;
 
-                           // inject the closing /DIV marker together with the SCRIPT tag of our content.js directly before the closing /BODY tag.
-                           for (l = n-1; l >= 6; l--)
-                              if (content[l] == '>' && cmp2(content+l-6, "</") && FourUpChars(content+l-4) == 'BODY')
+                           // inject the closing /DIV marker together with the SCRIPT tag of our content.js directly before the closing <!--E--> tag.
+                           for (l = n-1; l >= 8; l--)
+                              if (cmp8(content+l-8, "<!--E-->"))
                                  break;
 
-                           if (l >= 6)
+                           if (l >= 8)
                            {
-                              for (l -= 6, m = n-l, p = content+l, q = content+l+70, i = 0; i < m; i++)
+                              for (l -= 8, m = n-l, p = content+l, q = content+l+70, i = m-1; i >= 0; i--)
                                  q[i] = p[i];
                               memcpy(content+l, "</DIV><SCRIPT type=\"text/javascript\" src=\"/admin/content.js\"></SCRIPT>", 70); n += 70;
 
@@ -340,35 +340,64 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
                       && (content = allocate((contlen = st.st_size + replen)+1, default_align, false))
                       && (file = fopen(filep, "r")))
                      {
-                        llong k, l, m, n;
-                        char *p, *q, b[256]; cpy6(b, "******"); b[255] = 0;
+                        llong i, k, l, m, n;
+                        char *o, *p, *q, b[512]; cpy8(b, "********"); b[511] = 0;
 
-                        // extract the HEAD section of the HTML document
-                        for (p = NULL, q = b+6, l = 0, n = 0; ((l += m = fread(q, 1, sizeof(b)-7, file)), m) && !(p = strcasestr(b, "<BODY>")); cpy6(b, q+m-6), n += m)
+                        // extract the preamble section of the HTML document until the <!--e--> tag
+                        for (p = NULL, q = b+8, l = 0, n = 0; ((l += m = fread(q, 1, sizeof(b)-9, file)), m) && !(p = strstr(b, "<!--e-->")); cpy8(b, q+m-8), n += m)
                            memcpy(content+n, q, m);
-                        cpy6(b, q+m-6);
-                        fclose(file);
+                        cpy8(b, q+m-8);
 
-                        if (p
-                         && (file = fopen(filep, "w")))
+                        if (p)
                         {
                            if (p == q)
-                                cpy7(content+n, "<BODY>\n"),           n += 7;
+                                cpy8(content+n, p),                   p += 8, m -= 8, n += 8;
 
                            else if (p < q)
-                                cpy7(content+n+(k = p-q), "<BODY>\n"), k += 7, n += k;
+                                cpy8(content+n+(k = p-q), p), k += 8, p += 8, m -= k, n += k;
 
                            else // (p > q)
                            {
-                              memcpy(content+n, q, k = p-q),           n += k;
-                                cpy7(content+n, "<BODY>\n"),           n += 7;
+                              memcpy(content+n, q, k = p-q),                   m -= k, n += k;
+                                cpy8(content+n, p),                    p += 8, m -= 8, n += 8;
                            }
 
-                           memcpy(content+n, replace, replen);    n += replen;
-                            cpy16(content+n, "</BODY></HTML>\n"); n += 15;
+                           memcpy(o = content+n, p, m);                                n += m;
 
-                           rc = (fwrite(content, n, 1, file) == 1) ? 204 : 500;
-                           fclose(file);
+                           if (!(l = st.st_size - l) || fread(content+n, l, 1, file) == 1)
+                           {
+                              fclose(file);
+                              n += l;
+
+                              // find the closing <!--E--> tag, and move it togehther with everything beyond it to the new end of the document
+                              for (l = n-1; l >= 8; l--)
+                                 if (cmp8(content+l-8, "<!--E-->"))
+                                    break;
+
+                              if (l >= 8)
+                              {
+                                 l -= 8;
+                                 p = content+l;
+                                 k = p - o;
+                                 q = content+l+replen-k;
+                                 if (k > replen)
+                                    for (m = n-l, i = 0; i < m; i++)
+                                       q[i] = p[i];
+                                 else if (k < replen)
+                                    for (m = n-l, i = m-1; i >= 0; i--)
+                                       q[i] = p[i];
+
+                                 memcpy(o, replace, replen);                           n += replen-k;
+
+                                 if (file = fopen(filep, "w"))
+                                 {
+                                    rc = (fwrite(content, n, 1, file) == 1) ? 204 : 500;
+                                    fclose(file);
+                                 }
+                              }
+                           }
+                           else
+                              fclose(file);
                         }
                      }
 
