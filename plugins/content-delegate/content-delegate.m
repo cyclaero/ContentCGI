@@ -219,73 +219,78 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
                   content[contlen] = '\0';
 
                   llong i, k, l, m, n;
-                  char *p, *q, b[512]; cpy8(b, "********"); b[511] = 0;
 
-                  // inject the LINK tag of our content.css directly after the HEAD tag.
-                  for (p = NULL, q = b+8, l = 0, n = 0; ((l += m = fread(q, 1, sizeof(b)-9, file)), m) && !(p = strcasestr(b+2, "<HEAD>")); cpy8(b, q+m-8), n += m)
-                     memcpy(content+n, q, m);
-                  cpy8(b, q+m-8);
-
-                  if (p)
+                  if ((l = n = fread(content, 1, 8, file)) == 8
+                   && !cmp8(content, "<!--S-->"))
                   {
-                     if (p == q)
-                          cpy6(content+n, p),                                                   p += 6, m -= 6, n += 6;
+                     char *p, *q, b[512]; cpy8(b, "********"); b[511] = 0;
 
-                     else if (p < q)
-                          cpy6(content+n+(k = p-q), p),                                 k += 6, p += 6, m -= k, n += k;
-
-                     else // (p > q)
-                     {
-                        memcpy(content+n, q, k = p-q),                                                  m -= k, n += k;
-                          cpy6(content+n, p),                                                   p += 6, m -= 6, n += 6;
-                     }
-
-                     memcpy(content+n, "<LINK rel=\"stylesheet\" href=\"/admin/content.css\" type=\"text/css\">", 65); n += 65;
-
-                     // inject the DIV marker tag of the editibale content directly after the <!--e--> tag.
-                     if (!(p = strstr(q = p, "<!--e-->")))
-                     {
-                        memcpy(content+n, q, m);                                                                n += m;
-                        for (p = NULL; q = b+8, ((l += m = fread(q, 1, sizeof(b)-9, file)), m) && !(p = strstr(b, "<!--e-->")); cpy8(b, q+m-8), n += m)
-                           memcpy(content+n, q, m);
-                     }
+                     // inject the LINK tag of our content.css directly after the HEAD tag.
+                     for (p = NULL, q = b+8; ((l += m = fread(q, 1, sizeof(b)-9, file)), m) && !(p = strcasestr(b+2, "<HEAD>")); cpy8(b, q+m-8), n += m)
+                        memcpy(content+n, q, m);
+                     cpy8(b, q+m-8);
 
                      if (p)
                      {
                         if (p == q)
-                             cpy8(content+n, p),                                                p += 8, m -= 8, n += 8;
+                             cpy6(content+n, p),                                                   p += 6, m -= 6, n += 6;
 
                         else if (p < q)
-                             cpy8(content+n+(k = p-q), p),                              k += 8, p += 8, m -= k, n += k;
+                             cpy6(content+n+(k = p-q), p),                                 k += 6, p += 6, m -= k, n += k;
 
                         else // (p > q)
                         {
-                           memcpy(content+n, q, k = p-q),                                               m -= k, n += k;
-                             cpy8(content+n, p),                                                p += 8, m -= 8, n += 8;
+                           memcpy(content+n, q, k = p-q),                                                  m -= k, n += k;
+                             cpy6(content+n, p),                                                   p += 6, m -= 6, n += 6;
                         }
 
-                        memcpy(content+n, "<DIV data-editable data-name=\"content\">", 39);                     n += 39;
-                        memcpy(content+n, p, m);                                                                n += m;
+                        memcpy(content+n, "<LINK rel=\"stylesheet\" href=\"/admin/content.css\" type=\"text/css\">", 65); n += 65;
 
-                        if (!(l = st.st_size - l) || fread(content+n, l, 1, file) == 1)
+                        // inject the DIV marker tag of the editibale content directly after the <!--e--> tag.
+                        if (!(p = strstr(q = p, "<!--e-->")))
                         {
-                           n += l;
+                           memcpy(content+n, q, m);                                                                n += m;
+                           for (p = NULL; q = b+8, ((l += m = fread(q, 1, sizeof(b)-9, file)), m) && !(p = strstr(b, "<!--e-->")); cpy8(b, q+m-8), n += m)
+                              memcpy(content+n, q, m);
+                        }
 
-                           // inject the closing /DIV marker together with the SCRIPT tag of our content.js directly before the closing <!--E--> tag.
-                           for (l = n-1; l >= 8; l--)
-                              if (cmp8(content+l-8, "<!--E-->"))
-                                 break;
+                        if (p)
+                        {
+                           if (p == q)
+                                cpy8(content+n, p),                                                p += 8, m -= 8, n += 8;
 
-                           if (l >= 8)
+                           else if (p < q)
+                                cpy8(content+n+(k = p-q), p),                              k += 8, p += 8, m -= k, n += k;
+
+                           else // (p > q)
                            {
-                              for (l -= 8, m = n-l, p = content+l, q = content+l+70, i = m-1; i >= 0; i--)
-                                 q[i] = p[i];
-                              memcpy(content+l, "</DIV><SCRIPT type=\"text/javascript\" src=\"/admin/content.js\"></SCRIPT>", 70); n += 70;
+                              memcpy(content+n, q, k = p-q),                                               m -= k, n += k;
+                                cpy8(content+n, p),                                                p += 8, m -= 8, n += 8;
+                           }
 
-                              response->contlen = n;
-                              response->content = content;
-                              rc = 200;
-                              goto finish;
+                           memcpy(content+n, "<DIV data-editable data-name=\"content\">", 39);                     n += 39;
+                           memcpy(content+n, p, m);                                                                n += m;
+
+                           if (!(l = st.st_size - l) || fread(content+n, l, 1, file) == 1)
+                           {
+                              n += l;
+
+                              // inject the closing /DIV marker together with the SCRIPT tag of our content.js directly before the closing <!--E--> tag.
+                              for (l = n-1; l >= 8; l--)
+                                 if (cmp8(content+l-8, "<!--E-->"))
+                                    break;
+
+                              if (l >= 8)
+                              {
+                                 for (l -= 8, m = n-l, p = content+l, q = content+l+70, i = m-1; i >= 0; i--)
+                                    q[i] = p[i];
+                                 memcpy(content+l, "</DIV><SCRIPT type=\"text/javascript\" src=\"/admin/content.js\"></SCRIPT>", 70); n += 70;
+
+                                 response->contlen = n;
+                                 response->content = content;
+                                 rc = 200;
+                                 goto finish;
+                              }
                            }
                         }
                      }
@@ -358,11 +363,11 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
 
                            else // (p > q)
                            {
-                              memcpy(content+n, q, k = p-q),                   m -= k, n += k;
-                                cpy8(content+n, p),                    p += 8, m -= 8, n += 8;
+                              memcpy(content+n, q, k = p-q),                  m -= k, n += k;
+                                cpy8(content+n, p),                   p += 8, m -= 8, n += 8;
                            }
 
-                           memcpy(o = content+n, p, m);                                n += m;
+                           memcpy(o = content+n, p, m);                               n += m;
 
                            if (!(l = st.st_size - l) || fread(content+n, l, 1, file) == 1)
                            {
@@ -387,7 +392,7 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
                                     for (m = n-l, i = m-1; i >= 0; i--)
                                        q[i] = p[i];
 
-                                 memcpy(o, replace, replen);                           n += replen-k;
+                                 memcpy(o, replace, replen);                          n += replen-k;
 
                                  if (file = fopen(filep, "w"))
                                  {
