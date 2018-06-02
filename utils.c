@@ -83,27 +83,6 @@ int strmlcat(char *dst, int m, int *l, ...)
 }
 
 
-char *memstr(const char *s1, const char *s2, int n)
-{
-   int i, j, m = strvlen(s2);
-   if (m == 0)
-      return (char *)s1;
-
-   if (m > n)
-      return NULL;
-
-   for (i = 0; i < n; i++)
-      if (s1[i] == *s2)
-      {
-         for (j = 1; i+j < n && s1[i+j] == s2[j] && j < m; j++);
-         if (j == m)
-            return &(((char *)s1)[i]);
-      }
-
-   return NULL;
-}
-
-
 // hex <-> bin conversions
 
 int hex2val(char hex)
@@ -1186,7 +1165,7 @@ void *reallocate(void *p, ssize_t size, boolean cleanout, boolean free_on_error)
             void *q = b->payload + b->padis;
             *(uint8_t *)(q-2) = b->align;
             *(uint8_t *)(q-1) = b->padis;
-            memcpy(q, p, (a->size <= size) ? a->size : size);
+            memvcpy(q, p, (a->size <= size) ? a->size : size);
 
             if (cleanout)
                memset((void *)a, 0, allocationMetaSize + align + a->size + sizeof(size_t));

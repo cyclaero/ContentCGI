@@ -166,7 +166,7 @@ boolean FCGI_Receiver(ConnExec *connex)
                         ssize_t size;
                         if (node->value.s = reallocate(node->value.s, (size = allocsize(node->value.s)) + header.contentLength, false, false))
                         {
-                           memcpy(node->value.s+size-1, content, header.contentLength+1);
+                           memvcpy(node->value.s+size-1, content, header.contentLength+1);
                            node->value.size += header.contentLength;
                            deallocate(VPR(content), false);
                         }
@@ -191,7 +191,7 @@ boolean FCGI_Receiver(ConnExec *connex)
                         ssize_t size;
                         if (node->value.s = reallocate(node->value.s, (size = allocsize(node->value.s)) + header.contentLength, false, false))
                         {
-                           memcpy(node->value.s+size-1, content, header.contentLength+1);
+                           memvcpy(node->value.s+size-1, content, header.contentLength+1);
                            node->value.size += header.contentLength;
                            deallocate(VPR(content), false);
                         }

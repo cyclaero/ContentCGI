@@ -577,7 +577,7 @@ void *reallocate(void *p, ssize_t size, boolean cleanout, boolean free_on_error)
             void *q = b->payload + b->padis;
             *(uint8_t *)(q-2) = b->align;
             *(uint8_t *)(q-1) = b->padis;
-            memcpy(q, p, (a->size <= size) ? a->size : size);
+            memvcpy(q, p, (a->size <= size) ? a->size : size);
 
             if (cleanout)
                memset((void *)a, 0, allocationMetaSize + align + a->size + sizeof(size_t));

@@ -400,7 +400,7 @@ static inline char *uppercase(char *s)
    static const __m128i blk16 = {0x2020202020202020ULL, 0x2020202020202020ULL};  // 16 bytes with inner blank limit
    static const __m128i obl16 = {0x2121212121212121ULL, 0x2121212121212121ULL};  // 16 bytes with outer blank limit
 
-   // Drop-in replacement for strlen(), utilizing some builtin SSSE3 instructions
+   // Drop-in replacement for strlen() and memvcpy(), utilizing some builtin SSSE3 instructions
    static inline int strvlen(const char *str)
    {
       if (!str || !*str)
@@ -414,6 +414,37 @@ static inline char *uppercase(char *s)
          if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&str[len]), nul16)))
             return len + __builtin_ctz(bmask);
    }
+
+   static inline void memvcpy(void *dst, const void *src, size_t n)
+   {
+      size_t k;
+
+      switch (n)
+      {
+         default:
+            if ((intptr_t)dst&0xF || (intptr_t)src&0xF)
+               for (k = 0; k  < n>>4<<1; k += 2)
+                  ((uint64_t *)dst)[k] = ((uint64_t *)src)[k], ((uint64_t *)dst)[k+1] = ((uint64_t *)src)[k+1];
+            else
+               for (k = 0; k  < n>>4; k++)
+                  _mm_store_si128(&((__m128i *)dst)[k], _mm_load_si128(&((__m128i *)src)[k]));
+         case 8 ... 15:
+            if ((k = n>>4<<1) < n>>3)
+               ((uint64_t *)dst)[k] = ((uint64_t *)src)[k];
+         case 4 ... 7:
+            if ((k = n>>3<<1) < n>>2)
+               ((uint32_t *)dst)[k] = ((uint32_t *)src)[k];
+         case 2 ... 3:
+            if ((k = n>>2<<1) < n>>1)
+               ((uint16_t *)dst)[k] = ((uint16_t *)src)[k];
+         case 1:
+            if ((k = n>>1<<1) < n)
+               (( uint8_t *)dst)[k] = (( uint8_t *)src)[k];
+         case 0:
+            ;
+      }
+   }
+
 
    static inline int linelen(const char *line)
    {
@@ -613,6 +644,7 @@ static inline char *uppercase(char *s)
 #else
 
    #define strvlen(s) (int)strlen(s)
+   #define memvcpy(d,s,n)  memcpy(d,s,n)
 
    static inline int linelen(const char *line)
    {
@@ -1044,7 +1076,6 @@ char *casefold(char *p);
 
 #endif
 
-char *memstr(const char *s1, const char *s2, int n);
 
 int hex2val(char hex);
 void conv2Hex(uchar *bin, uchar *hex, uint16_t n);
