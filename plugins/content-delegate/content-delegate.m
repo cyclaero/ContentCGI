@@ -471,7 +471,7 @@ static void qdownsort(time_t *a, int l, int r)
 boolean reindex(char *droot)
 {
    char *idx = newDynBuffer().buf;
-   int  idxl = dynAddString((dynhdl)&idx,
+   dynAddString((dynhdl)&idx,
 "<!--S--><!DOCTYPE html><HTML><HEAD>\n"
 "   <TITLE>BLog Résumés</TITLE>\n"
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
@@ -495,7 +495,7 @@ boolean reindex(char *droot)
 "      <TD>\n", 761);
 
    char *toc = newDynBuffer().buf;
-   int  tocl = dynAddString((dynhdl)&toc,
+   dynAddString((dynhdl)&toc,
 "<!--S--><!DOCTYPE html><HTML><HEAD>\n"
 "   <TITLE>Table of Contents</TITLE>\n"
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
@@ -609,6 +609,9 @@ boolean reindex(char *droot)
 
          dynAddString((dynhdl)&toc, "</BODY></HTML>", 14+1);      // +1 for ...
 
+         boolean ok1 = false,
+                 ok2 = false;
+
          int   idxfl = drootl + 1 + 11;
          char  idxf[idxfl+1]; strmlcat(idxf, idxfl+1, NULL, droot, drootl, "/", 1, "index.html", 10, NULL);
          int   tocfl = drootl + 1 + 9;
@@ -617,9 +620,7 @@ boolean reindex(char *droot)
          if ((stat(idxf, &st) != no_error || S_ISREG(st.st_mode) && unlink(idxf) == no_error)  // remove an old index.html file
           || (stat(tocf, &st) != no_error || S_ISREG(st.st_mode) && unlink(tocf) == no_error)) // remove an old toc.html file
          {
-            boolean ok1 = false,
-                    ok2 = false;
-            FILE   *file;
+            FILE *file;
 
             if (file = fopen(idxf, "w"))
             {
@@ -632,15 +633,14 @@ boolean reindex(char *droot)
                ok2 = fwrite(toc, dynlen((dynptr){toc}), 1, file) == 1;
                fclose(file);
             }
-
-            return ok1 && ok2;
          }
 
          freeDynBuffer((dynptr){idx});
          freeDynBuffer((dynptr){toc});
+
+         return ok1 && ok2;
       }
    }
 
    return false;
 }
-
