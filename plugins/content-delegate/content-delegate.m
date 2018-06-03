@@ -156,6 +156,8 @@ EXPORT boolean initialize(Sources *sources)
 }
 
 
+boolean reindex(char *droot);
+
 EXPORT long respond(char *entity, int el, Request *request, Response *response)
 {
    long  rc = 0;
@@ -226,49 +228,51 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
                      char *p, *q, b[1024]; cpy8(b, "********"); b[1023] = 0;
 
                      // inject the LINK tag of our content.css directly after the HEAD tag.
-                     for (p = NULL, q = b+8; ((l += m = fread(q, 1, sizeof(b)-9, file)), cpy8(b, q+m-8), m) && !(p = strcasestr(b+2, "<HEAD>")); n += m)
+                     for (p = NULL, q = b+8; ((l += m = fread(q, 1, sizeof(b)-9, file)), m) && !(p = strcasestr(b+2, "<HEAD>")); cpy8(b, q+m-8), n += m)
                         memvcpy(content+n, q, m);
+                     cpy8(b, q+m-8);
 
                      if (p)
                      {
                         if (p == q)
-                             cpy6(content+n, p),                                                   p += 6, m -= 6, n += 6;
+                             cpy6(content+n, p),                                                p += 6, m -= 6, n += 6;
 
                         else if (p < q)
-                             cpy6(content+n+(k = p-q), p),                                 k += 6, p += 6, m -= k, n += k;
+                             cpy6(content+n+(k = p-q), p),                              k += 6, p += 6, m -= k, n += k;
 
                         else // (p > q)
                         {
-                           memvcpy(content+n, q, k = p-q),                                                 m -= k, n += k;
-                             cpy6(content+n, p),                                                   p += 6, m -= 6, n += 6;
+                           memvcpy(content+n, q, k = p-q),                                              m -= k, n += k;
+                             cpy6(content+n, p),                                                p += 6, m -= 6, n += 6;
                         }
 
-                        memvcpy(content+n, "<LINK rel=\"stylesheet\" href=\"/admin/content.css\" type=\"text/css\">", 65); n += 65;
+                        memvcpy(content+n,
+                                "<LINK rel=\"stylesheet\" href=\"/admin/content.css\" type=\"text/css\">", 65); n += 65;
 
                         // inject the DIV marker tag of the editibale content directly after the <!--e--> tag.
                         if (!(p = strstr(q = p, "<!--e-->")))
                         {
-                           memvcpy(content+n, q, m);                                                               n += m;
-                           for (p = NULL; q = b+8, ((l += m = fread(q, 1, sizeof(b)-9, file)), cpy8(b, q+m-8), m) && !(p = strstr(b, "<!--e-->")); n += m)
+                           memvcpy(content+n, q, m);                                                            n += m;
+                           for (p = NULL; q = b+8, ((l += m = fread(q, 1, sizeof(b)-9, file)), m) && !(p = strstr(b, "<!--e-->")); cpy8(b, q+m-8), n += m)
                               memvcpy(content+n, q, m);
                         }
 
                         if (p)
                         {
                            if (p == q)
-                                cpy8(content+n, p),                                                p += 8, m -= 8, n += 8;
+                                cpy8(content+n, p),                                             p += 8, m -= 8, n += 8;
 
                            else if (p < q)
-                                cpy8(content+n+(k = p-q), p),                              k += 8, p += 8, m -= k, n += k;
+                                cpy8(content+n+(k = p-q), p),                           k += 8, p += 8, m -= k, n += k;
 
                            else // (p > q)
                            {
-                              memvcpy(content+n, q, k = p-q),                                              m -= k, n += k;
-                                cpy8(content+n, p),                                                p += 8, m -= 8, n += 8;
+                              memvcpy(content+n, q, k = p-q),                                           m -= k, n += k;
+                                cpy8(content+n, p),                                             p += 8, m -= 8, n += 8;
                            }
 
-                           memvcpy(content+n, "<DIV data-editable data-name=\"content\">", 39);                    n += 39;
-                           memvcpy(content+n, p, m);                                                               n += m;
+                           memvcpy(content+n, "<DIV data-editable data-name=\"content\">", 39);                 n += 39;
+                           memvcpy(content+n, p, m);                                                            n += m;
 
                            if (!(l = st.st_size - l) || fread(content+n, l, 1, file) == 1)
                            {
@@ -334,7 +338,7 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
                {
                   *(t -= boundlen) = '\0';
                   for (; s < t && !cmp4(s, "\r\n\r\n"); s++);
-                  if ((s+=4) < t)
+                  if ((s+=3) < t)      // leave 1 line feed at the beginning of the replacement text
                   {
                      replace = s;
                      replen  = t-s;
@@ -348,8 +352,9 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
                         char *o, *p, *q, b[1024]; cpy8(b, "********"); b[1023] = 0;
 
                         // extract the preamble section of the HTML document until the <!--e--> tag
-                        for (p = NULL, q = b+8, l = 0, n = 0; ((l += m = fread(q, 1, sizeof(b)-9, file)), cpy8(b, q+m-8), m) && !(p = strstr(b, "<!--e-->")); n += m)
+                        for (p = NULL, q = b+8, l = 0, n = 0; ((l += m = fread(q, 1, sizeof(b)-9, file)), m) && !(p = strstr(b, "<!--e-->")); cpy8(b, q+m-8), n += m)
                            memvcpy(content+n, q, m);
+                        cpy8(b, q+m-8);
 
                         if (p)
                         {
@@ -394,8 +399,12 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
 
                                  if (file = fopen(filep, "w"))
                                  {
-                                    rc = (fwrite(content, n, 1, file) == 1) ? 204 : 500;
+                                    boolean ok = fwrite(content, n, 1, file) == 1;
                                     fclose(file);
+
+                                    rc = (ok && reindex(droot))
+                                       ? 204
+                                       : 500;
                                  }
                               }
                            }
@@ -434,3 +443,204 @@ EXPORT void release(void)
    [lResponder release];
    lResponder = nil;
 }
+
+
+#pragma mark ••• Helper Functions •••
+
+static void qdownsort(time_t *a, int l, int r)
+{
+   time_t m = a[(l + r)/2];
+   int    i = l, j = r;
+
+   do
+   {
+      while (a[i] > m) i++;
+      while (a[j] < m) j--;
+      if (i <= j)
+      {
+         time_t b = a[i]; a[i] = a[j], a[j] = b;
+         i++; j--;
+      }
+   } while (j > i);
+
+   if (l < j) qdownsort(a, l, j);
+   if (i < r) qdownsort(a, i, r);
+}
+
+
+boolean reindex(char *droot)
+{
+   char *idx = newDynBuffer().buf;
+   int  idxl = dynAddString((dynhdl)&idx,
+"<!--S--><!DOCTYPE html><HTML><HEAD>\n"
+"   <TITLE>BLog Résumés</TITLE>\n"
+"   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
+"   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"
+"   <LINK rel=\"icon\" href=\"favicon.ico\" type=\"image/x-icon\">\n"
+"</HEAD><BODY class=\"index\"><DIV class=\"page\"><TABLE>\n"
+"   <TR>\n"
+"      <TH style=\"width:675px; text-align:left;\">\n"
+"         <H1><A href=\"/\" style=\"color:#000;\">BLog</A></H1>\n"
+"      </TH>\n"
+"      <TH>\n"
+"         <A href=\"impressum.html\">Impressum</A><BR>\n"
+"         <A href=\"datenschutz.html\">Datenschutzerklärung</A><BR>\n"
+"         <A href=\"haftung.html\">Haftungsausschluß</A>\n"
+"      </TH>\n"
+"      <TH style=\"width:106px;\">\n"
+"         <IMG style=\"width:96px;\" src=\"logo.png\">\n"
+"      </TH>\n"
+"   </TR>\n"
+"   <TR>\n"
+"      <TD>\n", 761);
+
+   char *toc = newDynBuffer().buf;
+   int  tocl = dynAddString((dynhdl)&toc,
+"<!--S--><!DOCTYPE html><HTML><HEAD>\n"
+"   <TITLE>Table of Contents</TITLE>\n"
+"   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
+"   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"
+"</HEAD><BODY class=\"toc\">\n"
+"   <FORM action=\"_search\" method=\"POST\"><P><INPUT class=\"search\" type=\"text\" placeholder=\"Search in the BLog\"></P></FORM>\n", 352);
+
+   int   drootl = strvlen(droot);
+   int   adirl  = drootl + 1 + 8 + 1;
+   char  adir[adirl+1]; strmlcat(adir, adirl+1, NULL, droot, drootl, "/articles/", 10, NULL);
+
+   struct stat st;
+   if (stat(adir, &st) == no_error && S_ISDIR(st.st_mode))
+   {
+      DIR *dp;
+      if (dp = opendir(adir))
+      {
+         struct dirent *ep, bp;
+         int     fcnt = 0, fcap = 1024;
+         time_t *stamps = allocate(fcap*sizeof(time_t), default_align, false);
+
+         while (readdir_r(dp, &bp, &ep) == no_error && ep)
+         {
+            if (ep->d_name[0] != '.' && (ep->d_type == DT_REG || ep->d_type == DT_LNK))
+            {
+               int   artpl = adirl+ep->d_namlen;
+               char  artp[artpl+1];
+               strmlcat(artp, artpl+1, NULL, adir, adirl, ep->d_name, ep->d_namlen, NULL);
+               if (stat(artp, &st) == no_error && S_ISREG(st.st_mode))
+               {
+                  char  *chk = NULL;
+                  time_t stamp = strtoul(ep->d_name, &chk, 10);
+                  if (stamp && chk && cmp6(chk, ".html"))
+                  {
+                     if (fcnt == fcap)
+                        stamps = reallocate(stamps, (fcap += 1024)*sizeof(time_t), false, false);
+                     stamps[fcnt++] = stamp;
+                  }
+               }
+            }
+         }
+
+         closedir(dp);
+
+         if (fcnt > 1)
+            qdownsort(stamps, 0, fcnt-1);
+
+         for (int j = 0; j < fcnt; j++)
+         {
+            FILE  *file;
+            intStr stamp;
+            int    stmpl = int2str(stamp, stamps[j], intLen, 0);
+            int    artpl = adirl+stmpl+5;
+            char   artp[artpl+1];
+            char  *contemp;
+
+            strmlcat(artp, artpl+1, NULL, adir, adirl, stamp, stmpl, ".html", 5, NULL);
+            if (stat(artp, &st) == no_error && S_ISREG(st.st_mode)
+             && st.st_size
+             && (contemp = allocate(st.st_size+1, default_align, false)))
+            {
+               if (file = fopen(artp, "r"))
+               {
+                  contemp[st.st_size] = '\0';
+
+                  if (fread(contemp, st.st_size, 1, file) == 1)
+                  {
+                     char *p, *q, *s, *t;
+                     if ((p = strcasestr(contemp, "<TITLE>"))
+                      && (q = strcasestr(p += 7, "</TITLE>"))
+                      && (s =     strstr(q +  8, "<!--e-->"))
+                      && (t = strcasestr(s += 8, "</P>")))
+                     {
+                        struct tm tm;
+                        gmtime_r(&stamps[j], &tm);
+
+                        dynAddString((dynhdl)&idx, "<A class=\"index\" href=\"articles/", 32);
+                           dynAddInt((dynhdl)&idx, stamps[j]);
+                        dynAddString((dynhdl)&idx, ".html\">\n", 8);
+                        dynAddString((dynhdl)&idx, s, (int)(t-s));
+                        int m =
+                        dynAddString((dynhdl)&idx, "&nbsp;...</p>\n<P class=\"stamp\">", 31);
+                              dyninc((dynhdl)&idx, snprintf(idx+m, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
+                                                            tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec));
+
+                        dynAddString((dynhdl)&toc, "   <P><A href=\"articles/", 24);
+                           dynAddInt((dynhdl)&toc, stamps[j]);
+                        dynAddString((dynhdl)&toc, ".html\" target=\"_top\">", 21);
+                        dynAddString((dynhdl)&toc, p, (int)(q-p));
+                        dynAddString((dynhdl)&toc, "</A></P>\n", 9);
+                     }
+                  }
+
+                  fclose(file);
+               }
+
+               deallocate(VPR(contemp), false);
+            }
+         }
+
+         deallocate(VPR(stamps), false);
+
+         dynAddString((dynhdl)&idx,
+"      </TD>\n"
+"      <TD colspan=\"2\" style=\"padding:9px 3px 3px 27px;\">\n"
+"         <IFRAME name=\"toc\" src=\"toc.html\" align=\"top\" style=\"width:100%; border:0px;\"\n"
+"               onload=\"this.style.height=this.contentDocument.body.scrollHeight+'px';\"></IFRAME>\n"
+"      </TD>\n"
+"   </TR>\n"
+"</TABLE></DIV></BODY><HTML>\n", 302+1);                          // +1 for including the '\0' at the end of the dyn. buffer
+
+         dynAddString((dynhdl)&toc, "</BODY></HTML>", 14+1);      // +1 for ...
+
+         int   idxfl = drootl + 1 + 11;
+         char  idxf[idxfl+1]; strmlcat(idxf, idxfl+1, NULL, droot, drootl, "/", 1, "index.html", 10, NULL);
+         int   tocfl = drootl + 1 + 9;
+         char  tocf[tocfl+1]; strmlcat(tocf, tocfl+1, NULL, droot, drootl, "/", 1, "toc.html", 8, NULL);
+
+         if ((stat(idxf, &st) != no_error || S_ISREG(st.st_mode) && unlink(idxf) == no_error)  // remove an old index.html file
+          || (stat(tocf, &st) != no_error || S_ISREG(st.st_mode) && unlink(tocf) == no_error)) // remove an old toc.html file
+         {
+            boolean ok1 = false,
+                    ok2 = false;
+            FILE   *file;
+
+            if (file = fopen(idxf, "w"))
+            {
+               ok1 = fwrite(idx, dynlen((dynptr){idx}), 1, file) == 1;
+               fclose(file);
+            }
+
+            if (file = fopen(tocf, "w"))
+            {
+               ok2 = fwrite(toc, dynlen((dynptr){toc}), 1, file) == 1;
+               fclose(file);
+            }
+
+            return ok1 && ok2;
+         }
+
+         freeDynBuffer((dynptr){idx});
+         freeDynBuffer((dynptr){toc});
+      }
+   }
+
+   return false;
+}
+
