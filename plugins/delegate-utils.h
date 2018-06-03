@@ -1204,6 +1204,23 @@ static inline int dynAddString(dynhdl bufhdl, char *s, int len)
    return db->len;
 }
 
+static inline void dynAddInt(dynhdl bufhdl, llong i)
+{
+   dynbuf *db = (dynbuf *)(bufhdl->buf - dynbufMetaSize);
+   if (db->len+intLen >= db->cap)
+   {
+      if (db = reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
+         bufhdl->buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
+      else
+      {
+         syslog(LOG_ERR, "Reallocation of memory for a dynamic buffer failed.");
+         exit(EXIT_FAILURE);
+      }
+   }
+   db->len += int2str(bufhdl->buf+db->len, i, db->cap-db->len, 0);
+}
+
+
 static inline void dynAddStrField(dynhdl bufhdl, char *s, int len)
 {
    dynbuf *db = (dynbuf *)(bufhdl->buf - dynbufMetaSize);
