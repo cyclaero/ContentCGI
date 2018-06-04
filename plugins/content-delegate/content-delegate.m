@@ -166,10 +166,10 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
 
    if ((node = findName(request->serverTable, "REQUEST_METHOD", 14))
     && (cmp4(method = node->value.s, "GET") || cmp5(method, "POST"))       // only respond to GET or POST requests
-    && cmp7(entity, "/admin/"))                                            // only be reponsible for everything below the /admin/ path
+    && cmp6(entity, "/edit/"))                                             // only be reponsible for everything below the /edit/ path
    {
-      if (*(entity += 7) != '\0')
-         el -= 7;
+      if (*(entity += 6) != '\0')
+         el -= 6;
       else
          el = 10, entity = "index.html";
 
@@ -212,7 +212,7 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
 
             // GET method
             if (cmp4(method, "GET")
-             && (content = allocate((contlen = st.st_size + 65 + 39 + 70)+1, default_align, false))
+             && (content = allocate((contlen = st.st_size + 64 + 39 + 69)+1, default_align, false))
              && (file = fopen(filep, "r")))
             {
                int32_t loext = FourLoChars(spec);
@@ -235,19 +235,19 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
                      if (p)
                      {
                         if (p == q)
-                             cpy6(content+n, p),                                                p += 6, m -= 6, n += 6;
+                              cpy6(content+n, p),                                               p += 6, m -= 6, n += 6;
 
                         else if (p < q)
-                             cpy6(content+n+(k = p-q), p),                              k += 6, p += 6, m -= k, n += k;
+                              cpy6(content+n+(k = p-q), p),                             k += 6, p += 6, m -= k, n += k;
 
                         else // (p > q)
                         {
                            memvcpy(content+n, q, k = p-q),                                              m -= k, n += k;
-                             cpy6(content+n, p),                                                p += 6, m -= 6, n += 6;
+                              cpy6(content+n, p),                                               p += 6, m -= 6, n += 6;
                         }
 
                         memvcpy(content+n,
-                                "<LINK rel=\"stylesheet\" href=\"/admin/content.css\" type=\"text/css\">", 65); n += 65;
+                                "<LINK rel=\"stylesheet\" href=\"/edit/content.css\" type=\"text/css\">", 64);  n += 64;
 
                         // inject the DIV marker tag of the editibale content directly after the <!--e--> tag.
                         if (!(p = strstr(q = p, "<!--e-->")))
@@ -260,15 +260,15 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
                         if (p)
                         {
                            if (p == q)
-                                cpy8(content+n, p),                                             p += 8, m -= 8, n += 8;
+                                 cpy8(content+n, p),                                            p += 8, m -= 8, n += 8;
 
                            else if (p < q)
-                                cpy8(content+n+(k = p-q), p),                           k += 8, p += 8, m -= k, n += k;
+                                 cpy8(content+n+(k = p-q), p),                          k += 8, p += 8, m -= k, n += k;
 
                            else // (p > q)
                            {
                               memvcpy(content+n, q, k = p-q),                                           m -= k, n += k;
-                                cpy8(content+n, p),                                             p += 8, m -= 8, n += 8;
+                                 cpy8(content+n, p),                                            p += 8, m -= 8, n += 8;
                            }
 
                            memvcpy(content+n, "<DIV data-editable data-name=\"content\">", 39);                 n += 39;
@@ -285,10 +285,11 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
 
                               if (l >= 8)
                               {
-                                 for (l -= 8, m = n-l, p = content+l, q = content+l+70, i = m-1; i >= 0; i--)
+                                 for (l -= 8, m = n-l, p = content+l, q = content+l+69, i = m-1; i >= 0; i--)
                                     q[i] = p[i];
-                                 memvcpy(content+l, "</DIV><SCRIPT type=\"text/javascript\" src=\"/admin/content.js\"></SCRIPT>", 70); n += 70;
-
+                                 memvcpy(content+l,
+                                         "</DIV><SCRIPT type=\"text/javascript\" src=\"/edit/content.js\"></SCRIPT>", 69);
+                                                                                                                n += 69;
                                  response->contlen = n;
                                  response->content = content;
                                  rc = 200;
@@ -349,28 +350,58 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
                       && (file = fopen(filep, "r")))
                      {
                         llong i, k, l, m, n;
-                        char *o, *p, *q, b[1024]; cpy8(b, "********"); b[1023] = 0;
+                        char  b[1024]; cpy8(b, "********"); b[1023] = 0;
+                        char *o, *p, *q = b+8;
+
+                        // find the heading in the replacement tag by purposely being restrictive on what to accept as a new title to be injected
+                        char *heading = (*replace == '\n' && cmp4(replace+1, "<h1>"))
+                                      ? skip(replace+5) : NULL;
+                        llong headlen = (heading && (p = strstr(heading, "</h1>")))
+                                      ? bskip(p) - heading : 0;
 
                         // extract the preamble section of the HTML document until the <!--e--> tag
-                        for (p = NULL, q = b+8, l = 0, n = 0; ((l += m = fread(q, 1, sizeof(b)-9, file)), m) && !(p = strstr(b, "<!--e-->")); cpy8(b, q+m-8), n += m)
-                           memvcpy(content+n, q, m);
-                        cpy8(b, q+m-8);
+                        // and in case a heading has been found, replace the content of <TITLE> by it
+                        if (heading && headlen)
+                        {
+                           p = NULL, n = 0;
+
+                           char *tb, *te;
+                           if ((l = m = fread(q, 1, sizeof(b)-9, file))
+                               && (tb = strstr(q, "<TITLE>"))     // inject the new title only if the respective
+                               && (te = strstr(q, "</TITLE>")))   // tags are all in capital letters
+                           {
+                              tb += 7;
+                              memvcpy(content,   q, k = tb-q);                         n  = k;
+                              memvcpy(content+n, heading, headlen);         m -= te-q, n += headlen;
+                                 cpy8(content+n, te);                q = te+8, m -= 8, n += 8;
+
+                              if (!(p = strstr(q, "<!--e-->")))
+                              {
+                                 memvcpy(content+n, q, m);                             n += m;
+                                 for (p = NULL; q = b+8, ((l += m = fread(q, 1, sizeof(b)-9, file)), m) && !(p = strstr(b, "<!--e-->")); cpy8(b, q+m-8), n += m)
+                                    memvcpy(content+n, q, m);
+                              }
+                           }
+                        }
+                        else
+                           for (p = NULL, l = 0, n = 0; ((l += m = fread(q, 1, sizeof(b)-9, file)), m) && !(p = strstr(b, "<!--e-->")); cpy8(b, q+m-8), n += m)
+                              memvcpy(content+n, q, m);
 
                         if (p)
                         {
                            if (p == q)
-                                cpy8(content+n, p),                   p += 8, m -= 8, n += 8;
+                                 cpy8(content+n, p),                   p += 8, m -= 8, n += 8;
 
                            else if (p < q)
-                                cpy8(content+n+(k = p-q), p), k += 8, p += 8, m -= k, n += k;
+                                 cpy8(content+n+(k = p-q), p), k += 8, p += 8, m -= k, n += k;
 
                            else // (p > q)
                            {
-                              memvcpy(content+n, q, k = p-q),                 m -= k, n += k;
-                                cpy8(content+n, p),                   p += 8, m -= 8, n += 8;
+                              memvcpy(content+n, q, k = p-q),                  m -= k, n += k;
+                                 cpy8(content+n, p),                   p += 8, m -= 8, n += 8;
                            }
 
-                           memvcpy(o = content+n, p, m);                              n += m;
+                           memvcpy(o = content+n, p, m);                               n += m;
 
                            if (!(l = st.st_size - l) || fread(content+n, l, 1, file) == 1)
                            {
@@ -395,7 +426,7 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
                                     for (m = n-l, i = m-1; i >= 0; i--)
                                        q[i] = p[i];
 
-                                 memvcpy(o, replace, replen);                         n += replen-k;
+                                 memvcpy(o, replace, replen);                          n += replen-k;
 
                                  if (file = fopen(filep, "w"))
                                  {
@@ -501,7 +532,7 @@ boolean reindex(char *droot)
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"
 "</HEAD><BODY class=\"toc\">\n"
-"   <FORM action=\"_search\" method=\"POST\"><P><INPUT class=\"search\" type=\"text\" placeholder=\"Search in the BLog\"></P></FORM>\n", 352);
+"   <FORM action=\"_search\" method=\"POST\" target=\"_top\"><P><INPUT class=\"search\" type=\"text\" placeholder=\"Search in the BLog\"></P></FORM>\n", 366);
 
    int   drootl = strvlen(droot);
    int   adirl  = drootl + 1 + 8 + 1;

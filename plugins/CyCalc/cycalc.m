@@ -7974,10 +7974,14 @@ static void makeFraction(long double q, llong *a, llong *b, double eps)
 
 - (char *)postProcess:(ResultType *)result modifier:(ResultModifier)resultModifier resultBuffer:(char **)buffer
 {
+   static char localResultBuffer[calcInOutSize];   // static fallback result buffer in case buffer or *buffer is NULL
+
    boolean negative = false;
    int     l;
    llong   i, n, d;
-   char   *s, *r = *buffer;
+   char   *s, *r = (buffer && *buffer)
+                 ? *buffer
+                 : localResultBuffer;
 
    if (resultModifier == strResult && result->s != NULL)
       result->f = rtString;

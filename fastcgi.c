@@ -217,7 +217,7 @@ boolean FCGI_Receiver(ConnExec *connex)
 
                         connex->QueryTable = createTable(128);
                         strmlcpy(o = allocate(queryLen+1, default_align, false), node->value.s, queryLen+1, &queryLen);
-                        for (defLen = 0, p = o, q = p + queryLen; p < q; p += defLen+1)
+                        for (p = o, q = p + queryLen; p < q; p += defLen+1)
                         {
                            defLen = vdeflen(p), p[defLen] = '\0';
                            namLen = vnamlen(p), p[namLen] = '\0';
@@ -242,7 +242,7 @@ boolean FCGI_Receiver(ConnExec *connex)
                         char *p, *q;
 
                         connex->POSTtable = createTable(128);
-                        for (defLen = 0, p = node->value.s, q = p + strvlen(node->value.s); p < q; p += defLen+1)
+                        for (p = node->value.s, q = p + strvlen(node->value.s); p < q; p += defLen+1)
                         {
                            defLen = vdeflen(p), p[defLen] = '\0';
                            namLen = vnamlen(p), p[namLen] = '\0';

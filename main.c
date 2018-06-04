@@ -852,7 +852,11 @@ int main(int argc, char *const argv[])
          exit(EXIT_FAILURE);
       }
 
-      rc = chmod(unixDomainSocket.sun_path, 0666);  // set read/write access for everybody to the just created unix domain socket
+      if (chmod(unixDomainSocket.sun_path, 0666) < 0)  // set read/write access for everybody to the just created unix domain socket
+      {
+         syslog(LOG_ERR, "The access rigths of the Unix domain socket could no be set: %d.", errno);
+         exit(EXIT_FAILURE);
+      }
 
       if (listen(gListenSocket_ud, 5) < 0)
       {
