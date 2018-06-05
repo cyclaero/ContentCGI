@@ -308,8 +308,8 @@ static void loadPlugins(const char *dir, size_t len)
 
                            else
                            {
-                              releaseTable(plugin->cache.models);
                               releaseTable(plugin->cache.images);
+                              releaseTable(plugin->cache.models);
                               deallocate_batch(false, VPR(plugin->cache.ico.content),  VPR(plugin->cache.ico.conttag),
                                                       VPR(plugin->cache.png.content),  VPR(plugin->cache.png.conttag),
                                                       VPR(plugin->cache.js.content),   VPR(plugin->cache.js.conttag),
@@ -345,8 +345,8 @@ static void releasePlugins(void)
    for (plugin = gPlugins; plugin; plugin = next)
    {
       plugin->release();
-      releaseTable(plugin->cache.models);
       releaseTable(plugin->cache.images);
+      releaseTable(plugin->cache.models);
       deallocate_batch(false, VPR(plugin->cache.ico.content),  VPR(plugin->cache.ico.conttag),
                               VPR(plugin->cache.png.content),  VPR(plugin->cache.png.conttag),
                               VPR(plugin->cache.js.content),   VPR(plugin->cache.js.conttag),
