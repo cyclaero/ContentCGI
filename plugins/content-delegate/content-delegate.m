@@ -478,7 +478,7 @@ EXPORT void release(void)
 
 #pragma mark ••• Helper Functions •••
 
-static void qdownsort(time_t *a, int l, int r)
+void qdownsort(time_t *a, int l, int r)
 {
    time_t m = a[(l + r)/2];
    int    i = l, j = r;
@@ -498,6 +498,34 @@ static void qdownsort(time_t *a, int l, int r)
    if (i < r) qdownsort(a, i, r);
 }
 
+int stripATags(char *s, int n)
+{
+   int i, j;
+
+   for (i = 0, j = 0; i < n; i++)
+      switch (s[i])
+      {
+         case '<':
+            if (s[i+1] == 'a' || s[i+1] == 'A')
+            {
+               for (i += 2; s[i] != '>'; i++);
+               break;
+            }
+            else if (cmp2(s+i+1, "/a") || cmp2(s+i+1, "/A"))
+            {
+               for (i += 3; s[i] != '>'; i++);
+               break;
+            }
+
+         default:
+            if (i != j)
+               s[j++] = s[i];
+            break;
+      }
+
+   s[j] = '\0';
+   return j;
+}
 
 boolean reindex(char *droot)
 {
@@ -532,7 +560,7 @@ boolean reindex(char *droot)
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"
 "</HEAD><BODY class=\"toc\">\n"
-"   <FORM action=\"_search\" method=\"POST\" target=\"_top\"><P><INPUT class=\"search\" type=\"text\" placeholder=\"Search in the BLog\"></P></FORM>\n", 366);
+"   <FORM action=\"_search\" method=\"POST\" target=\"_top\"><INPUT class=\"search\" type=\"text\" placeholder=\"Search in the BLog\"></FORM>\n", 359);
 
    int   drootl = strvlen(droot);
    int   adirl  = drootl + 1 + 8 + 1;
@@ -603,12 +631,13 @@ boolean reindex(char *droot)
                         struct tm tm;
                         gmtime_r(&stamps[j], &tm);
 
+                        int sl = stripATags(s, (int)(bskip(t)-s));
                         dynAddString((dynhdl)&idx, "<A class=\"index\" href=\"articles/", 32);
                            dynAddInt((dynhdl)&idx, stamps[j]);
                         dynAddString((dynhdl)&idx, ".html\">\n", 8);
-                        dynAddString((dynhdl)&idx, s, (int)(t-s));
+                        dynAddString((dynhdl)&idx, s, sl);
                         int m =
-                        dynAddString((dynhdl)&idx, "&nbsp;...</p>\n<P class=\"stamp\">", 31);
+                        dynAddString((dynhdl)&idx, "&nbsp;...\n</p>\n<P class=\"stamp\">", 32);
                               dyninc((dynhdl)&idx, snprintf(idx+m, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
                                                             tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec));
 
