@@ -55,8 +55,10 @@ typedef struct
    Response html;
    Response css;
    Response js;
+   Response png;
    Response ico;
    Node   **images;
+   Node   **models;
 } Sources;
 
 

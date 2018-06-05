@@ -173,6 +173,24 @@ static void loadPlugins(const char *dir, size_t len)
                               fclose(srcfile);
                            }
 
+                           // PNG
+                           cpy4(filep+filepl+1, "png");
+                           if (stat(filep, &st) == no_error && S_ISREG(st.st_mode) && st.st_size && (srcfile = fopen(filep, "r")))
+                           {
+                              plugin->cache.png.content = allocate((ssize_t)st.st_size+1, default_align, false);
+                              if (plugin->cache.png.content)
+                                 if (fread(plugin->cache.png.content, (size_t)st.st_size, 1, srcfile) == 1)
+                                 {
+                                    plugin->cache.png.content[plugin->cache.png.contlen = st.st_size] = '\0';
+                                    plugin->cache.png.conttag = allocate(etagLen, default_align, false);
+                                    httpETag(plugin->cache.png.conttag , &st, false);
+                                    plugin->cache.png.conttyp = "image/png";
+                                 }
+                                 else
+                                    deallocate(VPR(plugin->cache.png.content), false);
+                              fclose(srcfile);
+                           }
+
                            // ICO
                            cpy4(filep+filepl+1, "ico");
                            if (stat(filep, &st) == no_error && S_ISREG(st.st_mode) && st.st_size && (srcfile = fopen(filep, "r")))
@@ -191,24 +209,71 @@ static void loadPlugins(const char *dir, size_t len)
                               fclose(srcfile);
                            }
 
-                           // load the files of a possible images directory into the plugins cache
-                           char *imagdir = strcpy(alloca(subdpl+7+1), subdp);
-                           cpy8(imagdir+subdpl, "/images");
-                           if (stat(imagdir, &st) == no_error && S_ISDIR(st.st_mode))
+                           // load the files of a possible models directory into the plugins cache
+                           char *modeldir = strcpy(alloca(subdpl+7+1), subdp);
+                           cpy8(modeldir+subdpl, "/models");
+                           if (stat(modeldir, &st) == no_error && S_ISDIR(st.st_mode))
                            {
                               DIR           *idp;
                               struct dirent *iep, ibp;
-                              if (idp = opendir(imagdir))
+                              if (idp = opendir(modeldir))
                               {
                                  Value value = {{.p = NULL}, dynamic*Data, 0, 0, NULL};
 
                                  while (readdir_r(idp, &ibp, &iep) == no_error && iep)
                                     if (iep->d_name[0] != '.' && (iep->d_type == DT_REG || iep->d_type == DT_LNK))
                                     {
-                                       int  imagpl = subdpl+7+1+iep->d_namlen;
-                                       char imagp[imagpl+1];
-                                       strmlcat(imagp, imagpl+1, NULL, imagdir, subdpl+7, "/", 1, iep->d_name, iep->d_namlen, NULL);
-                                       if (stat(imagp, &st) == no_error && S_ISREG(st.st_mode) && st.st_size && (srcfile = fopen(imagp, "r")))
+                                       int  modelpl = subdpl+7+1+iep->d_namlen;
+                                       char modelp[modelpl+1];
+                                       strmlcat(modelp, modelpl+1, NULL, modeldir, subdpl+7, "/", 1, iep->d_name, iep->d_namlen, NULL);
+                                       if (stat(modelp, &st) == no_error && S_ISREG(st.st_mode) && st.st_size && (srcfile = fopen(modelp, "r")))
+                                       {
+                                          Response *response;
+                                          if (response = allocate(sizeof(Response), default_align, true))
+                                             if (response->content = allocate((ssize_t)st.st_size+1, default_align, false))
+                                                if (fread(response->content, (size_t)st.st_size, 1, srcfile) == 1)
+                                                {
+                                                   response->content[response->contlen = st.st_size] = '\0';
+                                                   response->conttag = allocate(etagLen, default_align, false);
+                                                   httpETag(response->conttag , &st, false);
+                                                   response->conttyp = (char *)extensionToType(iep->d_name, iep->d_namlen);
+                                                   value.p = response;
+
+                                                   if (!plugin->cache.models)
+                                                      plugin->cache.models = createTable(64);
+                                                   storeName(plugin->cache.models, iep->d_name, iep->d_namlen, &value);
+                                                }
+                                                else
+                                                   deallocate_batch(false, VPR(response->content), VPR(response), NULL);
+                                             else
+                                                deallocate(VPR(response), false);
+
+                                          fclose(srcfile);
+                                       }
+                                    }
+
+                                 closedir(idp);
+                              }
+                           }
+
+                           // load the files of a possible images directory into the plugins cache
+                           char *imagedir = strcpy(alloca(subdpl+7+1), subdp);
+                           cpy8(imagedir+subdpl, "/images");
+                           if (stat(imagedir, &st) == no_error && S_ISDIR(st.st_mode))
+                           {
+                              DIR           *idp;
+                              struct dirent *iep, ibp;
+                              if (idp = opendir(imagedir))
+                              {
+                                 Value value = {{.p = NULL}, dynamic*Data, 0, 0, NULL};
+
+                                 while (readdir_r(idp, &ibp, &iep) == no_error && iep)
+                                    if (iep->d_name[0] != '.' && (iep->d_type == DT_REG || iep->d_type == DT_LNK))
+                                    {
+                                       int  imagepl = subdpl+7+1+iep->d_namlen;
+                                       char imagep[imagepl+1];
+                                       strmlcat(imagep, imagepl+1, NULL, imagedir, subdpl+7, "/", 1, iep->d_name, iep->d_namlen, NULL);
+                                       if (stat(imagep, &st) == no_error && S_ISREG(st.st_mode) && st.st_size && (srcfile = fopen(imagep, "r")))
                                        {
                                           Response *response;
                                           if (response = allocate(sizeof(Response), default_align, true))
@@ -243,11 +308,13 @@ static void loadPlugins(const char *dir, size_t len)
 
                            else
                            {
+                              releaseTable(plugin->cache.models);
                               releaseTable(plugin->cache.images);
                               deallocate_batch(false, VPR(plugin->cache.ico.content),  VPR(plugin->cache.ico.conttag),
-                                                      VPR(plugin->cache.html.content), VPR(plugin->cache.html.conttag),
+                                                      VPR(plugin->cache.png.content),  VPR(plugin->cache.png.conttag),
                                                       VPR(plugin->cache.js.content),   VPR(plugin->cache.js.conttag),
                                                       VPR(plugin->cache.css.content),  VPR(plugin->cache.css.conttag),
+                                                      VPR(plugin->cache.html.content), VPR(plugin->cache.html.conttag),
                                                       VPR(plugin), NULL);
                               dlclose(pluglib);
 
@@ -278,8 +345,10 @@ static void releasePlugins(void)
    for (plugin = gPlugins; plugin; plugin = next)
    {
       plugin->release();
+      releaseTable(plugin->cache.models);
       releaseTable(plugin->cache.images);
       deallocate_batch(false, VPR(plugin->cache.ico.content),  VPR(plugin->cache.ico.conttag),
+                              VPR(plugin->cache.png.content),  VPR(plugin->cache.png.conttag),
                               VPR(plugin->cache.js.content),   VPR(plugin->cache.js.conttag),
                               VPR(plugin->cache.css.content),  VPR(plugin->cache.css.conttag),
                               VPR(plugin->cache.html.content), VPR(plugin->cache.html.conttag),

@@ -76,9 +76,10 @@ debug: all
 update: clean all
 
 install: $(PRODUCT)
-	mkdir -p     "$(PLUGINS)/$(PROJECT)"
-	strip -x -o  "$(PLUGINS)/$(PROJECT)/$(PRODUCT)" $(PRODUCT)
-	cp -p $(PROJECT).html "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
-	cp -p $(PROJECT).css  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
-	cp -p $(PROJECT).js   "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
-	cp -p $(PROJECT).ico  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	mkdir -p      "$(PLUGINS)/$(PROJECT)"
+	strip -x -o   "$(PLUGINS)/$(PROJECT)/$(PRODUCT)" $(PRODUCT)
+	cp -p  $(PROJECT).html   "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p  $(PROJECT).css    "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p  $(PROJECT).js     "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p  $(PROJECT).png    "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p  $(PROJECT).ico    "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:

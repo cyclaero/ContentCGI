@@ -17,6 +17,13 @@
 		7E324E6C20B6292A001E29F9 /* CyObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EE882A220AC9F2900CD24F3 /* CyObject.m */; };
 		7E324E7B20B6296A001E29F9 /* content-delegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EE8829D20AC9F2900CD24F3 /* content-delegate.m */; };
 		7E5069DA209FE0CB00D15F5A /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5069D9209FE0CB00D15F5A /* libicucore.dylib */; };
+		7E6B8BF420C6C2EF00A95B6A /* content-delegate.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BEB20C6AB7200A95B6A /* content-delegate.png */; };
+		7E6B8BF620C6C3CE00A95B6A /* 0000000000.html in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BEE20C6BBA500A95B6A /* 0000000000.html */; };
+		7E6B8BF720C6C3CE00A95B6A /* styles.css in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BEF20C6BBDD00A95B6A /* styles.css */; };
+		7E6B8BF820C6C3CE00A95B6A /* logo.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BF220C6BF9200A95B6A /* logo.png */; };
+		7E6B8BF920C6C3CE00A95B6A /* favicon.ico in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BF120C6BF0600A95B6A /* favicon.ico */; };
+		7E6B8BFA20C6C3CE00A95B6A /* searchpict.svg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BF020C6BC2300A95B6A /* searchpict.svg */; };
+		7E6B8BFC20C6CC9700A95B6A /* functions.js in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BFB20C6C6B900A95B6A /* functions.js */; };
 		7E9433A520B6F64D00855520 /* delegate-utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7E324E5C20B616E8001E29F9 /* delegate-utils.c */; };
 		7E9433A620B6F65600855520 /* delegate-utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7E324E5C20B616E8001E29F9 /* delegate-utils.c */; };
 		7EBD78E520AE0F960035901F /* hello-delegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EBD78C220ADAC660035901F /* hello-delegate.m */; };
@@ -83,6 +90,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7E6B8BF520C6C38600A95B6A /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)/models";
+			dstSubfolderSpec = 0;
+			files = (
+				7E6B8BF620C6C3CE00A95B6A /* 0000000000.html in CopyFiles */,
+				7E6B8BF720C6C3CE00A95B6A /* styles.css in CopyFiles */,
+				7E6B8BFC20C6CC9700A95B6A /* functions.js in CopyFiles */,
+				7E6B8BF820C6C3CE00A95B6A /* logo.png in CopyFiles */,
+				7E6B8BF920C6C3CE00A95B6A /* favicon.ico in CopyFiles */,
+				7E6B8BFA20C6C3CE00A95B6A /* searchpict.svg in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7EBD78E720AE10B10035901F /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -103,6 +125,7 @@
 			dstSubfolderSpec = 0;
 			files = (
 				7EBD790720AE19500035901F /* content-delegate.html in CopyFiles */,
+				7E6B8BF420C6C2EF00A95B6A /* content-delegate.png in CopyFiles */,
 				7EFCFEE520B348C300B3D759 /* content-delegate.ico in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -126,6 +149,14 @@
 		7E324E8820B62BD9001E29F9 /* libcyobj.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcyobj.so; path = plugins/libcyobj.so; sourceTree = "<group>"; };
 		7E5069D9209FE0CB00D15F5A /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = /usr/lib/libicucore.dylib; sourceTree = "<absolute>"; };
 		7E5725F720B1173A009D5008 /* ContentCGI.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rc; lineEnding = 0; path = ContentCGI.rc; sourceTree = "<group>"; };
+		7E6B8BEB20C6AB7200A95B6A /* content-delegate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "content-delegate.png"; sourceTree = "<group>"; };
+		7E6B8BEC20C6AC9100A95B6A /* hello-delegate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "hello-delegate.png"; sourceTree = "<group>"; };
+		7E6B8BEE20C6BBA500A95B6A /* 0000000000.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = 0000000000.html; sourceTree = "<group>"; };
+		7E6B8BEF20C6BBDD00A95B6A /* styles.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = styles.css; sourceTree = "<group>"; };
+		7E6B8BF020C6BC2300A95B6A /* searchpict.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = searchpict.svg; sourceTree = "<group>"; };
+		7E6B8BF120C6BF0600A95B6A /* favicon.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = favicon.ico; sourceTree = "<group>"; };
+		7E6B8BF220C6BF9200A95B6A /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
+		7E6B8BFB20C6C6B900A95B6A /* functions.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = functions.js; sourceTree = "<group>"; };
 		7EB7356B20A2534C00D73FC1 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		7EB7356C20A2534C00D73FC1 /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
 		7EB7356D20A2534C00D73FC1 /* bower.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = bower.json; sourceTree = "<group>"; };
@@ -452,6 +483,19 @@
 				7E324E6120B61A23001E29F9 /* CyCalc-Reference.pdf */,
 			);
 			path = CyCalc;
+			sourceTree = "<group>";
+		};
+		7E6B8BED20C6B98600A95B6A /* models */ = {
+			isa = PBXGroup;
+			children = (
+				7E6B8BEE20C6BBA500A95B6A /* 0000000000.html */,
+				7E6B8BEF20C6BBDD00A95B6A /* styles.css */,
+				7E6B8BFB20C6C6B900A95B6A /* functions.js */,
+				7E6B8BF220C6BF9200A95B6A /* logo.png */,
+				7E6B8BF120C6BF0600A95B6A /* favicon.ico */,
+				7E6B8BF020C6BC2300A95B6A /* searchpict.svg */,
+			);
+			path = models;
 			sourceTree = "<group>";
 		};
 		7EB7356A20A2534C00D73FC1 /* ContentTools */ = {
@@ -890,6 +934,7 @@
 				7EBD78BF20ADAC660035901F /* hello-delegate.html */,
 				7EBD78BE20ADAC660035901F /* hello-delegate.css */,
 				7EBD78C120ADAC660035901F /* hello-delegate.js */,
+				7E6B8BEC20C6AC9100A95B6A /* hello-delegate.png */,
 				7EBD78C020ADAC660035901F /* hello-delegate.ico */,
 				7EBD78C320ADAC660035901F /* Makefile */,
 			);
@@ -942,10 +987,12 @@
 		7EE8829820AC9F2900CD24F3 /* content-delegate */ = {
 			isa = PBXGroup;
 			children = (
+				7E6B8BED20C6B98600A95B6A /* models */,
 				7EE8829D20AC9F2900CD24F3 /* content-delegate.m */,
 				7EE8829A20AC9F2900CD24F3 /* content-delegate.html */,
 				7EE8829920AC9F2900CD24F3 /* content-delegate.css */,
 				7EE8829C20AC9F2900CD24F3 /* content-delegate.js */,
+				7E6B8BEB20C6AB7200A95B6A /* content-delegate.png */,
 				7EE8829B20AC9F2900CD24F3 /* content-delegate.ico */,
 				7EE8829E20AC9F2900CD24F3 /* Makefile */,
 			);
@@ -1024,6 +1071,7 @@
 				7EBD78FB20AE18EC0035901F /* Frameworks */,
 				7EBD78FD20AE18EC0035901F /* Headers */,
 				7EBD78FE20AE18EC0035901F /* CopyFiles */,
+				7E6B8BF520C6C38600A95B6A /* CopyFiles */,
 				7E20155B20B23E52000FC68A /* CopyFiles */,
 				7EFCFEE420B346B900B3D759 /* ShellScript */,
 				7E20156420B25125000FC68A /* ShellScript */,

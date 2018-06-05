@@ -40,6 +40,7 @@
 
 - (id)initWithSources:(Sources *)sources;
 - (long)content:(char *)extension :(Request *)request :(Response *)response;
+- (long)models:(char *)name :(Request *)request :(Response *)response;
 - (long)images:(char *)name :(Request *)request :(Response *)response;
 
 @end
@@ -116,6 +117,32 @@
    return (response->contlen) ? 200 : 0;
 }
 
+- (long)models:(char *)name :(Request *)request :(Response *)response
+{
+   Node *node = findName(request->serverTable, "HTTP_IF_NONE_MATCH", 18);
+   char *etag = (node) ? node->value.s : NULL;
+
+   if (node = findName(cache->models, name, strvlen(name)))
+      if (!etag || strstr(etag, ((Response *)node->value.p)->conttag) != etag+1)
+         *response = *(Response *)node->value.p;
+      else
+      {
+         response->conttag = ((Response *)node->value.p)->conttag;
+         return 304;
+      }
+
+   if (response->contlen)
+      return 200;
+
+   else
+   {
+      response->contlen = 10;
+      response->conttyp = "text/plain";
+      response->content = "Not found.";
+      return 404;
+   }
+}
+
 - (long)images:(char *)name :(Request *)request :(Response *)response
 {
    Node *node = findName(request->serverTable, "HTTP_IF_NONE_MATCH", 18);
@@ -177,8 +204,12 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
       char  *msg = strcpy(alloca(el+4), entity);
       int dl, ml = el;
 
-      if (cmp7(msg, "images/"))
+      if (cmp7(msg, "models/"))
+         spec = msg+7, msg = "models:::";
+
+      else if (cmp7(msg, "images/"))
          spec = msg+7, msg = "images:::";
+
       else
       {
          if ((dl = domlen(msg)) != ml)
