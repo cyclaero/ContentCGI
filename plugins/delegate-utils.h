@@ -35,6 +35,7 @@
 #include <errno.h>
 #include <string.h>
 #include <time.h>
+#include <fenv.h>
 #include <math.h>
 #include <complex.h>
 #include <pthread.h>
