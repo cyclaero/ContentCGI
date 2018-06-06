@@ -6,6 +6,9 @@ location.search.substr(1).split("&").forEach(function(item) {
    (qargs[k] = qargs[k] || []).push(v)
 })
 
+
+ContentEdit.TRIM_WHITESPACE = false;
+
 window.addEventListener('load', function() {
    var editor;
 });
