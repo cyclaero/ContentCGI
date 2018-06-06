@@ -38,12 +38,16 @@ IMG.shade               { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border
 IMG.shade-center        { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; clear:both; display: block; margin-left:auto; margin-right:auto; max-width:100%; }
 
 TABLE                   { width:100%; table-layout:fixed; margin:0; padding:0; border-width:0; border-spacing:0; border-collapse:collapse; }
-TH                      { text-align:right; font-size:11px; font-weight:normal; vertical-align:middle; margin:0; padding:0; }
+TH                      { text-align:right; }
 TH H1                   { font-size:31px; padding:0; }
 TH H1 A                 { color:#000 !important; }
 TH H1 A:hover           { color:#777 !important; }
 TH IMG                  { margin:0; }
-TD                      { vertical-align:top; margin:0; padding:0; }
+TD                      { vertical-align:top; }
+
+TABLE.fyi               { width:147px; margin-left:21px; font-size:11px; }
+TABLE.fyi TH            { padding-left: 5px; font-weight:normal; text-align:left; vertical-align:top; width:60px; }
+TABLE.fyi TD            { padding-right:5px; font-weight:normal; }
 
 INPUT,TEXTAREA,SELECT   { font-family:verdana,sans-serif; font-size:12px; border:1px solid #bbb; background-clip:content-box; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box }
 SELECT                  { font-family:verdana,sans-serif; font-size:12px; margin:1px 2px; border:1px solid #bbb; border-radius:5px; background-clip:content-box }

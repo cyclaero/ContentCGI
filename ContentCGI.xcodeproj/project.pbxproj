@@ -147,6 +147,7 @@
 		7E324E6320B61A23001E29F9 /* cycalc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = cycalc.m; sourceTree = "<group>"; };
 		7E324E7920B6292A001E29F9 /* libcyobj.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libcyobj.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E324E8820B62BD9001E29F9 /* libcyobj.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcyobj.so; path = plugins/libcyobj.so; sourceTree = "<group>"; };
+		7E40AC3420C810B4005E98A8 /* bsdinstall.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = bsdinstall.sh; sourceTree = "<group>"; };
 		7E5069D9209FE0CB00D15F5A /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = /usr/lib/libicucore.dylib; sourceTree = "<absolute>"; };
 		7E5725F720B1173A009D5008 /* ContentCGI.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rc; lineEnding = 0; path = ContentCGI.rc; sourceTree = "<group>"; };
 		7E6B8BEB20C6AB7200A95B6A /* content-delegate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "content-delegate.png"; sourceTree = "<group>"; };
@@ -451,6 +452,7 @@
 				7EE8829520AC9EE900CD24F3 /* Makefile */,
 				7E5725F720B1173A009D5008 /* ContentCGI.rc */,
 				7E20156220B245D0000FC68A /* apache-vhost.conf */,
+				7E40AC3420C810B4005E98A8 /* bsdinstall.sh */,
 				7E20156120B24587000FC68A /* README.md */,
 				7EDEDE0F20B8B187003BF35A /* LICENSE */,
 				7EB9295320A24367007A2330 /* .gitignore */,

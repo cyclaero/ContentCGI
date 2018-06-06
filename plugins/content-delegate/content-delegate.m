@@ -569,20 +569,20 @@ boolean reindex(char *droot)
 "   <LINK rel=\"icon\" href=\"favicon.ico\" type=\"image/x-icon\">\n"
 "</HEAD><BODY class=\"index\"><DIV class=\"page\"><TABLE>\n"
 "   <TR>\n"
-"      <TH style=\"width:675px; text-align:left;\">\n"
+"      <TH style=\"width:675px;\">\n"
 "         <H1><A href=\"/\" style=\"color:#000;\">BLog</A></H1>\n"
 "      </TH>\n"
-"      <TH>\n"
-"         <A href=\"impressum.html\">Impressum</A><BR>\n"
-"         <A href=\"datenschutz.html\">Datenschutzerklärung</A><BR>\n"
-"         <A href=\"haftung.html\">Haftungsausschluß</A>\n"
-"      </TH>\n"
-"      <TH style=\"width:106px;\">\n"
+"      <TH style=\"width:167px;\"><TABLE class=\"fyi\">\n"
+"         <TR><TH><A href=\"imprint.html\">Imprint</A></TH><TD><A href=\"impressum.html\">Impressum</A></TD></TR>\n"
+"         <TR><TH><A href=\"privacy.html\">Privacy</A></TH><TD><A href=\"datenschutz.html\">Datenschutz</TD></TR>\n"
+"         <TR><TH><A href=\"disclaimer.html\">Disclaimer</A></TH><TD><A href=\"haftung.html\">Haftung</TD></TR>\n"
+"      </TH></TABLE>\n"
+"      <TH style=\"width:96px;\">\n"
 "         <IMG style=\"width:96px;\" src=\"logo.png\">\n"
 "      </TH>\n"
 "   </TR>\n"
 "   <TR>\n"
-"      <TD>\n", 761);
+"      <TD>\n", 942);
 
    char *toc = newDynBuffer().buf;
    dynAddString((dynhdl)&toc,
