@@ -40,6 +40,7 @@
 
 - (id)initWithSources:(Sources *)sources;
 - (long)content:(char *)extension :(Request *)request :(Response *)response;
+- (long)create:(char *)name :(Request *)request :(Response *)response;
 - (long)models:(char *)name :(Request *)request :(Response *)response;
 - (long)images:(char *)name :(Request *)request :(Response *)response;
 
@@ -62,6 +63,7 @@
 {
    [super dealloc];
 }
+
 
 - (long)content:(char *)extension :(Request *)request :(Response *)response
 {
@@ -117,6 +119,16 @@
    return (response->contlen) ? 200 : 0;
 }
 
+
+- (long)create:(char *)name :(Request *)request :(Response *)response;
+{
+   response->contlen = 10;
+   response->conttyp = "text/plain";
+   response->content = "Not found.";
+   return 404;
+}
+
+
 - (long)models:(char *)name :(Request *)request :(Response *)response
 {
    Node *node = findName(request->serverTable, "HTTP_IF_NONE_MATCH", 18);
@@ -142,6 +154,7 @@
       return 404;
    }
 }
+
 
 - (long)images:(char *)name :(Request *)request :(Response *)response
 {
@@ -570,7 +583,7 @@ boolean reindex(char *droot)
 "</HEAD><BODY class=\"index\"><DIV class=\"page\"><TABLE>\n"
 "   <TR>\n"
 "      <TH style=\"width:675px;\">\n"
-"         <H1><A href=\"/\" style=\"color:#000;\">BLog</A></H1>\n"
+"         <H1><A href=\"./\" style=\"color:#000;\">BLog</A></H1>\n"
 "      </TH>\n"
 "      <TH style=\"width:167px;\"><TABLE class=\"fyi\">\n"
 "         <TR><TH><A href=\"imprint.html\">Imprint</A></TH><TD><A href=\"impressum.html\">Impressum</A></TD></TR>\n"
@@ -582,7 +595,7 @@ boolean reindex(char *droot)
 "      </TH>\n"
 "   </TR>\n"
 "   <TR>\n"
-"      <TD>\n", 942);
+"      <TD>\n", 943);
 
    char *toc = newDynBuffer().buf;
    dynAddString((dynhdl)&toc,

@@ -160,6 +160,10 @@ void *firstresponder(ConnExec *connex)
                         entity = "Status: 400\nContent-Type: text/plain\nContent-Length: 19\nConnection: close\n\n400 - Bad request.\n", el = 94;
                         goto sendmsg;
 
+                     case 404:
+                        entity = "Status: 404\nContent-Type: text/plain\nContent-Length: 17\nConnection: close\n\n404 - Not found.\n", el = 92;
+                        goto sendmsg;
+
                      case 500:
                         entity = "Status: 500\nContent-Type: text/plain\nContent-Length: 29\nConnection: close\n\n500 - Internal Server Error.\n", el = 104;
 
