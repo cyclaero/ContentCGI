@@ -46,16 +46,21 @@ editor.addEventListener('saved', function (ev) {
       if (ev.target.readyState == 4) {
          editor.busy(false);
          switch (ev.target.status) {
+            // Save was successful, notify the user with a flash
             case 200:
-            case 201:
             case 204:
-            case 303:
-               // Save was successful, notify the user with a flash
                new ContentTools.FlashUI('ok');
                break;
 
+            case 201:
+               new ContentTools.FlashUI('ok');
+               var location = ev.target.getResponseHeader('Location');
+               if (location)
+                  setTimeout(function(){window.location = location}, 1000);
+               break;
+
+            // Save failed, notify the user with a flash
             default:
-               // Save failed, notify the user with a flash
                new ContentTools.FlashUI('no');
          }
       }

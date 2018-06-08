@@ -32,6 +32,7 @@
 		7EBD78F620AE188E0035901F /* hello-delegate.ico in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EBD78C020ADAC660035901F /* hello-delegate.ico */; };
 		7EBD790720AE19500035901F /* content-delegate.html in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EE8829A20AC9F2900CD24F3 /* content-delegate.html */; };
 		7EC6FA6314F2FB9700B07421 /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7EC6FA6214F2FB9700B07421 /* utils.c */; };
+		7ECB204520CA054900AF68E2 /* model.html in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EA227F520C8855500C3BB78 /* model.html */; };
 		7EE7B83A20B913B100D6DBCB /* libcyobj.so in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E324E8820B62BD9001E29F9 /* libcyobj.so */; };
 		7EE7B83B20B913B700D6DBCB /* libcyobj.so in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E324E8820B62BD9001E29F9 /* libcyobj.so */; };
 		7EFCFEE520B348C300B3D759 /* content-delegate.ico in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EE8829B20AC9F2900CD24F3 /* content-delegate.ico */; };
@@ -95,6 +96,7 @@
 			dstPath = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)/models";
 			dstSubfolderSpec = 0;
 			files = (
+				7ECB204520CA054900AF68E2 /* model.html in CopyFiles */,
 				7E6B8BF720C6C3CE00A95B6A /* styles.css in CopyFiles */,
 				7E6B8BFC20C6CC9700A95B6A /* functions.js in CopyFiles */,
 				7E6B8BF820C6C3CE00A95B6A /* logo.png in CopyFiles */,

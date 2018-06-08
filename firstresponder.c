@@ -58,7 +58,7 @@ void *firstresponder(ConnExec *connex)
       {
          Node *node;
 
-         if ((node = findName(connex->serverTable, "SCRIPT_NAME", 11)) && node->value.s)
+         if ((node = findName(connex->serverTable, "SCRIPT_NAME", 11)) && node->value.s && *node->value.s)
          {
             if (cmp15(node->value.s, "/edit/requinfo") /* cmp12(node->value.s, "/_hello.css") */)
             {
@@ -131,7 +131,23 @@ void *firstresponder(ConnExec *connex)
                      }
 
                      case 201:
-                     case 202:
+                     case 303:
+                        if ((node = findName(connex->serverTable, "HTTP_HOST", 9)) && node->value.s && *node->value.s)
+                        {
+                           hthl = snprintf(htheader, 256, "Status: %ld\nLocation: https://%s/edit%s\nContent-Length: 0\n\n",
+                                           rc, node->value.s, (response.content) ?: "/");
+                           plugins->freeback(&response);
+                           if (FCGI_SendDataStream(connex, FCGI_STDOUT, hthl, htheader))
+                           {
+                              force = false;
+                              goto sendOK;
+                           }
+                           else
+                              goto killconn;
+                        }
+                        else
+                           goto error500;
+
                      case 204:
                         hthl = snprintf(htheader, 256, "Status: %ld\nContent-Length: 0\n\n", rc);
                         if (FCGI_SendDataStream(connex, FCGI_STDOUT, hthl, htheader))
@@ -164,6 +180,7 @@ void *firstresponder(ConnExec *connex)
                         entity = "Status: 404\nContent-Type: text/plain\nContent-Length: 17\nConnection: close\n\n404 - Not found.\n", el = 92;
                         goto sendmsg;
 
+                     error500:
                      case 500:
                         entity = "Status: 500\nContent-Type: text/plain\nContent-Length: 29\nConnection: close\n\n500 - Internal Server Error.\n", el = 104;
 

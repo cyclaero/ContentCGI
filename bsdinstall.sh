@@ -73,7 +73,6 @@ if [ "$1" == "update" ]; then
    cd ..
    svn update
 fi
-$MAKE
 
 cd plugins
 $MAKE
@@ -85,6 +84,9 @@ for PLUGDIR in *-delegate; do
       cd ..
    fi
 done
+
+cd ..
+$MAKE
 
 cd "$CWD"
 
