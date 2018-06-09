@@ -584,7 +584,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 "</p>\r\n", user, tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
                }
 
-               int extlen = replen + stampl;
+               llong extlen = replen + stampl;
 
                int32_t loex = FourLoChars(spec);
                FILE   *file = NULL;

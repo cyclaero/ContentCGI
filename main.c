@@ -39,6 +39,7 @@
 #include <syslog.h>
 #include <signal.h>
 #include <pwd.h>
+#include <grp.h>
 #include <sys/stat.h>
 #include <sys/mount.h>
 #include <sys/socket.h>
@@ -431,15 +432,16 @@ void daemonize(DaemonKind kind)
          // fork off the parent process
          pid_t pid = fork();
 
-         if (pid < 0)
-            exit(EXIT_FAILURE);
-
-         // if we got a good PID, then we can exit the parent process.
-         if (pid > 0)
+         if (pid > 0)            // got a good PID, so exit the parent process.
             exit(EXIT_SUCCESS);
 
-         // The child process continues here.
-         // first close all open descriptors
+         else if (pid < 0)
+         {
+            syslog(LOG_ERR, "Could not fork of a daemon, error: %d.\n", errno);
+            exit(EXIT_FAILURE);
+         }
+
+         // The child process continues here, first close all open descriptors
          for (int i = getdtablesize(); i >= 0; --i)
             close(i);
 
@@ -453,20 +455,28 @@ void daemonize(DaemonKind kind)
 
          pid_t sid = setsid();
          if (sid < 0)
-            exit(EXIT_FAILURE);     // should log the failure before exiting?
+         {
+            syslog(LOG_ERR, "The daemon could not create a new session - error: %d.\n", errno);
+            exit(EXIT_FAILURE);
+         }
 
-         // Check and write our pid lock file
-         // and mutually exclude other instances from running
+         // Check and write our pid lock file and mutually exclude other instances from running
          int pidfile = open(pidfname, O_RDWR|O_CREAT, 0640);
          if (pidfile < 0)
-            exit(EXIT_FAILURE);     // can not open our pid file
+         {
+            syslog(LOG_ERR, "The daemon could not open its pid file - error: %d.\n", errno);
+            exit(EXIT_FAILURE);
+         }
 
          if (lockf(pidfile, F_TLOCK, 0) < 0)
-            exit(EXIT_FAILURE);     // can not lock our pid file -- was locked already
+         {
+            syslog(LOG_ERR, "The daemon could not lock its pid file - %d\n", errno);
+            exit(EXIT_FAILURE);
+         }
 
          // only first instance continues beyound this
          intStr is;
-         int    il = int2str(is, getpid(), intLen, 0 );
+         int il = int2str(is, getpid(), intLen, 0 );
          write(pidfile, is, il);    // record pid to our pid file
 
          signal(SIGURG,  signals);
@@ -490,7 +500,7 @@ void usage(const char *executable)
 {
    const char *r = executable + strvlen(executable);
    while (--r >= executable && *r != '/'); r++;
-   printf("\nusage: %s [-f] [-n] [-l local port] [-a local IPv4] [-b local IPv6] [-s secure port] [-c cert dir] [-r plugins] [-w web root] [-p pid file] [-u unix domain socket] [-h|?]\n", r);
+   printf("\nusage: %s [-f] [-n] [-l local port] [-a local IPv4] [-b local IPv6] [-s secure port] [-c cert dir] [-r plugins] [-w web root] [-u uid:gid] [-p pid file] [-u unix domain socket] [-h|?]\n", r);
    printf(" -f             foreground mode, don't fork off as a daemon.\n");
    printf(" -n             no console, don't fork off as a daemon - started/managed by launchd.\n");
    printf(" -l local port  listen on the non-TLS local host/net port number [default: 4000].\n");
@@ -502,8 +512,9 @@ void usage(const char *executable)
    printf(" -c cert dir    the path to the directory holding the certificate chain [default: ~/certdir].\n");
    printf(" -r plugins     the path to the async responder plugins directory [default: ~/plugins/"DAEMON_NAME"].\n");
    printf(" -w web root    the path to the web root directory [default: ~/webroot].\n");
+   printf(" -u uid:gid     switch to another user:group before launching the child.\n");
    printf(" -p pid file    the path to the pid file [default: /var/run/"DAEMON_NAME".pid]\n");
-   printf(" -u unix socket the path to the unix domain socket on which "DAEMON_NAME" is listening on [default: /tmp/"DAEMON_NAME".sock].\n");
+   printf(" -d unix socket the path to the unix domain socket on which "DAEMON_NAME" is listening on [default: /tmp/"DAEMON_NAME".sock].\n");
    printf(" ?|-h           shows these usage instructions.\n\n");
 }
 
@@ -728,6 +739,9 @@ int main(int argc, char *const argv[])
    const char     *command   = argv[0];
 
    DaemonKind      dKind     = discreteDaemon;
+   int64_t         uid       = -1;   // do not set the uid
+   int64_t         gid       = -1;   // do not set the gid
+
    const char     *certdir   = "~/certdir";
    const char     *plugdir   = "~/plugins/"DAEMON_NAME;
    const char     *webroot   = "~/webroot";
@@ -754,7 +768,7 @@ int main(int argc, char *const argv[])
    struct sockaddr_in6 serverAddress_v6 = {};
    serverAddress_v6.sin6_family = AF_INET6;
 
-   while ((ch = getopt(argc, argv, "fnl:a:b:s:4:6:c:r:w:p:u:h")) != -1)
+   while ((ch = getopt(argc, argv, "fnl:a:b:s:4:6:c:r:w:u:p:d:h")) != -1)
    {
       switch (ch)
       {
@@ -836,11 +850,67 @@ int main(int argc, char *const argv[])
             webroot = optarg;
             break;
 
+         case 'u':
+            if (optarg && !cmp2(optarg, "-"))
+            {
+               int     sl = strvlen(optarg);
+               char   *p, *q;
+               int64_t id;
+               if (optarg[0] != '-' || optarg[1] != ':')
+               {
+                  struct passwd *pwd;
+
+                  int fl = taglen(optarg);
+                  *(q = optarg + fl) = '\0';
+
+                  if ((id = strtol(optarg, &p, 10)) && p == q)
+                     uid = (uid_t)id;
+
+                  else if (pwd = getpwnam(optarg))
+                  {
+                     uid = pwd->pw_uid;
+                     gid = pwd->pw_gid;
+                     p = q;
+                  }
+
+                  else
+                  {
+                     syslog(LOG_ERR, "Invalid user ID '%s'\n", optarg);
+                     exit(EXIT_FAILURE);
+                  }
+
+                  if (fl != sl)
+                     p += 1;
+                  else
+                     p = NULL;
+               }
+               else
+                  p = &optarg[1];
+
+               if (p && !cmp2(optarg, "-"))
+               {
+                  struct group *grp;
+
+                  if ((id = strtol(p, &q, 10)) && q == optarg+sl)
+                     gid = id;
+
+                  else if (grp = getgrnam(p))
+                     gid = grp->gr_gid;
+
+                  else
+                  {
+                     syslog(LOG_ERR, "Invalid group ID '%s'\n", p);
+                     exit(EXIT_FAILURE);
+                  }
+               }
+            }
+            break;
+
          case 'p':
             pidfname = optarg;
             break;
 
-         case 'u':
+         case 'd':
             usocket = optarg;
             break;
 
@@ -1150,6 +1220,20 @@ int main(int argc, char *const argv[])
 
 
 #pragma mark ••• main() -- main thread loop responding to Unix Domain Socket connections •••
+      if (gid >= 0)              // gid needs to be set first
+         if (setgid((gid_t)gid) == -1)
+         {
+            syslog(LOG_ERR, "The gid of the ContentCGI process could not be set to '%u'.\n", (gid_t)gid);
+            exit(EXIT_FAILURE);
+         }
+
+      if (uid >= 0)
+         if (setuid((uid_t)uid) == -1)
+         {
+            syslog(LOG_ERR, "The uid of the ContentCGI process could not be set to '%u'.\n", (uid_t)uid);
+            exit(EXIT_FAILURE);
+         }
+
       long double mt, lastfail = microtime();
       int sock, err;
 

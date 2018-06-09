@@ -117,7 +117,7 @@
 
       response->contdyn = true;
       response->contlen = snprintf(resultStr, 1024, "Hello Responder Delegate at \"%s\".\n \n"
-                                                    "Demonstration the CyCalc Library by Dr. Rolf Jansen:\n \n"
+                                                    "Demonstration of the CyCalc Library:\n \n"
                                                     "  CyCalc example evaluating a prepared math. expression:\n     %s = %-10.6f\n \n"
                                                     "  CyCalc example calculating a onetime algebraic term:  \n     %s = %s \n",
                                                     cache->path,
