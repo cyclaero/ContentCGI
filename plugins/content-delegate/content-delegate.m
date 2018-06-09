@@ -691,30 +691,33 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                               moved = (stat(filep, &st) == no_error && S_ISREG(st.st_mode) && rename(filep, tmpfp) == no_error);
                            }
 
-                           if (moved != invalid && (file = fopen(filep, "w")))
+                           if (moved != invalid)
                            {
-                              boolean ok = (fwrite(content, n, 1, file) == 1);
-                              fclose(file);
-                              if (ok)
+                              if (file = fopen(filep, "w"))
                               {
-                                 if (moved == valid)
-                                    unlink(tmpfp);
-
-                                 if (reindex(droot))
+                                 boolean ok = (fwrite(content, n, 1, file) == 1);
+                                 fclose(file);
+                                 if (ok)
                                  {
-                                    if (!cache)
-                                       rc = 204;
+                                    if (moved == valid)
+                                       unlink(tmpfp), moved = undefined;
 
-                                    else if (response->content = allocate(filepl -= drootl, default_align, false))
+                                    if (reindex(droot))
                                     {
-                                       response->contdyn = true;
-                                       response->contlen = strmlcpy(response->content, filep+drootl, 0, &filepl);
-                                       rc = 201;
+                                       if (!cache)
+                                          rc = 204;
+
+                                       else if (response->content = allocate(filepl -= drootl, default_align, false))
+                                       {
+                                          response->contdyn = true;
+                                          response->contlen = strmlcpy(response->content, filep+drootl, 0, &filepl);
+                                          rc = 201;
+                                       }
                                     }
                                  }
                               }
 
-                              else if (moved == valid)
+                              if (moved == valid)
                                  rename(tmpfp, filep);
                            }
                         }
