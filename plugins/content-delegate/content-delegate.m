@@ -218,8 +218,8 @@ boolean  reindex(char *droot);
             int  artpl = drootl + 1 + bl + 1 + 10 + 1 + dl;  // for example $DOCUMENT_ROOT/articles/1527627185.html
             char artp[artpl+1];
             strmlcat(artp, artpl+1, NULL, droot, drootl, "/", 1, basepath, bl, "/", 1, node->value.s, dl, NULL);
-            int  delpl = 5+dl+1;                             // for example /tmp/1527627185.html
-            char delp[5+dl+1];
+            int  delpl = 5+dl;                               // for example /tmp/1527627185.html
+            char delp[delpl+1];
             strmlcat(delp, delpl+1, NULL, "/tmp/", 5, node->value.s, dl, NULL);
 
             struct stat st;
@@ -674,27 +674,48 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                            if (stamp)
                               memvcpy(o+replen, stamp, stampl),                  n += stampl;
 
-                           if (file = fopen(filep, "w"))
+
+                           // write out the changes to the file in a safe manner
+                           rc = 500;
+
+                           tris moved = undefined;
+                           int  tmpfpl, j;
+                           char *tmpfp = NULL;
+                           if (!cache)
                            {
-                              boolean ok = fwrite(content, n, 1, file) == 1;
+                              for (j = 1; entity[el-j] != '/' && j <= el; j++);
+                              tmpfpl = 5 + --j;
+                              tmpfp = alloca(tmpfpl+1);
+                              strmlcat(tmpfp, tmpfpl+1, NULL, "/tmp/", 5, filep+filepl-j, j, NULL);
+                              struct stat st;
+                              moved = (stat(filep, &st) == no_error && S_ISREG(st.st_mode) && rename(filep, tmpfp) == no_error);
+                           }
+
+                           if (moved != invalid && (file = fopen(filep, "w")))
+                           {
+                              boolean ok = (fwrite(content, n, 1, file) == 1);
                               fclose(file);
-                              if (ok && reindex(droot))
+                              if (ok)
                               {
-                                 if (!cache)
-                                    rc = 204;
+                                 if (moved == valid)
+                                    unlink(tmpfp);
 
-                                 else if (response->content = allocate(filepl -= drootl, default_align, false))
+                                 if (reindex(droot))
                                  {
-                                    response->contdyn = true;
-                                    response->contlen = strmlcpy(response->content, filep+drootl, 0, &filepl);
-                                    rc = 201;
-                                 }
+                                    if (!cache)
+                                       rc = 204;
 
-                                 else
-                                    rc = 500;
+                                    else if (response->content = allocate(filepl -= drootl, default_align, false))
+                                    {
+                                       response->contdyn = true;
+                                       response->contlen = strmlcpy(response->content, filep+drootl, 0, &filepl);
+                                       rc = 201;
+                                    }
+                                 }
                               }
-                              else
-                                 rc = 500;
+
+                              else if (moved == valid)
+                                 rename(tmpfp, filep);
                            }
                         }
                      }

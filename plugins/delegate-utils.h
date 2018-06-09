@@ -67,6 +67,13 @@ typedef unsigned long long ullong;
 
 typedef void *opaque;   // opaque pointer to an object
 
+typedef enum
+{
+   undefined = -1,
+   invalid   =  false,
+   valid     =  true
+} tris;
+
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 

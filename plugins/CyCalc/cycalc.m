@@ -5,8 +5,8 @@
 //  Copyright © 2006-2018 Dr. Rolf Jansen. All rights reserved.
 
 #warning: \
-    IMPORTANT: The CyCalc Library is Open Soruce but it is NOT FREE. \
-    Copyright © 2006-2018 Dr. Rolf Jansen. All rights reserved.
+IMPORTANT: The CyCalc Library is Open Soruce but it is NOT FREE. \
+Copyright © 2006-2018 Dr. Rolf Jansen. All rights reserved.
 
 //
 //  You may solely evaluate this Software in your develpoment projects.
