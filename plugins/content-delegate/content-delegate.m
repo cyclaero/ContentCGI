@@ -678,7 +678,6 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                            // write out the changes to the file in a safe manner
                            rc = 500;
 
-                           tris moved = undefined;
                            int  tmpfpl, j;
                            char *tmpfp = NULL;
                            if (!cache)
@@ -687,38 +686,31 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                               tmpfpl = 5 + --j;
                               tmpfp = alloca(tmpfpl+1);
                               strmlcat(tmpfp, tmpfpl+1, NULL, "/tmp/", 5, filep+filepl-j, j, NULL);
-                              struct stat st;
-                              moved = (stat(filep, &st) == no_error && S_ISREG(st.st_mode) && rename(filep, tmpfp) == no_error);
+                              file = fopen(tmpfp, "w");
                            }
+                           else
+                              file = fopen(filep, "w");
 
-                           if (moved != invalid)
+                           if (file)
                            {
-                              if (file = fopen(filep, "w"))
+                              boolean ok = (fwrite(content, n, 1, file) == 1);
+                              fclose(file);
+
+                              if (ok && (cache || rename(tmpfp, filep) == no_error))
                               {
-                                 boolean ok = (fwrite(content, n, 1, file) == 1);
-                                 fclose(file);
-                                 if (ok)
+                                 if (reindex(droot))
                                  {
-                                    if (moved == valid)
-                                       unlink(tmpfp), moved = undefined;
+                                    if (!cache)
+                                       rc = 204;
 
-                                    if (reindex(droot))
+                                    else if (response->content = allocate(filepl -= drootl, default_align, false))
                                     {
-                                       if (!cache)
-                                          rc = 204;
-
-                                       else if (response->content = allocate(filepl -= drootl, default_align, false))
-                                       {
-                                          response->contdyn = true;
-                                          response->contlen = strmlcpy(response->content, filep+drootl, 0, &filepl);
-                                          rc = 201;
-                                       }
+                                       response->contdyn = true;
+                                       response->contlen = strmlcpy(response->content, filep+drootl, 0, &filepl);
+                                       rc = 201;
                                     }
                                  }
                               }
-
-                              if (moved == valid)
-                                 rename(tmpfp, filep);
                            }
                         }
                      }
