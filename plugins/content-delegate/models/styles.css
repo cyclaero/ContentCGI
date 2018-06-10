@@ -45,9 +45,9 @@ TH H1 A:hover           { color:#777 !important; }
 TH IMG                  { margin:0; }
 TD                      { vertical-align:top; }
 
-TABLE.fyi               { width:147px; margin-left:21px; font-size:11px; }
-TABLE.fyi TH            { padding-left: 5px; font-weight:normal; text-align:left; vertical-align:top; width:60px; }
-TABLE.fyi TD            { padding-right:5px; font-weight:normal; }
+TABLE.fyi               { width:147px; margin-left:25px; font-size:11px; }
+TABLE.fyi TH            { font-weight:normal; text-align:left; vertical-align:top; width:60px; }
+TABLE.fyi TD            { font-weight:normal; padding-right:15px; }
 
 INPUT,TEXTAREA,SELECT   { font-family:verdana,sans-serif; font-size:12px; border:1px solid #bbb; background-clip:content-box; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box }
 SELECT                  { font-family:verdana,sans-serif; font-size:12px; margin:1px 2px; border:1px solid #bbb; border-radius:5px; background-clip:content-box }
