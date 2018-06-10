@@ -589,7 +589,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                int32_t loex = FourLoChars(spec);
                FILE   *file = NULL;
                if ((loex == 'html' && spec[4] == '\0' || loex == 'htm\0')
-                && (content = allocate((contlen = filesize + replen)+1, default_align, false))
+                && (content = allocate(filesize + extlen+1, default_align, false))
                 && (cache || (file = fopen(filep, "r"))))
                {
                   llong i, k, l, m, n;
@@ -613,12 +613,14 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                          && (tb = strstr(q, "<TITLE>"))     // inject the new title only if the respective
                          && (te = strstr(q, "</TITLE>")))   // tags are all in capital letters
                      {
+                        cpy8(b, q+m-8);
+
                         tb += 7;
                         memvcpy(content,   q, k = tb-q);                         n  = k;
                         memvcpy(content+n, heading, headlen);         m -= te-q, n += headlen;
                            cpy8(content+n, te);                q = te+8, m -= 8, n += 8;
 
-                        if (!(p = strstr(q, "<!--e-->")))
+                        if (!(p = strstr(b, "<!--e-->")))
                         {
                            memvcpy(content+n, q, m);                             n += m;
                            for (p = NULL; q = b+8, ((l += m = contread(q, 1, sizeof(b)-9, file, cache, &contpos)), m) && !(p = strstr(b, "<!--e-->")); cpy8(b, q+m-8), n += m)
@@ -791,7 +793,7 @@ boolean reindex(char *droot)
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"
 "   <LINK rel=\"icon\" href=\"favicon.ico\" type=\"image/x-icon\">\n"
-"</HEAD><BODY class=\"index\"><DIV class=\"page\"><TABLE>\n"
+"</HEAD><BODY><DIV class=\"page\"><TABLE>\n"
 "   <TR>\n"
 "      <TH style=\"width:675px;\">\n"
 "         <H1><A href=\"./\" style=\"color:#000;\">BLog</A></H1>\n"
@@ -802,11 +804,11 @@ boolean reindex(char *droot)
 "         <TR><TH><A href=\"disclaimer.html\">Disclaimer</A></TH><TD><A href=\"haftung.html\">Haftung</TD></TR>\n"
 "      </TH></TABLE>\n"
 "      <TH style=\"width:96px;\">\n"
-"         <IMG style=\"width:96px;\" src=\"logo.png\">\n"
+"         <A href=\"/\"><IMG style=\"width:96px;\" src=\"logo.png\"></A>\n"
 "      </TH>\n"
 "   </TR>\n"
 "   <TR>\n"
-"      <TD>\n", 943);
+"      <TD>\n", 945);
 
    char *toc = newDynBuffer().buf;
    dynAddString((dynhdl)&toc,
