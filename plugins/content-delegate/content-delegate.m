@@ -410,7 +410,7 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
             if ((l = n = contread(content, 1, 8, file, cache, &contpos)) == 8
              && !cmp8(content, "<!--S-->"))
             {
-               char *p, *q, b[1024]; cpy8(b, "********"); b[1023] = 0;
+               char *p, *q, b[1536]; cpy8(b, "********"); b[1535] = 0;
 
                // inject the LINK tag of our content.css directly after the HEAD tag.
                for (p = NULL, q = b+8; ((l += m = contread(q, 1, sizeof(b)-9, file, cache, &contpos)), m) && !(p = strcasestr(b+2, "<HEAD>")); cpy8(b, q+m-8), n += m)
@@ -593,7 +593,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                 && (cache || (file = fopen(filep, "r"))))
                {
                   llong i, k, l, m, n;
-                  char  b[1024]; cpy8(b, "********"); b[1023] = 0;
+                  char  b[1536]; cpy8(b, "********"); b[1535] = 0;
                   char *o, *p, *q = b+8;
 
                   // find the heading in the replacement tag by purposely being restrictive on what to accept as a new title to be injected
