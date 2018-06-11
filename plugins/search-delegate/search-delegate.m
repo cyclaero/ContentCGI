@@ -1,7 +1,7 @@
-//  hello-delegate.m
-//  hello-delegate
+//  search-delegate.m
+//  search-delegate
 //
-//  Created by Dr. Rolf Jansen on 2018-05-08.
+//  Created by Dr. Rolf Jansen on 2018-06-11.
 //  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -33,18 +33,18 @@
 
 #pragma mark •••• Responder Delegate Class ••••
 
-@interface Hello : CyObject
+@interface Search : CyObject
 {
    Sources *cache;
 }
 
 - (id)initWithSources:(Sources *)sources;
-- (long)hello:(char *)extension :(Request *)request :(Response *)response;
+- (long)search:(char *)extension :(Request *)request :(Response *)response;
 
 @end
 
 
-@implementation Hello
+@implementation Search
 
 - (id)initWithSources:(Sources *)sources
 {
@@ -61,7 +61,7 @@
    [super dealloc];
 }
 
-- (long)hello:(char *)extension :(Request *)request :(Response *)response
+- (long)search:(char *)extension :(Request *)request :(Response *)response
 {
    Node *node = findName(request->serverTable, "HTTP_IF_NONE_MATCH", 18);
    char *etag = (node) ? node->value.s : NULL;
@@ -107,7 +107,7 @@
    {
       response->contlen = 40;
       response->conttyp = "text/plain";
-      response->content = "The Hello Responder Delegate does work.\n";
+      response->content = "The Search Responder Delegate does work.\n";
    }
 
    if (response->contlen)
@@ -127,11 +127,11 @@
 
 #pragma mark •••• Responder Delegate Plugin Entry Points ••••
 
-Hello *lResponder = nil;
+Search *lResponder = nil;
 
 EXPORT boolean initialize(Sources *sources)
 {
-   lResponder = [[Hello alloc] initWithSources:sources];
+   lResponder = [[Search alloc] initWithSources:sources];
    return (lResponder != nil);
 }
 

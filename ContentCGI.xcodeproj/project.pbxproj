@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7E0E572320CF3F1900562DA9 /* delegate-utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7E324E5C20B616E8001E29F9 /* delegate-utils.c */; };
+		7E0E572620CF3F1900562DA9 /* libcyobj.so in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E324E8820B62BD9001E29F9 /* libcyobj.so */; };
+		7E0E573120CF3F3300562DA9 /* hello-delegate.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BEC20C6AC9100A95B6A /* hello-delegate.png */; };
+		7E0E573220CF3F4500562DA9 /* search-delegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E0E571D20CF3E5900562DA9 /* search-delegate.m */; };
+		7E0E573320CF3F5800562DA9 /* search-delegate.html in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E0E571A20CF3E5900562DA9 /* search-delegate.html */; };
+		7E0E573420CF3F5800562DA9 /* search-delegate.css in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E0E571920CF3E5900562DA9 /* search-delegate.css */; };
+		7E0E573520CF3F5800562DA9 /* search-delegate.js in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E0E571C20CF3E5900562DA9 /* search-delegate.js */; };
+		7E0E573620CF3F5800562DA9 /* search-delegate.ico in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E0E571B20CF3E5900562DA9 /* search-delegate.ico */; };
+		7E0E573720CF3F5800562DA9 /* search-delegate.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E0E571E20CF3E5900562DA9 /* search-delegate.png */; };
 		7E20155C20B23E82000FC68A /* drop-horz.svg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EB7357320A2534C00D73FC1 /* drop-horz.svg */; };
 		7E20155D20B23E86000FC68A /* drop-vert-above.svg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EB7357420A2534C00D73FC1 /* drop-vert-above.svg */; };
 		7E20155E20B23E88000FC68A /* drop-vert-below.svg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EB7357520A2534C00D73FC1 /* drop-vert-below.svg */; };
@@ -44,6 +53,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		7E0E572120CF3F1900562DA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7E324E6920B6292A001E29F9;
+			remoteInfo = libcyobjc;
+		};
+		7E0E573820CF3F6B00562DA9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7E0E571F20CF3F1900562DA9;
+			remoteInfo = "search-delegate";
+		};
 		7E324E8420B62B07001E29F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -75,6 +98,20 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		7E0E572820CF3F1900562DA9 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 0;
+			files = (
+				7E0E573320CF3F5800562DA9 /* search-delegate.html in CopyFiles */,
+				7E0E573420CF3F5800562DA9 /* search-delegate.css in CopyFiles */,
+				7E0E573520CF3F5800562DA9 /* search-delegate.js in CopyFiles */,
+				7E0E573620CF3F5800562DA9 /* search-delegate.ico in CopyFiles */,
+				7E0E573720CF3F5800562DA9 /* search-delegate.png in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7E20155B20B23E52000FC68A /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -113,6 +150,7 @@
 				7EBD78E820AE10D70035901F /* hello-delegate.html in CopyFiles */,
 				7EBD78E920AE10DA0035901F /* hello-delegate.css in CopyFiles */,
 				7EBD78EA20AE10DF0035901F /* hello-delegate.js in CopyFiles */,
+				7E0E573120CF3F3300562DA9 /* hello-delegate.png in CopyFiles */,
 				7EBD78F620AE188E0035901F /* hello-delegate.ico in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -134,6 +172,15 @@
 /* Begin PBXFileReference section */
 		08FB7796FE84155DC02AAC07 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = main.c; sourceTree = "<group>"; };
 		7E02668F20BC3C52004C92F9 /* webroot */ = {isa = PBXFileReference; lastKnownFileType = folder; path = webroot; sourceTree = "<group>"; };
+		7E0E571620CF3A9800562DA9 /* delegate-cloner.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "delegate-cloner.sh"; sourceTree = "<group>"; };
+		7E0E571820CF3E5900562DA9 /* Makefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		7E0E571920CF3E5900562DA9 /* search-delegate.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = "search-delegate.css"; sourceTree = "<group>"; };
+		7E0E571A20CF3E5900562DA9 /* search-delegate.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "search-delegate.html"; sourceTree = "<group>"; };
+		7E0E571B20CF3E5900562DA9 /* search-delegate.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = "search-delegate.ico"; sourceTree = "<group>"; };
+		7E0E571C20CF3E5900562DA9 /* search-delegate.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "search-delegate.js"; sourceTree = "<group>"; };
+		7E0E571D20CF3E5900562DA9 /* search-delegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "search-delegate.m"; sourceTree = "<group>"; };
+		7E0E571E20CF3E5900562DA9 /* search-delegate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "search-delegate.png"; sourceTree = "<group>"; };
+		7E0E573020CF3F1900562DA9 /* search-delegate.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "search-delegate.so"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E20156120B24587000FC68A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; lineEnding = 0; path = README.md; sourceTree = "<group>"; };
 		7E20156220B245D0000FC68A /* apache-vhost.conf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; lineEnding = 0; path = "apache-vhost.conf"; sourceTree = "<group>"; };
 		7E2F1B8620A5DBC500B7B848 /* ContentCGI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ContentCGI; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -395,6 +442,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		7E0E572520CF3F1900562DA9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7E0E572620CF3F1900562DA9 /* libcyobj.so in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7E324E6F20B6292A001E29F9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -462,6 +517,20 @@
 			name = ContentCGI;
 			sourceTree = "<group>";
 		};
+		7E0E571720CF3E5900562DA9 /* search-delegate */ = {
+			isa = PBXGroup;
+			children = (
+				7E0E571D20CF3E5900562DA9 /* search-delegate.m */,
+				7E0E571A20CF3E5900562DA9 /* search-delegate.html */,
+				7E0E571920CF3E5900562DA9 /* search-delegate.css */,
+				7E0E571C20CF3E5900562DA9 /* search-delegate.js */,
+				7E0E571B20CF3E5900562DA9 /* search-delegate.ico */,
+				7E0E571E20CF3E5900562DA9 /* search-delegate.png */,
+				7E0E571820CF3E5900562DA9 /* Makefile */,
+			);
+			path = "search-delegate";
+			sourceTree = "<group>";
+		};
 		7E2F1B8720A5DBC500B7B848 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -469,6 +538,7 @@
 				7EBD78E420AE0F660035901F /* hello-delegate.so */,
 				7EBD790620AE18EC0035901F /* content-delegate.so */,
 				7E324E7920B6292A001E29F9 /* libcyobj.so */,
+				7E0E573020CF3F1900562DA9 /* search-delegate.so */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -965,8 +1035,10 @@
 				7EE882A120AC9F2900CD24F3 /* CyObject.h */,
 				7EE882A220AC9F2900CD24F3 /* CyObject.m */,
 				7EE882A420AC9F2900CD24F3 /* Makefile */,
+				7E0E571620CF3A9800562DA9 /* delegate-cloner.sh */,
 				7EBD78BD20ADAC660035901F /* hello-delegate */,
 				7EE8829820AC9F2900CD24F3 /* content-delegate */,
+				7E0E571720CF3E5900562DA9 /* search-delegate */,
 			);
 			path = plugins;
 			sourceTree = "<group>";
@@ -989,6 +1061,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		7E0E572720CF3F1900562DA9 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7E324E7020B6292A001E29F9 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1013,6 +1092,25 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		7E0E571F20CF3F1900562DA9 /* search-delegate */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7E0E572D20CF3F1900562DA9 /* Build configuration list for PBXNativeTarget "search-delegate" */;
+			buildPhases = (
+				7E0E572220CF3F1900562DA9 /* Sources */,
+				7E0E572520CF3F1900562DA9 /* Frameworks */,
+				7E0E572720CF3F1900562DA9 /* Headers */,
+				7E0E572820CF3F1900562DA9 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7E0E572020CF3F1900562DA9 /* PBXTargetDependency */,
+			);
+			name = "search-delegate";
+			productName = libcyobj;
+			productReference = 7E0E573020CF3F1900562DA9 /* search-delegate.so */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 		7E324E6920B6292A001E29F9 /* libcyobj */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7E324E7620B6292A001E29F9 /* Build configuration list for PBXNativeTarget "libcyobj" */;
@@ -1085,6 +1183,7 @@
 			dependencies = (
 				7E5725EA20B10E1E009D5008 /* PBXTargetDependency */,
 				7E5725EC20B10E21009D5008 /* PBXTargetDependency */,
+				7E0E573920CF3F6B00562DA9 /* PBXTargetDependency */,
 			);
 			name = ContentCGI;
 			productInstallPath = "$(HOME)/bin";
@@ -1118,6 +1217,7 @@
 				7E324E6920B6292A001E29F9 /* libcyobj */,
 				7EBD78D920AE0F660035901F /* hello-delegate */,
 				7EBD78F720AE18EC0035901F /* content-delegate */,
+				7E0E571F20CF3F1900562DA9 /* search-delegate */,
 			);
 		};
 /* End PBXProject section */
@@ -1176,6 +1276,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		7E0E572220CF3F1900562DA9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7E0E572320CF3F1900562DA9 /* delegate-utils.c in Sources */,
+				7E0E573220CF3F4500562DA9 /* search-delegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7E324E6A20B6292A001E29F9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1218,6 +1327,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		7E0E572020CF3F1900562DA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7E324E6920B6292A001E29F9 /* libcyobj */;
+			targetProxy = 7E0E572120CF3F1900562DA9 /* PBXContainerItemProxy */;
+		};
+		7E0E573920CF3F6B00562DA9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7E0E571F20CF3F1900562DA9 /* search-delegate */;
+			targetProxy = 7E0E573820CF3F6B00562DA9 /* PBXContainerItemProxy */;
+		};
 		7E324E8520B62B07001E29F9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 7E324E6920B6292A001E29F9 /* libcyobj */;
@@ -1354,6 +1473,55 @@
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				WARNING_CFLAGS = "-Wno-multichar";
+			};
+			name = Release;
+		};
+		7E0E572E20CF3F1900562DA9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = "~/";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_EXTENSION = so;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				HEADER_SEARCH_PATHS = (
+					../,
+					/usr/local/include,
+				);
+				INSTALL_PATH = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/plugins",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+			};
+			name = Debug;
+		};
+		7E0E572F20CF3F1900562DA9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = "~/";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_EXTENSION = so;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				HEADER_SEARCH_PATHS = (
+					../,
+					/usr/local/include,
+				);
+				INSTALL_PATH = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/plugins",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
@@ -1509,6 +1677,15 @@
 			buildConfigurations = (
 				1DEB928A08733DD80010E9CD /* Debug */,
 				1DEB928B08733DD80010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7E0E572D20CF3F1900562DA9 /* Build configuration list for PBXNativeTarget "search-delegate" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7E0E572E20CF3F1900562DA9 /* Debug */,
+				7E0E572F20CF3F1900562DA9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
