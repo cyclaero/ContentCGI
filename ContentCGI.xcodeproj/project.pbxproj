@@ -13,7 +13,6 @@
 		7E20155F20B23E8C000FC68A /* video.svg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EB7357720A2534C00D73FC1 /* video.svg */; };
 		7E20156020B23E91000FC68A /* icons.woff in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EB7357620A2534C00D73FC1 /* icons.woff */; };
 		7E2F1B8B20A608B800B7B848 /* fastcgi.c in Sources */ = {isa = PBXBuildFile; fileRef = 7E2F1B8920A608B800B7B848 /* fastcgi.c */; };
-		7E324E6420B61A60001E29F9 /* cycalc.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E324E6320B61A23001E29F9 /* cycalc.m */; };
 		7E324E6C20B6292A001E29F9 /* CyObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EE882A220AC9F2900CD24F3 /* CyObject.m */; };
 		7E324E7B20B6296A001E29F9 /* content-delegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EE8829D20AC9F2900CD24F3 /* content-delegate.m */; };
 		7E5069DA209FE0CB00D15F5A /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5069D9209FE0CB00D15F5A /* libicucore.dylib */; };
@@ -142,9 +141,6 @@
 		7E2F1B8A20A608B800B7B848 /* fastcgi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = fastcgi.h; sourceTree = "<group>"; };
 		7E324E5C20B616E8001E29F9 /* delegate-utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = "delegate-utils.c"; sourceTree = "<group>"; };
 		7E324E5F20B61961001E29F9 /* delegate-utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "delegate-utils.h"; sourceTree = "<group>"; };
-		7E324E6120B61A23001E29F9 /* CyCalc-Reference.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "CyCalc-Reference.pdf"; sourceTree = "<group>"; };
-		7E324E6220B61A23001E29F9 /* cycalc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = cycalc.h; sourceTree = "<group>"; };
-		7E324E6320B61A23001E29F9 /* cycalc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = cycalc.m; sourceTree = "<group>"; };
 		7E324E7920B6292A001E29F9 /* libcyobj.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libcyobj.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E324E8820B62BD9001E29F9 /* libcyobj.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcyobj.so; path = plugins/libcyobj.so; sourceTree = "<group>"; };
 		7E40AC3420C810B4005E98A8 /* bsdinstall.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = bsdinstall.sh; sourceTree = "<group>"; };
@@ -475,16 +471,6 @@
 				7E324E7920B6292A001E29F9 /* libcyobj.so */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		7E324E6020B61A23001E29F9 /* CyCalc */ = {
-			isa = PBXGroup;
-			children = (
-				7E324E6220B61A23001E29F9 /* cycalc.h */,
-				7E324E6320B61A23001E29F9 /* cycalc.m */,
-				7E324E6120B61A23001E29F9 /* CyCalc-Reference.pdf */,
-			);
-			path = CyCalc;
 			sourceTree = "<group>";
 		};
 		7E6B8BED20C6B98600A95B6A /* models */ = {
@@ -979,7 +965,6 @@
 				7EE882A120AC9F2900CD24F3 /* CyObject.h */,
 				7EE882A220AC9F2900CD24F3 /* CyObject.m */,
 				7EE882A420AC9F2900CD24F3 /* Makefile */,
-				7E324E6020B61A23001E29F9 /* CyCalc */,
 				7EBD78BD20ADAC660035901F /* hello-delegate */,
 				7EE8829820AC9F2900CD24F3 /* content-delegate */,
 			);
@@ -1204,7 +1189,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7E9433A520B6F64D00855520 /* delegate-utils.c in Sources */,
-				7E324E6420B61A60001E29F9 /* cycalc.m in Sources */,
 				7EBD78E520AE0F960035901F /* hello-delegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

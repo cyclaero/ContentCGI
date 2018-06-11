@@ -28,7 +28,6 @@
 
 #import "CyObject.h"
 #import "delegate-utils.h"
-#import "cycalc.h"
 #import "exports.h"
 
 
@@ -37,9 +36,6 @@
 @interface Hello : CyObject
 {
    Sources *cache;
-   CalcPrep model;
-   char *mathExpression;
-   char  resultStr[1024];
 }
 
 - (id)initWithSources:(Sources *)sources;
@@ -55,9 +51,6 @@
    if (self = [super init])
    {
       cache = sources;
-
-      gDecSep = '.';
-      model = prepareFunction(sharedCalculator(), mathExpression = "solve(r := 5000/24; 5000·(1+6.25%/12)^24 - r·∑(k := 0; 23; (1+6.25%/12)^k))");
    }
 
    return self;
@@ -65,7 +58,6 @@
 
 - (void)dealloc
 {
-   disposeCalcPrep(&model);
    [super dealloc];
 }
 
@@ -113,21 +105,9 @@
 
    if (!response->content)
    {
-      char *tmpStr = NULL;
-
-      response->contdyn = true;
-      response->contlen = snprintf(resultStr, 1024, "Hello Responder Delegate at \"%s\".\n \n"
-                                                    "Demonstration of the CyCalc Library:\n \n"
-                                                    "  CyCalc example evaluating a prepared math. expression:\n     %s = %-10.6f\n \n"
-                                                    "  CyCalc example calculating a onetime algebraic term:  \n     %s = %s \n",
-                                                    cache->path,
-                                                    mathExpression, evaluatePrepFunc(model.func, 0, &model.errRec),
-                                                    "(4.79 - 5.41)/(100 - 60)*(80.37 - 60) + 5.41",
-                                                    tmpStr = calculate(sharedCalculator(), "(4.79 - 5.41)/(100 - 60)*(80.37 - 60) + 5.41", 0));
-      response->conttag = NULL;
+      response->contlen = 40;
       response->conttyp = "text/plain";
-      response->content = strcpy(allocate((long)response->contlen+1, default_align, false), resultStr);
-      deallocate(VPR(tmpStr), false);
+      response->content = "The Hello Responder Delegate does work.\n";
    }
 
    if (response->contlen)
@@ -156,6 +136,16 @@ EXPORT boolean initialize(Sources *sources)
 }
 
 
+SEL makeSelector(char *message, int ml)
+{
+   if (!ml)
+      ml = strvlen(message);
+   char sel[ml+3+1];
+   strmlcpy(sel, message, 0, &ml);
+   cpy4(sel+ml, ":::");
+   return sel_registerName(sel);
+}
+
 EXPORT long respond(char *entity, int el, Request *request, Response *response)
 {
    Node *node;
@@ -173,9 +163,7 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
          extension = entity+el+1;
       }
 
-      entity = strcpy(alloca(el+4), entity); cpy4(entity+el, ":::");
-
-      SEL selector = sel_registerName(entity);
+      SEL selector = makeSelector(entity, el);
       if ([lResponder respondsToSelector:selector])
          return (long)objc_msgSend(lResponder, selector, (id)extension, (id)request, (id)response);
    }

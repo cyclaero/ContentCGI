@@ -279,41 +279,41 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
       else
          el = 10, entity = "index.html";
 
-      int    len = el;
-      char  *msg = strcpy(alloca(len+5), entity);
+      int     ml = el;
+      char  *msg = strcpy(alloca(ml+5), entity);
       char *spec = NULL;
 
       if (cmp8(msg, "content."))
-         spec = msg+8, msg[len = 7] = '\0';
+         spec = msg+8, msg[ml = 7] = '\0';
 
       else if (cmp7(msg, "models/")
             || cmp7(msg, "images/"))
-         spec = msg+7, msg[len = 6] = '\0';
+         spec = msg+7, msg[ml = 6] = '\0';
 
-      else if (cmp8(msg+len-7, "/create")
-            || cmp8(msg+len-7, "/delete"))
-         spec = msg, msg += len-6, spec[len-7] = '\0', len = 6;
+      else if (cmp8(msg+ml-7, "/create")
+            || cmp8(msg+ml-7, "/delete"))
+         spec = msg, msg += ml-6, spec[ml-7] = '\0', ml = 6;
 
       else
       {
          int dl;
-         if ((dl = domlen(msg)) != len)
+         if ((dl = domlen(msg)) != ml)
          {
-            msg[len = dl] = '\0';
-            spec = entity+len+1;
+            msg[ml = dl] = '\0';
+            spec = entity+ml+1;
          }
       }
 
-      SEL selector = makeSelector(msg, len);
+      SEL selector = makeSelector(msg, ml);
       if ([lResponder respondsToSelector:selector]                            // return a cached or generated resource
        && (rc = (long)objc_msgSend(lResponder, selector, (id)spec, (id)method, (id)request, (id)response)))
          return rc;
 
       else if ((node = findName(request->serverTable, "DOCUMENT_ROOT", 13))   // access resource from DOCUMENT_RROT
-            && node->value.s && (len = strvlen(node->value.s)))
+            && node->value.s && (ml = strvlen(node->value.s)))
          return (cmp4(method, "GET"))
-                ?  GEThandler(node->value.s, len, entity, el, spec, request, response, NULL)
-                : POSThandler(node->value.s, len, entity, el, spec, request, response, NULL);
+                ?  GEThandler(node->value.s, ml, entity, el, spec, request, response, NULL)
+                : POSThandler(node->value.s, ml, entity, el, spec, request, response, NULL);
    }
 
    return rc;

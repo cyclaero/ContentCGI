@@ -48,10 +48,10 @@ CFLAGS += -fsigned-char
 
 CFLAGS += -std=c11 -fpic -fvisibility=hidden -fstrict-aliasing -fno-common -fobjc-nonfragile-abi \
           -Wno-multichar -Wno-parentheses -Wno-empty-body -Wno-switch -Wno-deprecated-declarations -Wshorten-64-to-32 \
-          -I/usr/local/include -I../ -I../CyCalc/
+          -I/usr/local/include -I../
 LDFLAGS = -shared -L/usr/local/lib -lm -lpthread -lobjc -rpath $(PLUGINS) -L$(PLUGINS) -lcyobj
 
-SOURCESm = $(PROJECT).m ../CyCalc/cycalc.m
+SOURCESm = $(PROJECT).m
 OBJECTSm = $(SOURCESm:.m=.o)
 SOURCESc = ../delegate-utils.c
 OBJECTSc = $(SOURCESc:.c=.o)
@@ -69,7 +69,7 @@ $(OBJECTSm) $(OBJECTSc): Makefile
 	$(CC) $(CFLAGS) $< -c -o $@
 
 clean:
-	rm -rf *.o ../delegate-utils.o ../CyCalc/cycalc.o $(PRODUCT)
+	rm -rf *.o ../delegate-utils.o $(PRODUCT)
 
 debug: all
 
