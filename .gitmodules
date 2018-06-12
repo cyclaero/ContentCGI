@@ -1,3 +1,6 @@
 [submodule "ContentTools"]
 	path = ContentTools
 	url = https://github.com/GetmeUK/ContentTools
+[submodule "plugins/search-delegate/zettair"]
+	path = plugins/search-delegate/zettair
+	url = https://github.com/cyclaero/zettair.git
