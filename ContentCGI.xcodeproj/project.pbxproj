@@ -522,7 +522,7 @@
 		7ED3DD2A20D00BB80082B171 /* iobtree.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = iobtree.c; sourceTree = "<group>"; };
 		7ED3DD2B20D00BB80082B171 /* ioutil.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ioutil.c; sourceTree = "<group>"; };
 		7ED3DD2C20D00BB80082B171 /* lcrand.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = lcrand.c; sourceTree = "<group>"; };
-		7ED3DD2D20D00BB80082B171 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		7ED3DD2D20D00BB80082B171 /* Makefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		7ED3DD2E20D00BB80082B171 /* makeindex.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = makeindex.c; sourceTree = "<group>"; };
 		7ED3DD2F20D00BB80082B171 /* media-types.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "media-types.txt"; sourceTree = "<group>"; };
 		7ED3DD3020D00BB80082B171 /* mem.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mem.c; sourceTree = "<group>"; };
@@ -1402,10 +1402,10 @@
 		7ED3DD4F20D00BB80082B171 /* Spider */ = {
 			isa = PBXGroup;
 			children = (
+				7ED3DD5320D00BB80082B171 /* spider */,
+				7ED3DD5220D00BB80082B171 /* rtftotext.py */,
 				7ED3DD5020D00BB80082B171 /* docxtotext.py */,
 				7ED3DD5120D00BB80082B171 /* pptxtotext.py */,
-				7ED3DD5220D00BB80082B171 /* rtftotext.py */,
-				7ED3DD5320D00BB80082B171 /* spider */,
 				7ED3DD5420D00BB80082B171 /* xlsxtotext.py */,
 			);
 			path = Spider;

@@ -215,20 +215,23 @@ boolean  reindex(char *droot);
          {
             int  bl = strvlen(basepath),
                  dl = strvlen(node->value.s);
-            int  artpl = drootl + 1 + bl + 1 + 10 + 1 + dl;  // for example $DOCUMENT_ROOT/articles/1527627185.html
+            int  artpl = drootl + 1 + bl + 1 + 10 + 1 + dl; // for example $DOCUMENT_ROOT/articles/1527627185.html
             char artp[artpl+1];
             strmlcat(artp, artpl+1, NULL, droot, drootl, "/", 1, basepath, bl, "/", 1, node->value.s, dl, NULL);
-            int  delpl = 5+dl;                               // for example /tmp/1527627185.html
+            int  delpl = 5+dl;                              // for example /tmp/1527627185.html
             char delp[delpl+1];
             strmlcat(delp, delpl+1, NULL, "/tmp/", 5, node->value.s, dl, NULL);
 
             struct stat st;
             if (stat(artp, &st) == no_error && S_ISREG(st.st_mode)
-             && rename(artp, delp) == no_error)
+             && fileCopy(artp, delp, &st) == no_error       // the spider of the search-deleagte determines changes by observing the number of hard links for a given
+             && unlink(artp) == no_error)                   // inode. For this reason we cannot simply rename the deleted file, because its nlink value wont't change.
             {
                reindex(droot);
                return 303;
             }
+            else
+               return 500;
          }
 
          return 404;
