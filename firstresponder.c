@@ -60,7 +60,7 @@ void *firstresponder(ConnExec *connex)
 
          if ((node = findName(connex->serverTable, "SCRIPT_NAME", 11)) && node->value.s && *node->value.s)
          {
-            if (cmp15(node->value.s, "/edit/requinfo") /* cmp12(node->value.s, "/_hello.css") */)
+            if (cmp15(node->value.s, "/edit/requinfo") /* || cmp9(node->value.s, "/_search") */)
             {
                char *output = newDynBuffer().buf;
                uint  namColWidth = 0;

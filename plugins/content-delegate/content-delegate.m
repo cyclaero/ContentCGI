@@ -799,7 +799,7 @@ boolean reindex(char *droot)
 "</HEAD><BODY><DIV class=\"page\"><TABLE>\n"
 "   <TR>\n"
 "      <TH style=\"width:675px;\">\n"
-"         <H1><A href=\"./\" style=\"color:#000;\">BLog</A></H1>\n"
+"         <H1><A href=\"./\">BLog</A></H1>\n"
 "      </TH>\n"
 "      <TH style=\"width:167px;\"><TABLE class=\"fyi\">\n"
 "         <TR><TH><A href=\"imprint.html\">Imprint</A></TH><TD><A href=\"impressum.html\">Impressum</A></TD></TR>\n"
@@ -811,7 +811,7 @@ boolean reindex(char *droot)
 "      </TH>\n"
 "   </TR>\n"
 "   <TR>\n"
-"      <TD>\n", 945);
+"      <TD>\n", 925);
 
    char *toc = newDynBuffer().buf;
    dynAddString((dynhdl)&toc,
@@ -820,7 +820,7 @@ boolean reindex(char *droot)
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"
 "</HEAD><BODY class=\"toc\">\n"
-"   <FORM action=\"_search\" method=\"POST\" target=\"_top\"><INPUT class=\"search\" type=\"text\" placeholder=\"Search in the BLog\"></FORM>\n", 359);
+"   <FORM action=\"_search\" method=\"POST\" target=\"_top\"><INPUT class=\"search\" name=\"search\" type=\"text\" placeholder=\"Search in the BLog\"></FORM>\n", 373);
 
    int   drootl = strvlen(droot);
    int   adirl  = drootl + 1 + 8 + 1;

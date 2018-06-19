@@ -47,13 +47,69 @@ CFLAGS += -fsigned-char
 .endif
 
 CFLAGS += -std=c11 -fpic -fvisibility=hidden -fstrict-aliasing -fno-common -fobjc-nonfragile-abi \
-          -Wno-multichar -Wno-parentheses -Wno-empty-body -Wno-switch -Wno-deprecated-declarations -Wshorten-64-to-32 \
-          -I/usr/local/include -I../
-LDFLAGS = -shared -L/usr/local/lib -lm -lpthread -lobjc -rpath $(PLUGINS) -L$(PLUGINS) -lcyobj
+          -Wno-multichar -Wno-parentheses -Wno-empty-body -Wno-switch -Wno-deprecated-declarations \
+          -I/usr/local/include -I../ -Izettair-spider/include/  -Izettair-spider/include/compat/
+LDFLAGS = -shared -L/usr/local/lib -lm -lpthread -liconv -lz -lobjc -rpath $(PLUGINS) -L$(PLUGINS) -lcyobj
 
 SOURCESm = $(PROJECT).m
 OBJECTSm = $(SOURCESm:.m=.o)
-SOURCESc = ../delegate-utils.c
+SOURCESc = ../delegate-utils.c \
+           zettair-spider/alloc.c \
+           zettair-spider/binsearch.c \
+           zettair-spider/bit.c \
+           zettair-spider/btbucket.c \
+           zettair-spider/btbulk.c \
+           zettair-spider/bucket.c \
+           zettair-spider/chash.c \
+           zettair-spider/cosine.c \
+           zettair-spider/crc.c \
+           zettair-spider/detectfilter.c \
+           zettair-spider/dirichlet.c \
+           zettair-spider/docmap.c \
+           zettair-spider/error.c \
+           zettair-spider/fdset.c \
+           zettair-spider/freemap.c \
+           zettair-spider/getmaxfsize.c \
+           zettair-spider/gunzipfilter.c \
+           zettair-spider/hawkapi.c \
+           zettair-spider/heap.c \
+           zettair-spider/impact_build.c \
+           zettair-spider/impact.c \
+           zettair-spider/index_querybuild.c \
+           zettair-spider/index.c \
+           zettair-spider/iobtree.c \
+           zettair-spider/ioutil.c \
+           zettair-spider/lcrand.c \
+           zettair-spider/makeindex.c \
+           zettair-spider/mem.c \
+           zettair-spider/merge.c \
+           zettair-spider/mime.c \
+           zettair-spider/mlparse_wrap.c \
+           zettair-spider/mlparse.c \
+           zettair-spider/mrwlock.c \
+           zettair-spider/objalloc.c \
+           zettair-spider/okapi.c \
+           zettair-spider/pcosine.c \
+           zettair-spider/poolalloc.c \
+           zettair-spider/postings.c \
+           zettair-spider/psettings_default.c \
+           zettair-spider/psettings.c \
+           zettair-spider/pyramid.c \
+           zettair-spider/queryparse.c \
+           zettair-spider/rbtree.c \
+           zettair-spider/remerge.c \
+           zettair-spider/reposset.c \
+           zettair-spider/search.c \
+           zettair-spider/stack.c \
+           zettair-spider/stem.c \
+           zettair-spider/stop_default.c \
+           zettair-spider/stop.c \
+           zettair-spider/storagep.c \
+           zettair-spider/str.c \
+           zettair-spider/stream.c \
+           zettair-spider/summarise.c \
+           zettair-spider/vec.c \
+           zettair-spider/vocab.c
 OBJECTSc = $(SOURCESc:.c=.o)
 PRODUCT  = $(PROJECT).so
 
@@ -65,11 +121,11 @@ depend:
 $(PRODUCT): $(OBJECTSm) $(OBJECTSc)
 	$(CC) $(OBJECTSm) $(OBJECTSc) $(LDFLAGS) -o $@
 
-$(OBJECTSm) $(OBJECTSc): Makefile
+$(OBJECTSm) $(OBJECTSc):
 	$(CC) $(CFLAGS) $< -c -o $@
 
 clean:
-	rm -rf *.o ../delegate-utils.o $(PRODUCT)
+	rm -rf *.o ../delegate-utils.o zettair-spider/*.o $(PRODUCT)
 
 debug: all
 

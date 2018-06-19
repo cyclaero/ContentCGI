@@ -44,6 +44,7 @@ TH H1 A                 { color:#000 !important; }
 TH H1 A:hover           { color:#777 !important; }
 TH IMG                  { margin:0; }
 TD                      { vertical-align:top; }
+TD.found SPAN           { color:#F70; }
 
 TABLE.fyi               { width:147px; margin-left:25px; font-size:11px; }
 TABLE.fyi TH            { font-weight:normal; text-align:left; vertical-align:top; width:60px; }

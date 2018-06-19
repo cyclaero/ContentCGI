@@ -26,16 +26,27 @@
 //  OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+#import <iconv.h>
+
 #import "CyObject.h"
 #import "delegate-utils.h"
 #import "exports.h"
+#import "index.h"
 
 
 #pragma mark •••• Responder Delegate Class ••••
 
+typedef struct
+{
+   struct stat           stat;
+   struct index          *idx;
+   struct index_load_opt lopt;
+} IndexCache;
+
 @interface Search : CyObject
 {
-   Sources *cache;
+   Sources   *cache;
+   IndexCache index;
 }
 
 - (id)initWithSources:(Sources *)sources;
@@ -46,11 +57,17 @@
 
 @implementation Search
 
+#define ZETTAIR_DB_PATH "/var/db/zettair/"
+#define ZETTAIR_DB_PLEN 16
+
 - (id)initWithSources:(Sources *)sources
 {
    if (self = [super init])
    {
       cache = sources;
+
+      if (stat(ZETTAIR_DB_PATH"index.v.0", &index.stat) == no_error)
+         index.idx  = index_load(ZETTAIR_DB_PATH"index", 50*1024*1024, INDEX_LOAD_NOOPT, &index.lopt);
    }
 
    return self;
@@ -58,6 +75,7 @@
 
 - (void)dealloc
 {
+   index_delete(index.idx);
    [super dealloc];
 }
 
@@ -103,15 +121,128 @@
             return 304;
          }
 
-   if (!response->content)
-   {
-      response->contlen = 40;
-      response->conttyp = "text/plain";
-      response->content = "The Search Responder Delegate does work.\n";
-   }
-
    if (response->contlen)
       return 200;
+
+   else if ((node = findName(request->POSTtable, "search", 6)) && node->value.s && *node->value.s)
+   {
+      struct stat st;
+      if (stat(ZETTAIR_DB_PATH"index.v.0", &st) == no_error)
+      {
+         if (st.st_mtimespec.tv_sec != index.stat.st_mtimespec.tv_sec || st.st_mtimespec.tv_nsec != index.stat.st_mtimespec.tv_nsec)
+         {
+            index_delete(index.idx);
+            index.idx = index_load(ZETTAIR_DB_PATH"index", 50*1024*1024, INDEX_LOAD_NOOPT, &index.lopt);
+         }
+
+         struct index_search_opt opt = {.u.okapi={1.2, 1e10, 0.75}, 0, 0, INDEX_SUMMARISE_TAG};
+         struct index_result    *res = allocate(100*sizeof(struct index_result), default_align, false);
+         iconv_t  utfToIso, isoToUtf;
+         if (index.idx && res && (utfToIso = iconv_open("ISO-8859-1//TRANSLIT//IGNORE", "UTF-8")))
+         {
+            size_t origLen = strvlen(node->value.s), convLen = 4*origLen;
+            char  *orig = node->value.s, *conv = alloca(convLen + 1), *siso  = conv;
+            iconv(utfToIso, &orig, &origLen, &conv, &convLen); *conv = '\0';
+            iconv_close(utfToIso);
+
+            unsigned i, k, n;
+            double   total;
+            int      estim;
+            if (index_search(index.idx, siso, 0, 100, res, &n, &total, &estim, INDEX_SEARCH_SUMMARY_TYPE, &opt)
+             && (isoToUtf = iconv_open("UTF-8//TRANSLIT//IGNORE", "ISO-8859-1")))
+            {
+               response->content = newDynBuffer().buf;
+               dynAddString((dynhdl)&response->content,
+"<!DOCTYPE html><HTML><HEAD>\n"
+"   <TITLE>Search Results</TITLE>\n"
+"   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
+"   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"
+"   <LINK rel=\"icon\" href=\"favicon.ico\" type=\"image/x-icon\">\n"
+"   <SCRIPT src=\"functions.js\"></SCRIPT>\n"
+"</HEAD><BODY><DIV class=\"page\"><TABLE>\n"
+"   <TR>\n"
+"      <TH style=\"width:675px;\">\n"
+"         <H1 style=\"line-height:29px;\"><A href=\"./\">BLog</A><BR>\n"
+"         <SPAN style=\"font-size:19px;\">Search Results</SPAN></H1>\n"
+"      </TH>\n"
+"      <TH style=\"width:167px;\"><TABLE class=\"fyi\">\n"
+"         <TR><TH><A href=\"imprint.html\">Imprint</A></TH><TD><A href=\"impressum.html\">Impressum</A></TD></TR>\n"
+"         <TR><TH><A href=\"privacy.html\">Privacy</A></TH><TD><A href=\"datenschutz.html\">Datenschutz</TD></TR>\n"
+"         <TR><TH><A href=\"disclaimer.html\">Disclaimer</A></TH><TD><A href=\"haftung.html\">Haftung</TD></TR>\n"
+"      </TH></TABLE>\n"
+"      <TH style=\"width:96px;\">\n"
+"         <A href=\"/\"><IMG style=\"width:96px;\" src=\"logo.png\"></A>\n"
+"      </TH>\n"
+"   </TR>\n"
+"   <TR>\n"
+"      <TD class=\"found\">\n", 1062);
+
+               for (i = 0, k = 0; i < n; i++)
+               {
+                  char *href, *hend;
+                  if ((href = strstr(res[i].auxilliary, ZETTAIR_DB_PATH))
+                   && (hend = strstr(href += ZETTAIR_DB_PLEN, ".iso.html")))
+                  {
+                     dynAddString((dynhdl)&response->content, "<H1><A href=\"", 13);
+                     dynAddString((dynhdl)&response->content, href, hend-href);
+                     dynAddString((dynhdl)&response->content, "\">", 2);
+
+                     size_t origLen, convLen;
+                     char  *orig, *conv, *utf8;
+                     if (res[i].title[0] != '\0')
+                     {
+                        origLen = strvlen(res[i].title);
+                        convLen = 4*origLen;
+                        orig = res[i].title;
+                        utf8 = conv = alloca(convLen + 1);
+                        iconv(isoToUtf, &orig, &origLen, &conv, &convLen); *conv = '\0';
+                        dynAddString((dynhdl)&response->content, utf8, conv-utf8);
+                     }
+                     else
+                        dynAddString((dynhdl)&response->content, href, hend-href);
+                     dynAddString((dynhdl)&response->content, "</A></H1>\n", 10);
+
+                     if (res[i].summary[0] != '\0')
+                     {
+                        origLen = strvlen(res[i].summary);
+                        convLen = 4*origLen;
+                        orig = res[i].summary;
+                        utf8 = conv = alloca(convLen + 1);
+                        iconv(isoToUtf, &orig, &origLen, &conv, &convLen); *conv = '\0';
+                        dynAddString((dynhdl)&response->content, "<P>", 3);
+                        dynAddString((dynhdl)&response->content, utf8, conv-utf8);
+                        dynAddString((dynhdl)&response->content, "</P>\n", 5);
+                     }
+
+                     k++;
+                  }
+               }
+
+               if (k == 0)
+                  dynAddString((dynhdl)&response->content, "<H1>Nothing found.</H1>\n", 24);
+
+               dynAddString((dynhdl)&response->content,
+"      </TD>\n"
+"      <TD colspan=\"2\" style=\"padding:9px 3px 3px 27px;\">\n"
+"         <IFRAME name=\"toc\" src=\"toc.html\" align=\"top\" style=\"width:100%; border:0px;\"\n"
+"               onload=\"this.style.height=this.contentDocument.body.scrollHeight+'px';\"></IFRAME>\n"
+"      </TD>\n"
+"   </TR>\n"
+"</TABLE></DIV></BODY><HTML>\n", 302+1);                          // +1 for including the '\0' at the end of the dyn. buffer
+
+               iconv_close(isoToUtf);
+
+               response->contdyn = -true;
+               response->contlen = dynlen((dynptr){response->content});
+               response->conttyp = "text/html; charset=utf-8";
+            }
+
+            deallocate(VPR(res), false);
+         }
+      }
+
+      return (response->contlen) ? 200 : 500;
+   }
 
    else
    {

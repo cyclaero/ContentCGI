@@ -40,9 +40,67 @@
 		7EBD78F620AE188E0035901F /* hello-delegate.ico in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EBD78C020ADAC660035901F /* hello-delegate.ico */; };
 		7EBD790720AE19500035901F /* content-delegate.html in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EE8829A20AC9F2900CD24F3 /* content-delegate.html */; };
 		7EC6FA6314F2FB9700B07421 /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7EC6FA6214F2FB9700B07421 /* utils.c */; };
+		7EC953A320D921AD00E67E97 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EC953A220D921AD00E67E97 /* libiconv.tbd */; };
 		7ECB204520CA054900AF68E2 /* model.html in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EA227F520C8855500C3BB78 /* model.html */; };
 		7EE7B83A20B913B100D6DBCB /* libcyobj.so in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E324E8820B62BD9001E29F9 /* libcyobj.so */; };
 		7EE7B83B20B913B700D6DBCB /* libcyobj.so in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E324E8820B62BD9001E29F9 /* libcyobj.so */; };
+		7EF44C0E20D2CEC300EF8AD1 /* alloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCB220D00BB80082B171 /* alloc.c */; };
+		7EF44C0F20D2CEC300EF8AD1 /* binsearch.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCB320D00BB80082B171 /* binsearch.c */; };
+		7EF44C1020D2CEC300EF8AD1 /* bit.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCB420D00BB80082B171 /* bit.c */; };
+		7EF44C1120D2CEC300EF8AD1 /* btbucket.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCB520D00BB80082B171 /* btbucket.c */; };
+		7EF44C1220D2CEC300EF8AD1 /* btbulk.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCB620D00BB80082B171 /* btbulk.c */; };
+		7EF44C1320D2CEC300EF8AD1 /* bucket.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCB720D00BB80082B171 /* bucket.c */; };
+		7EF44C1420D2CEC300EF8AD1 /* chash.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCB820D00BB80082B171 /* chash.c */; };
+		7EF44C1520D2CEC300EF8AD1 /* cosine.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCBD20D00BB80082B171 /* cosine.c */; };
+		7EF44C1620D2CEC300EF8AD1 /* detectfilter.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCC020D00BB80082B171 /* detectfilter.c */; };
+		7EF44C1720D2CEC300EF8AD1 /* dirichlet.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCC120D00BB80082B171 /* dirichlet.c */; };
+		7EF44C1820D2CEC300EF8AD1 /* error.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCC420D00BB80082B171 /* error.c */; };
+		7EF44C1920D2CEC300EF8AD1 /* fdset.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCC520D00BB80082B171 /* fdset.c */; };
+		7EF44C1A20D2CEC300EF8AD1 /* freemap.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCC620D00BB80082B171 /* freemap.c */; };
+		7EF44C1C20D2CEC300EF8AD1 /* getmaxfsize.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCC820D00BB80082B171 /* getmaxfsize.c */; };
+		7EF44C1D20D2CEC300EF8AD1 /* gunzipfilter.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCC920D00BB80082B171 /* gunzipfilter.c */; };
+		7EF44C1E20D2CEC300EF8AD1 /* hawkapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCCA20D00BB80082B171 /* hawkapi.c */; };
+		7EF44C1F20D2CEC300EF8AD1 /* heap.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCCC20D00BB80082B171 /* heap.c */; };
+		7EF44C2020D2CEC300EF8AD1 /* impact_build.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCCE20D00BB80082B171 /* impact_build.c */; };
+		7EF44C2120D2CEC300EF8AD1 /* impact.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCCD20D00BB80082B171 /* impact.c */; };
+		7EF44C2220D2CEC300EF8AD1 /* index_querybuild.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD2820D00BB80082B171 /* index_querybuild.c */; };
+		7EF44C2320D2CEC300EF8AD1 /* index.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD2720D00BB80082B171 /* index.c */; };
+		7EF44C2520D2CEC300EF8AD1 /* iobtree.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD2A20D00BB80082B171 /* iobtree.c */; };
+		7EF44C2620D2CEC300EF8AD1 /* ioutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD2B20D00BB80082B171 /* ioutil.c */; };
+		7EF44C2720D2CEC300EF8AD1 /* lcrand.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD2C20D00BB80082B171 /* lcrand.c */; };
+		7EF44C2820D2CEC300EF8AD1 /* makeindex.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD2E20D00BB80082B171 /* makeindex.c */; };
+		7EF44C2920D2CEC300EF8AD1 /* mem.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD3020D00BB80082B171 /* mem.c */; };
+		7EF44C2A20D2CEC300EF8AD1 /* merge.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD3120D00BB80082B171 /* merge.c */; };
+		7EF44C2C20D2CEC300EF8AD1 /* mime.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD3420D00BB80082B171 /* mime.c */; };
+		7EF44C2D20D2CEC300EF8AD1 /* mlparse_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD3620D00BB80082B171 /* mlparse_wrap.c */; };
+		7EF44C2E20D2CEC300EF8AD1 /* mlparse.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD3520D00BB80082B171 /* mlparse.c */; };
+		7EF44C2F20D2CEC300EF8AD1 /* mrwlock.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD3720D00BB80082B171 /* mrwlock.c */; };
+		7EF44C3020D2CEC300EF8AD1 /* objalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD3A20D00BB80082B171 /* objalloc.c */; };
+		7EF44C3120D2CEC300EF8AD1 /* okapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD3B20D00BB80082B171 /* okapi.c */; };
+		7EF44C3220D2CEC300EF8AD1 /* pcosine.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD3D20D00BB80082B171 /* pcosine.c */; };
+		7EF44C3320D2CEC300EF8AD1 /* poolalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD3F20D00BB80082B171 /* poolalloc.c */; };
+		7EF44C3420D2CEC300EF8AD1 /* postings.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD4020D00BB80082B171 /* postings.c */; };
+		7EF44C3520D2CEC300EF8AD1 /* psettings_default.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD4220D00BB80082B171 /* psettings_default.c */; };
+		7EF44C3620D2CEC300EF8AD1 /* psettings.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD4120D00BB80082B171 /* psettings.c */; };
+		7EF44C3720D2CEC300EF8AD1 /* pyramid.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD4320D00BB80082B171 /* pyramid.c */; };
+		7EF44C3820D2CEC300EF8AD1 /* queryparse.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD4920D00BB80082B171 /* queryparse.c */; };
+		7EF44C3920D2CEC300EF8AD1 /* rbtree.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD4A20D00BB80082B171 /* rbtree.c */; };
+		7EF44C3A20D2CEC300EF8AD1 /* remerge.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD4B20D00BB80082B171 /* remerge.c */; };
+		7EF44C3B20D2CEC300EF8AD1 /* reposset.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD4C20D00BB80082B171 /* reposset.c */; };
+		7EF44C3C20D2CEC300EF8AD1 /* search.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD4D20D00BB80082B171 /* search.c */; };
+		7EF44C3E20D2CEC300EF8AD1 /* stack.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD5520D00BB80082B171 /* stack.c */; };
+		7EF44C4020D2CEC300EF8AD1 /* stem.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD5720D00BB80082B171 /* stem.c */; };
+		7EF44C4120D2CEC300EF8AD1 /* stop_default.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD5920D00BB80082B171 /* stop_default.c */; };
+		7EF44C4220D2CEC300EF8AD1 /* stop.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD5820D00BB80082B171 /* stop.c */; };
+		7EF44C4320D2CEC300EF8AD1 /* storagep.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD5A20D00BB80082B171 /* storagep.c */; };
+		7EF44C4420D2CEC300EF8AD1 /* str.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD5B20D00BB80082B171 /* str.c */; };
+		7EF44C4520D2CEC300EF8AD1 /* stream.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD5C20D00BB80082B171 /* stream.c */; };
+		7EF44C4620D2CEC300EF8AD1 /* summarise.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD5D20D00BB80082B171 /* summarise.c */; };
+		7EF44C4820D2CEC300EF8AD1 /* vec.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD8D20D00BB80082B171 /* vec.c */; };
+		7EF44C4920D2CEC300EF8AD1 /* vocab.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD8E20D00BB80082B171 /* vocab.c */; };
+		7EF44C4A20D2CF0800EF8AD1 /* crc.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCBF20D00BB80082B171 /* crc.c */; };
+		7EF44C4B20D2D0EB00EF8AD1 /* docmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCC320D00BB80082B171 /* docmap.c */; };
+		7EF44C4D20D2D12100EF8AD1 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EF44C4C20D2D12100EF8AD1 /* libz.tbd */; };
 		7EFCFEE520B348C300B3D759 /* content-delegate.ico in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EE8829B20AC9F2900CD24F3 /* content-delegate.ico */; };
 		7EFDF50420A4681A006BACAF /* connection.c in Sources */ = {isa = PBXBuildFile; fileRef = 7EFDF50320A4681A006BACAF /* connection.c */; };
 		7EFDF50720A46832006BACAF /* interim.c in Sources */ = {isa = PBXBuildFile; fileRef = 7EFDF50620A46832006BACAF /* interim.c */; };
@@ -59,13 +117,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 7E324E6920B6292A001E29F9;
 			remoteInfo = libcyobjc;
-		};
-		7E0E573820CF3F6B00562DA9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7E0E571F20CF3F1900562DA9;
-			remoteInfo = "search-delegate";
 		};
 		7E324E8420B62B07001E29F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -94,6 +145,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 7EBD78F720AE18EC0035901F;
 			remoteInfo = "content-delegate";
+		};
+		7EF44C4E20D30B6E00EF8AD1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7E0E571F20CF3F1900562DA9;
+			remoteInfo = "search-delegate";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -410,6 +468,7 @@
 		7EBD790620AE18EC0035901F /* content-delegate.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "content-delegate.so"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7EC6FA6114F2FB9700B07421 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = utils.h; sourceTree = "<group>"; };
 		7EC6FA6214F2FB9700B07421 /* utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = utils.c; sourceTree = "<group>"; };
+		7EC953A220D921AD00E67E97 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		7ED3DCB220D00BB80082B171 /* alloc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = alloc.c; sourceTree = "<group>"; };
 		7ED3DCB320D00BB80082B171 /* binsearch.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = binsearch.c; sourceTree = "<group>"; };
 		7ED3DCB420D00BB80082B171 /* bit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bit.c; sourceTree = "<group>"; };
@@ -533,7 +592,6 @@
 		7ED3DD3520D00BB80082B171 /* mlparse.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mlparse.c; sourceTree = "<group>"; };
 		7ED3DD3620D00BB80082B171 /* mlparse_wrap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mlparse_wrap.c; sourceTree = "<group>"; };
 		7ED3DD3720D00BB80082B171 /* mrwlock.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mrwlock.c; sourceTree = "<group>"; };
-		7ED3DD3920D00BB80082B171 /* uri.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = uri.c; sourceTree = "<group>"; };
 		7ED3DD3A20D00BB80082B171 /* objalloc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = objalloc.c; sourceTree = "<group>"; };
 		7ED3DD3B20D00BB80082B171 /* okapi.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = okapi.c; sourceTree = "<group>"; };
 		7ED3DD3C20D00BB80082B171 /* okapi.metric */ = {isa = PBXFileReference; lastKnownFileType = text; path = okapi.metric; sourceTree = "<group>"; };
@@ -593,6 +651,7 @@
 		7EE882A220AC9F2900CD24F3 /* CyObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CyObject.m; sourceTree = "<group>"; };
 		7EE882A320AC9F2900CD24F3 /* exports.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = exports.h; sourceTree = "<group>"; };
 		7EE882A420AC9F2900CD24F3 /* Makefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; lineEnding = 0; path = Makefile; sourceTree = "<group>"; };
+		7EF44C4C20D2D12100EF8AD1 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		7EFDF50220A46813006BACAF /* connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = connection.h; sourceTree = "<group>"; };
 		7EFDF50320A4681A006BACAF /* connection.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = connection.c; sourceTree = "<group>"; };
 		7EFDF50520A4682B006BACAF /* interim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = interim.h; sourceTree = "<group>"; };
@@ -608,6 +667,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7EC953A320D921AD00E67E97 /* libiconv.tbd in Frameworks */,
+				7EF44C4D20D2D12100EF8AD1 /* libz.tbd in Frameworks */,
 				7E0E572620CF3F1900562DA9 /* libcyobj.so in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -682,7 +743,6 @@
 		7E0E571720CF3E5900562DA9 /* search-delegate */ = {
 			isa = PBXGroup;
 			children = (
-				7ED3DCB120D00BB80082B171 /* zettair-spider */,
 				7E0E571D20CF3E5900562DA9 /* search-delegate.m */,
 				7E0E571A20CF3E5900562DA9 /* search-delegate.html */,
 				7E0E571920CF3E5900562DA9 /* search-delegate.css */,
@@ -690,6 +750,7 @@
 				7E0E571B20CF3E5900562DA9 /* search-delegate.ico */,
 				7E0E571E20CF3E5900562DA9 /* search-delegate.png */,
 				7E0E571820CF3E5900562DA9 /* Makefile */,
+				7ED3DCB120D00BB80082B171 /* zettair-spider */,
 			);
 			path = "search-delegate";
 			sourceTree = "<group>";
@@ -1165,9 +1226,10 @@
 		7ED3DCB120D00BB80082B171 /* zettair-spider */ = {
 			isa = PBXGroup;
 			children = (
-				7ED3DD2D20D00BB80082B171 /* Makefile */,
 				7ED3DD4F20D00BB80082B171 /* Spider */,
 				7ED3DCCF20D00BB80082B171 /* include */,
+				7ED3DD2D20D00BB80082B171 /* Makefile */,
+				7ED3DCB920D00BB80082B171 /* commandline.c */,
 				7ED3DCB220D00BB80082B171 /* alloc.c */,
 				7ED3DCB320D00BB80082B171 /* binsearch.c */,
 				7ED3DCB420D00BB80082B171 /* bit.c */,
@@ -1175,13 +1237,10 @@
 				7ED3DCB620D00BB80082B171 /* btbulk.c */,
 				7ED3DCB720D00BB80082B171 /* bucket.c */,
 				7ED3DCB820D00BB80082B171 /* chash.c */,
-				7ED3DCB920D00BB80082B171 /* commandline.c */,
 				7ED3DCBD20D00BB80082B171 /* cosine.c */,
-				7ED3DCBE20D00BB80082B171 /* cosine.metric */,
 				7ED3DCBF20D00BB80082B171 /* crc.c */,
 				7ED3DCC020D00BB80082B171 /* detectfilter.c */,
 				7ED3DCC120D00BB80082B171 /* dirichlet.c */,
-				7ED3DCC220D00BB80082B171 /* dirichlet.metric */,
 				7ED3DCC320D00BB80082B171 /* docmap.c */,
 				7ED3DCC420D00BB80082B171 /* error.c */,
 				7ED3DCC520D00BB80082B171 /* fdset.c */,
@@ -1190,36 +1249,30 @@
 				7ED3DCC820D00BB80082B171 /* getmaxfsize.c */,
 				7ED3DCC920D00BB80082B171 /* gunzipfilter.c */,
 				7ED3DCCA20D00BB80082B171 /* hawkapi.c */,
-				7ED3DCCB20D00BB80082B171 /* hawkapi.metric */,
 				7ED3DCCC20D00BB80082B171 /* heap.c */,
-				7ED3DCCD20D00BB80082B171 /* impact.c */,
 				7ED3DCCE20D00BB80082B171 /* impact_build.c */,
-				7ED3DD2720D00BB80082B171 /* index.c */,
+				7ED3DCCD20D00BB80082B171 /* impact.c */,
 				7ED3DD2820D00BB80082B171 /* index_querybuild.c */,
+				7ED3DD2720D00BB80082B171 /* index.c */,
 				7ED3DD2920D00BB80082B171 /* insitu.c */,
 				7ED3DD2A20D00BB80082B171 /* iobtree.c */,
 				7ED3DD2B20D00BB80082B171 /* ioutil.c */,
 				7ED3DD2C20D00BB80082B171 /* lcrand.c */,
 				7ED3DD2E20D00BB80082B171 /* makeindex.c */,
-				7ED3DD2F20D00BB80082B171 /* media-types.txt */,
 				7ED3DD3020D00BB80082B171 /* mem.c */,
 				7ED3DD3120D00BB80082B171 /* merge.c */,
 				7ED3DD3220D00BB80082B171 /* metric.c */,
-				7ED3DD3320D00BB80082B171 /* mime-types.txt */,
 				7ED3DD3420D00BB80082B171 /* mime.c */,
-				7ED3DD3520D00BB80082B171 /* mlparse.c */,
 				7ED3DD3620D00BB80082B171 /* mlparse_wrap.c */,
+				7ED3DD3520D00BB80082B171 /* mlparse.c */,
 				7ED3DD3720D00BB80082B171 /* mrwlock.c */,
-				7ED3DD3820D00BB80082B171 /* net */,
 				7ED3DD3A20D00BB80082B171 /* objalloc.c */,
 				7ED3DD3B20D00BB80082B171 /* okapi.c */,
-				7ED3DD3C20D00BB80082B171 /* okapi.metric */,
 				7ED3DD3D20D00BB80082B171 /* pcosine.c */,
-				7ED3DD3E20D00BB80082B171 /* pcosine.metric */,
 				7ED3DD3F20D00BB80082B171 /* poolalloc.c */,
 				7ED3DD4020D00BB80082B171 /* postings.c */,
-				7ED3DD4120D00BB80082B171 /* psettings.c */,
 				7ED3DD4220D00BB80082B171 /* psettings_default.c */,
+				7ED3DD4120D00BB80082B171 /* psettings.c */,
 				7ED3DD4320D00BB80082B171 /* pyramid.c */,
 				7ED3DD4920D00BB80082B171 /* queryparse.c */,
 				7ED3DD4A20D00BB80082B171 /* rbtree.c */,
@@ -1230,8 +1283,8 @@
 				7ED3DD5520D00BB80082B171 /* stack.c */,
 				7ED3DD5620D00BB80082B171 /* staticalloc.c */,
 				7ED3DD5720D00BB80082B171 /* stem.c */,
-				7ED3DD5820D00BB80082B171 /* stop.c */,
 				7ED3DD5920D00BB80082B171 /* stop_default.c */,
+				7ED3DD5820D00BB80082B171 /* stop.c */,
 				7ED3DD5A20D00BB80082B171 /* storagep.c */,
 				7ED3DD5B20D00BB80082B171 /* str.c */,
 				7ED3DD5C20D00BB80082B171 /* stream.c */,
@@ -1244,6 +1297,13 @@
 				7ED3DD8D20D00BB80082B171 /* vec.c */,
 				7ED3DD8E20D00BB80082B171 /* vocab.c */,
 				7ED3DD8F20D00BB80082B171 /* zpthread.c */,
+				7ED3DCBE20D00BB80082B171 /* cosine.metric */,
+				7ED3DCC220D00BB80082B171 /* dirichlet.metric */,
+				7ED3DCCB20D00BB80082B171 /* hawkapi.metric */,
+				7ED3DD3C20D00BB80082B171 /* okapi.metric */,
+				7ED3DD3E20D00BB80082B171 /* pcosine.metric */,
+				7ED3DD2F20D00BB80082B171 /* media-types.txt */,
+				7ED3DD3320D00BB80082B171 /* mime-types.txt */,
 			);
 			path = "zettair-spider";
 			sourceTree = "<group>";
@@ -1267,36 +1327,30 @@
 				7ED3DCDD20D00BB80082B171 /* btbulk.h */,
 				7ED3DCDE20D00BB80082B171 /* bucket.h */,
 				7ED3DCDF20D00BB80082B171 /* chash.h */,
-				7ED3DCE020D00BB80082B171 /* compat */,
-				7ED3DCE520D00BB80082B171 /* config_h.in */,
 				7ED3DCE620D00BB80082B171 /* crc.h */,
-				7ED3DCE720D00BB80082B171 /* cygwin */,
-				7ED3DCE920D00BB80082B171 /* darwin */,
 				7ED3DCEB20D00BB80082B171 /* def.h */,
 				7ED3DCEC20D00BB80082B171 /* docmap.h */,
 				7ED3DCED20D00BB80082B171 /* error.h */,
 				7ED3DCEE20D00BB80082B171 /* fdset.h */,
-				7ED3DCEF20D00BB80082B171 /* freebsd */,
 				7ED3DCF120D00BB80082B171 /* freemap.h */,
 				7ED3DCF220D00BB80082B171 /* getlongopt.h */,
 				7ED3DCF320D00BB80082B171 /* getmaxfsize.h */,
 				7ED3DCF420D00BB80082B171 /* heap.h */,
-				7ED3DCF520D00BB80082B171 /* impact.h */,
 				7ED3DCF620D00BB80082B171 /* impact_build.h */,
-				7ED3DCF720D00BB80082B171 /* index.h */,
+				7ED3DCF520D00BB80082B171 /* impact.h */,
 				7ED3DCF820D00BB80082B171 /* index_querybuild.h */,
+				7ED3DCF720D00BB80082B171 /* index.h */,
 				7ED3DCF920D00BB80082B171 /* insitu.h */,
 				7ED3DCFA20D00BB80082B171 /* iobtree.h */,
 				7ED3DCFB20D00BB80082B171 /* ioutil.h */,
 				7ED3DCFC20D00BB80082B171 /* lcrand.h */,
-				7ED3DCFD20D00BB80082B171 /* linux */,
 				7ED3DCFF20D00BB80082B171 /* makeindex.h */,
 				7ED3DD0020D00BB80082B171 /* mem.h */,
 				7ED3DD0120D00BB80082B171 /* merge.h */,
 				7ED3DD0220D00BB80082B171 /* metric.h */,
 				7ED3DD0320D00BB80082B171 /* mime.h */,
-				7ED3DD0420D00BB80082B171 /* mlparse.h */,
 				7ED3DD0520D00BB80082B171 /* mlparse_wrap.h */,
+				7ED3DD0420D00BB80082B171 /* mlparse.h */,
 				7ED3DD0620D00BB80082B171 /* mrwlock.h */,
 				7ED3DD0720D00BB80082B171 /* objalloc.h */,
 				7ED3DD0820D00BB80082B171 /* poolalloc.h */,
@@ -1316,7 +1370,6 @@
 				7ED3DD1620D00BB80082B171 /* str.h */,
 				7ED3DD1720D00BB80082B171 /* stream.h */,
 				7ED3DD1820D00BB80082B171 /* summarise.h */,
-				7ED3DD1920D00BB80082B171 /* sunos */,
 				7ED3DD1B20D00BB80082B171 /* test.h */,
 				7ED3DD1C20D00BB80082B171 /* testutils.h */,
 				7ED3DD1D20D00BB80082B171 /* timings.h */,
@@ -1325,8 +1378,15 @@
 				7ED3DD2020D00BB80082B171 /* utf8.h */,
 				7ED3DD2120D00BB80082B171 /* vec.h */,
 				7ED3DD2220D00BB80082B171 /* vocab.h */,
-				7ED3DD2320D00BB80082B171 /* win32 */,
 				7ED3DD2620D00BB80082B171 /* zettair.h */,
+				7ED3DCE520D00BB80082B171 /* config_h.in */,
+				7ED3DCE020D00BB80082B171 /* compat */,
+				7ED3DCE720D00BB80082B171 /* cygwin */,
+				7ED3DCE920D00BB80082B171 /* darwin */,
+				7ED3DCEF20D00BB80082B171 /* freebsd */,
+				7ED3DCFD20D00BB80082B171 /* linux */,
+				7ED3DD1920D00BB80082B171 /* sunos */,
+				7ED3DD2320D00BB80082B171 /* win32 */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -1391,14 +1451,6 @@
 			path = win32;
 			sourceTree = "<group>";
 		};
-		7ED3DD3820D00BB80082B171 /* net */ = {
-			isa = PBXGroup;
-			children = (
-				7ED3DD3920D00BB80082B171 /* uri.c */,
-			);
-			path = net;
-			sourceTree = "<group>";
-		};
 		7ED3DD4F20D00BB80082B171 /* Spider */ = {
 			isa = PBXGroup;
 			children = (
@@ -1434,6 +1486,8 @@
 				7EFDF50820A471C3006BACAF /* libcrypto.dylib */,
 				7EFDF50A20A471CC006BACAF /* libssl.dylib */,
 				7E5069D9209FE0CB00D15F5A /* libicucore.dylib */,
+				7EC953A220D921AD00E67E97 /* libiconv.tbd */,
+				7EF44C4C20D2D12100EF8AD1 /* libz.tbd */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1595,7 +1649,7 @@
 			dependencies = (
 				7E5725EA20B10E1E009D5008 /* PBXTargetDependency */,
 				7E5725EC20B10E21009D5008 /* PBXTargetDependency */,
-				7E0E573920CF3F6B00562DA9 /* PBXTargetDependency */,
+				7EF44C4F20D30B6E00EF8AD1 /* PBXTargetDependency */,
 			);
 			name = ContentCGI;
 			productInstallPath = "$(HOME)/bin";
@@ -1694,6 +1748,62 @@
 			files = (
 				7E0E572320CF3F1900562DA9 /* delegate-utils.c in Sources */,
 				7E0E573220CF3F4500562DA9 /* search-delegate.m in Sources */,
+				7EF44C0E20D2CEC300EF8AD1 /* alloc.c in Sources */,
+				7EF44C0F20D2CEC300EF8AD1 /* binsearch.c in Sources */,
+				7EF44C1020D2CEC300EF8AD1 /* bit.c in Sources */,
+				7EF44C1120D2CEC300EF8AD1 /* btbucket.c in Sources */,
+				7EF44C1220D2CEC300EF8AD1 /* btbulk.c in Sources */,
+				7EF44C1320D2CEC300EF8AD1 /* bucket.c in Sources */,
+				7EF44C1420D2CEC300EF8AD1 /* chash.c in Sources */,
+				7EF44C1520D2CEC300EF8AD1 /* cosine.c in Sources */,
+				7EF44C4A20D2CF0800EF8AD1 /* crc.c in Sources */,
+				7EF44C1620D2CEC300EF8AD1 /* detectfilter.c in Sources */,
+				7EF44C1720D2CEC300EF8AD1 /* dirichlet.c in Sources */,
+				7EF44C4B20D2D0EB00EF8AD1 /* docmap.c in Sources */,
+				7EF44C1820D2CEC300EF8AD1 /* error.c in Sources */,
+				7EF44C1920D2CEC300EF8AD1 /* fdset.c in Sources */,
+				7EF44C1A20D2CEC300EF8AD1 /* freemap.c in Sources */,
+				7EF44C1C20D2CEC300EF8AD1 /* getmaxfsize.c in Sources */,
+				7EF44C1D20D2CEC300EF8AD1 /* gunzipfilter.c in Sources */,
+				7EF44C1E20D2CEC300EF8AD1 /* hawkapi.c in Sources */,
+				7EF44C1F20D2CEC300EF8AD1 /* heap.c in Sources */,
+				7EF44C2020D2CEC300EF8AD1 /* impact_build.c in Sources */,
+				7EF44C2120D2CEC300EF8AD1 /* impact.c in Sources */,
+				7EF44C2220D2CEC300EF8AD1 /* index_querybuild.c in Sources */,
+				7EF44C2320D2CEC300EF8AD1 /* index.c in Sources */,
+				7EF44C2520D2CEC300EF8AD1 /* iobtree.c in Sources */,
+				7EF44C2620D2CEC300EF8AD1 /* ioutil.c in Sources */,
+				7EF44C2720D2CEC300EF8AD1 /* lcrand.c in Sources */,
+				7EF44C2820D2CEC300EF8AD1 /* makeindex.c in Sources */,
+				7EF44C2920D2CEC300EF8AD1 /* mem.c in Sources */,
+				7EF44C2A20D2CEC300EF8AD1 /* merge.c in Sources */,
+				7EF44C2C20D2CEC300EF8AD1 /* mime.c in Sources */,
+				7EF44C2D20D2CEC300EF8AD1 /* mlparse_wrap.c in Sources */,
+				7EF44C2E20D2CEC300EF8AD1 /* mlparse.c in Sources */,
+				7EF44C2F20D2CEC300EF8AD1 /* mrwlock.c in Sources */,
+				7EF44C3020D2CEC300EF8AD1 /* objalloc.c in Sources */,
+				7EF44C3120D2CEC300EF8AD1 /* okapi.c in Sources */,
+				7EF44C3220D2CEC300EF8AD1 /* pcosine.c in Sources */,
+				7EF44C3320D2CEC300EF8AD1 /* poolalloc.c in Sources */,
+				7EF44C3420D2CEC300EF8AD1 /* postings.c in Sources */,
+				7EF44C3520D2CEC300EF8AD1 /* psettings_default.c in Sources */,
+				7EF44C3620D2CEC300EF8AD1 /* psettings.c in Sources */,
+				7EF44C3720D2CEC300EF8AD1 /* pyramid.c in Sources */,
+				7EF44C3820D2CEC300EF8AD1 /* queryparse.c in Sources */,
+				7EF44C3920D2CEC300EF8AD1 /* rbtree.c in Sources */,
+				7EF44C3A20D2CEC300EF8AD1 /* remerge.c in Sources */,
+				7EF44C3B20D2CEC300EF8AD1 /* reposset.c in Sources */,
+				7EF44C3C20D2CEC300EF8AD1 /* search.c in Sources */,
+				7EF44C3E20D2CEC300EF8AD1 /* stack.c in Sources */,
+				7EF44C4020D2CEC300EF8AD1 /* stem.c in Sources */,
+				7EF44C4120D2CEC300EF8AD1 /* stop_default.c in Sources */,
+				7EF44C4220D2CEC300EF8AD1 /* stop.c in Sources */,
+				7EF44C4320D2CEC300EF8AD1 /* storagep.c in Sources */,
+				7EF44C4420D2CEC300EF8AD1 /* str.c in Sources */,
+				7EF44C4520D2CEC300EF8AD1 /* stream.c in Sources */,
+				7EF44C4620D2CEC300EF8AD1 /* summarise.c in Sources */,
+				7EF44C4820D2CEC300EF8AD1 /* vec.c in Sources */,
+				7EF44C4920D2CEC300EF8AD1 /* vocab.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1744,11 +1854,6 @@
 			target = 7E324E6920B6292A001E29F9 /* libcyobj */;
 			targetProxy = 7E0E572120CF3F1900562DA9 /* PBXContainerItemProxy */;
 		};
-		7E0E573920CF3F6B00562DA9 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 7E0E571F20CF3F1900562DA9 /* search-delegate */;
-			targetProxy = 7E0E573820CF3F6B00562DA9 /* PBXContainerItemProxy */;
-		};
 		7E324E8520B62B07001E29F9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 7E324E6920B6292A001E29F9 /* libcyobj */;
@@ -1768,6 +1873,11 @@
 			isa = PBXTargetDependency;
 			target = 7EBD78F720AE18EC0035901F /* content-delegate */;
 			targetProxy = 7E5725EB20B10E21009D5008 /* PBXContainerItemProxy */;
+		};
+		7EF44C4F20D30B6E00EF8AD1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7E0E571F20CF3F1900562DA9 /* search-delegate */;
+			targetProxy = 7EF44C4E20D30B6E00EF8AD1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1892,6 +2002,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = "~/";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1899,6 +2010,8 @@
 				EXECUTABLE_EXTENSION = so;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				GCC_WARN_SHADOW = NO;
 				HEADER_SEARCH_PATHS = (
 					../,
 					/usr/local/include,
@@ -1917,6 +2030,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = "~/";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1924,6 +2038,8 @@
 				EXECUTABLE_EXTENSION = so;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				GCC_WARN_SHADOW = NO;
 				HEADER_SEARCH_PATHS = (
 					../,
 					/usr/local/include,
