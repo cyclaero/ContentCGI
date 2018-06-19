@@ -35,8 +35,10 @@ CC = clang
 
 .ifmake debug
 CFLAGS = $(CDEFS) -g -O0
+STRIP  =
 .else
 CFLAGS = $(CDEFS) -g0 -O3
+STRIP  = -s
 .endif
 
 .if $(MACHINE) == "i386" || $(MACHINE) == "amd64" || $(MACHINE) == "x86_64"
@@ -72,6 +74,6 @@ debug: all
 update: clean all
 
 install: $(PRODUCT)
-	strip -o /usr/local/bin/$(PRODUCT) $(PRODUCT)
+	install $(STRIP) $(PRODUCT) /usr/local/bin/
 	cp $(PRODUCT).rc /usr/local/etc/rc.d/$(PRODUCT)
 	chmod 555 /usr/local/etc/rc.d/$(PRODUCT)

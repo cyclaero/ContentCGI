@@ -1437,3 +1437,6 @@ int fileCopy(char *src, char *dst, struct stat *st);
 
 #pragma mark ••• MIME Types •••
 const char *extensionToType(char *fnam, int flen);
+
+#define ZETTAIR_DB_PATH "/var/db/zettair/"
+#define ZETTAIR_DB_PLEN 16

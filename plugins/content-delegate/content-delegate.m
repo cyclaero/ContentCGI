@@ -953,6 +953,9 @@ boolean reindex(char *droot)
                ok2 = fwrite(toc, dynlen((dynptr){toc}), 1, file) == 1;
                fclose(file);
             }
+
+            // touch the re-index token in the zettair index directory
+            fclose(fopen(ZETTAIR_DB_PATH"token", "w"));
          }
 
          freeDynBuffer((dynptr){idx});

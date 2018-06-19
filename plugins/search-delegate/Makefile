@@ -36,8 +36,10 @@ CC = clang
 
 .ifmake debug
 CFLAGS = $(CDEFS) -g -O0
+STRIP  =
 .else
 CFLAGS = $(CDEFS) -g0 -O3
+STRIP  = -s
 .endif
 
 .if $(MACHINE) == "i386" || $(MACHINE) == "amd64" || $(MACHINE) == "x86_64"
@@ -125,17 +127,17 @@ $(OBJECTSm) $(OBJECTSc):
 	$(CC) $(CFLAGS) $< -c -o $@
 
 clean:
-	rm -rf *.o ../delegate-utils.o zettair-spider/*.o $(PRODUCT)
+	rm -rf *.o ../delegate-utils.o zettair-spider/\*.o $(PRODUCT)
 
 debug: all
 
 update: clean all
 
 install: $(PRODUCT)
-	mkdir -p      "$(PLUGINS)/$(PROJECT)"
-	strip -x -o   "$(PLUGINS)/$(PROJECT)/$(PRODUCT)" $(PRODUCT)
-	cp -p  $(PROJECT).html   "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
-	cp -p  $(PROJECT).css    "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
-	cp -p  $(PROJECT).js     "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
-	cp -p  $(PROJECT).png    "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
-	cp -p  $(PROJECT).ico    "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	mkdir -p "$(PLUGINS)/$(PROJECT)"
+	install $(STRIP) $(PRODUCT) "$(PLUGINS)/$(PROJECT)/"
+	cp -p  $(PROJECT).html "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p  $(PROJECT).css  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p  $(PROJECT).js   "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p  $(PROJECT).png  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p  $(PROJECT).ico  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:

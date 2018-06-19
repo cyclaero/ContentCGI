@@ -35,8 +35,9 @@
 # PREPARATION (cheking out the sources of ContentCGI and ContentTools from GitHub)
 #
 #   cd <third-party-install-dir>
-#   svn checkout https://github.com/cyclaero/ContentCGI.git/trunk  ContentCGI
-#   svn checkout https://github.com/GetmeUK/ContentTools.git/trunk ContentCGI/ContentTools
+#   svn checkout https://github.com/cyclaero/ContentCGI.git/trunk        ContentCGI
+#   svn checkout https://github.com/GetmeUK/ContentTools.git/trunk       ContentCGI/ContentTools
+#   svn checkout https://github.com/cyclaero/zettair.git/trunk/devel/src ContentCGI/plugins/search-delegate/zettair-spider
 #
 # USAGE:
 #
@@ -68,13 +69,18 @@ fi
 CWD=$PWD
 
 if [ "$1" == "update" ]; then
-   cd ContentTools
+   cd "$CWD/plugins/search-delegate/zettair-spider"
    svn update
-   cd ..
+   cd "$CWD/ContentTools"
+   svn update
+   cd "$CWD"
    svn update
 fi
 
-cd plugins
+cd "$CWD/plugins/search-delegate/zettair-spider"
+$MAKE clean
+
+cd "$CWD/plugins"
 $MAKE
 
 for PLUGDIR in *-delegate; do
@@ -85,7 +91,7 @@ for PLUGDIR in *-delegate; do
    fi
 done
 
-cd ..
+cd "$CWD"
 $MAKE
 
 cd "$CWD"

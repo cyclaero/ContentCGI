@@ -35,8 +35,10 @@ CC = clang
 
 .ifmake debug
 CFLAGS = $(CDEFS) -g -O0
+STRIP  =
 .else
 CFLAGS = $(CDEFS) -g0 -O3
+STRIP  = -s
 .endif
 
 .if $(MACHINE) == "i386" || $(MACHINE) == "amd64" || $(MACHINE) == "x86_64"
@@ -73,5 +75,5 @@ debug: all
 update: clean all
 
 install: $(PRODUCT)
-	mkdir -p     "$(PLUGINS)"
-	strip -x -o  "$(PLUGINS)/$(PRODUCT)" $(PRODUCT)
+	mkdir -p "$(PLUGINS)"
+	install $(STRIP) $(PRODUCT) "$(PLUGINS)/"

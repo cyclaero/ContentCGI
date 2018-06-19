@@ -36,8 +36,10 @@ CC = clang
 
 .ifmake debug
 CFLAGS = $(CDEFS) -g -O0
+STRIP  =
 .else
 CFLAGS = $(CDEFS) -g0 -O3
+STRIP  = -s
 .endif
 
 .if $(MACHINE) == "i386" || $(MACHINE) == "amd64" || $(MACHINE) == "x86_64"
@@ -76,11 +78,11 @@ debug: all
 update: clean all
 
 install: $(PRODUCT)
-	mkdir -p      "$(PLUGINS)/$(PROJECT)"
-	strip -x -o   "$(PLUGINS)/$(PROJECT)/$(PRODUCT)" $(PRODUCT)
-	cp -p  $(PROJECT).html   "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
-	cp -p  $(PROJECT).png    "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
-	cp -p  $(PROJECT).ico    "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	mkdir -p "$(PLUGINS)/$(PROJECT)"
+	install $(STRIP) $(PRODUCT) "$(PLUGINS)/$(PROJECT)/"
+	cp -p  $(PROJECT).html "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p  $(PROJECT).png  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	cp -p  $(PROJECT).ico  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
 	cp -pr models "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
 	printf '\n\n' | cat ../../ContentTools/build/content-tools.min.css - $(PROJECT).css > "$(PLUGINS)/$(PROJECT)/$(PROJECT).css" 2>/dev/null ||:
 	printf '\n\n' | cat ../../ContentTools/build/content-tools.min.js  - $(PROJECT).js  > "$(PLUGINS)/$(PROJECT)/$(PROJECT).js"  2>/dev/null ||:
