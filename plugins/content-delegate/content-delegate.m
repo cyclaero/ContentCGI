@@ -274,8 +274,9 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
    char *method = NULL;
 
    if ((node = findName(request->serverTable, "REQUEST_METHOD", 14))
-    && (cmp4(method = node->value.s, "GET") || cmp5(method, "POST"))       // only respond to GET or POST requests
-    && cmp6(entity, "/edit/"))                                             // only be reponsible for everything below the /edit/ path
+    && (cmp4(method = node->value.s, "GET") || cmp5(method, "POST"))    // only respond to GET or POST requests
+    && cmp6(entity, "/edit/")                                           // only be reponsible for everything below the /edit/ path
+    && entity[6] != '_')                                                // but do not respond to other dynamic calls
    {
       if (*(entity += 6) != '\0')
          el -= 6;

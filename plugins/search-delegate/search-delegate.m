@@ -285,6 +285,8 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
    {
       if (cmp2(entity, "/_"))
          entity += 2, el -= 2;
+      else if (cmp7(entity, "/edit/_"))
+         entity += 7, el -= 7;
 
       char *extension = NULL;
       int dl = domlen(entity);
