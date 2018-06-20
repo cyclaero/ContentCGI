@@ -157,7 +157,7 @@ typedef struct
 "   <TITLE>Search Results</TITLE>\n"
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"
-"   <LINK rel=\"icon\" href=\"favicon.ico\" type=\"image/x-icon\">\n"
+"   <LINK rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\">\n"
 "   <SCRIPT src=\"functions.js\"></SCRIPT>\n"
 "</HEAD><BODY><DIV class=\"page\"><TABLE>\n"
 "   <TR>\n"
@@ -175,7 +175,7 @@ typedef struct
 "      </TH>\n"
 "   </TR>\n"
 "   <TR>\n"
-"      <TD class=\"found\">\n", 1062);
+"      <TD class=\"found\">\n", 1063);
 
                for (i = 0, k = 0; i < n; i++)
                {

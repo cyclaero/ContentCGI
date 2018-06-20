@@ -796,7 +796,7 @@ boolean reindex(char *droot)
 "   <TITLE>BLog Résumés</TITLE>\n"
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"
-"   <LINK rel=\"icon\" href=\"favicon.ico\" type=\"image/x-icon\">\n"
+"   <LINK rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\">\n"
 "</HEAD><BODY><DIV class=\"page\"><TABLE>\n"
 "   <TR>\n"
 "      <TH style=\"width:675px;\">\n"
@@ -812,7 +812,7 @@ boolean reindex(char *droot)
 "      </TH>\n"
 "   </TR>\n"
 "   <TR>\n"
-"      <TD>\n", 925);
+"      <TD>\n", 926);
 
    char *toc = newDynBuffer().buf;
    dynAddString((dynhdl)&toc,
