@@ -127,7 +127,7 @@ $(OBJECTSm) $(OBJECTSc):
 	$(CC) $(CFLAGS) $< -c -o $@
 
 clean:
-	rm -rf *.o ../delegate-utils.o zettair-spider/\*.o $(PRODUCT)
+	rm -rf *.o ../delegate-utils.o zettair-spider/*.o $(PRODUCT)
 
 debug: all
 
