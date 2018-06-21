@@ -39,7 +39,7 @@
 #    ContentCGI_group="wheel"
 #
 # Don't use spaces in the following path argumments:
-#    ContentCGI_flags="-w /usr/local/www/ContentCGI/webroot"
+#    ContentCGI_flags="-w /usr/local/www/ContentCGI/webdocs"
 #    ContentCGI_pidfile="/var/run/ContentCGI.pid"
 
 . /etc/rc.subr
@@ -52,7 +52,7 @@ load_rc_config $name
 : ${ContentCGI_enable:="NO"}
 : ${ContentCGI_user:="root"}
 : ${ContentCGI_group:="wheel"}
-: ${ContentCGI_flags="-w /usr/local/www/ContentCGI/webroot"}
+: ${ContentCGI_flags="-w /usr/local/www/ContentCGI/webdocs"}
 : ${ContentCGI_pidfile:="/var/run/ContentCGI.pid"}
 
 pidfile="${ContentCGI_pidfile}"

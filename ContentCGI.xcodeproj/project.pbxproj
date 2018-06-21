@@ -469,6 +469,7 @@
 		7EC6FA6114F2FB9700B07421 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = utils.h; sourceTree = "<group>"; };
 		7EC6FA6214F2FB9700B07421 /* utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = utils.c; sourceTree = "<group>"; };
 		7EC953A220D921AD00E67E97 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		7ECA977020DBD17F002EAEAB /* generate-webdocs.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "generate-webdocs.sh"; sourceTree = "<group>"; };
 		7ED3DCB220D00BB80082B171 /* alloc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = alloc.c; sourceTree = "<group>"; };
 		7ED3DCB320D00BB80082B171 /* binsearch.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = binsearch.c; sourceTree = "<group>"; };
 		7ED3DCB420D00BB80082B171 /* bit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bit.c; sourceTree = "<group>"; };
@@ -1520,6 +1521,7 @@
 				7E6B8BEB20C6AB7200A95B6A /* content-delegate.png */,
 				7EE8829B20AC9F2900CD24F3 /* content-delegate.ico */,
 				7EE8829E20AC9F2900CD24F3 /* Makefile */,
+				7ECA977020DBD17F002EAEAB /* generate-webdocs.sh */,
 			);
 			path = "content-delegate";
 			sourceTree = "<group>";

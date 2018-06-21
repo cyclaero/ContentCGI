@@ -827,7 +827,7 @@ boolean reindex(char *droot)
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"
 "</HEAD><BODY class=\"toc\">\n"
-"   <FORM action=\"_search\" method=\"POST\" target=\"_top\"><INPUT class=\"search\" name=\"search\" type=\"text\" placeholder=\"Search in the BLog\"></FORM>\n", 373);
+"   <FORM action=\"_search\" method=\"POST\" target=\"_top\"><INPUT class=\"search\" name=\"search\" type=\"text\" placeholder=\"Search the Content\"></FORM>\n", 373);
 
    int   drootl = strvlen(droot);
    int   adirl  = drootl + 1 + 8 + 1;
