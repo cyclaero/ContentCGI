@@ -111,7 +111,7 @@ void *firstresponder(ConnExec *connex)
 
                      case 200:
                      {
-                        if (response.conttag)
+                        if (*response.conttag)
                            hthl = snprintf(htheader, 256, "Status: %ld\nContent-Type: %s\nContent-Length: %lld\nETag: \"%s\"\n\n",
                                            rc, response.conttyp, response.contlen, response.conttag);
                         else
@@ -159,7 +159,7 @@ void *firstresponder(ConnExec *connex)
                            goto killconn;
 
                      case 304:
-                        if (response.conttag)
+                        if (*response.conttag)
                         {
                            hthl = snprintf(htheader, 256, "Status: %ld\nETag: \"%s\"\nContent-Length: 0\n\n", rc, response.conttag);
                            if (FCGI_SendDataStream(connex, FCGI_STDOUT, hthl, htheader))

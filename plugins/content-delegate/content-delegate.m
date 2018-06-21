@@ -73,11 +73,11 @@
 
    if (extension)
       if (cmp5(extension, "html"))
-         if (!etag || strstr(etag, cache->html.conttag) != etag+1)
+         if (!etag || !*etag || strstr(etag, cache->html.conttag) != etag+1)
             *response = cache->html;
          else
          {
-            response->conttag = cache->html.conttag;
+            strmlcpy(response->conttag, cache->html.conttag, etagLen, NULL);
             return 304;
          }
 
@@ -86,7 +86,7 @@
             *response = cache->css;
          else
          {
-            response->conttag = cache->css.conttag;
+            strmlcpy(response->conttag, cache->css.conttag, etagLen, NULL);
             return 304;
          }
 
@@ -95,7 +95,16 @@
             *response = cache->js;
          else
          {
-            response->conttag = cache->js.conttag;
+            strmlcpy(response->conttag, cache->js.conttag, etagLen, NULL);
+            return 304;
+         }
+
+      else if (cmp4(extension, "png"))
+         if (!etag || strstr(etag, cache->png.conttag) != etag+1)
+            *response = cache->png;
+         else
+         {
+            strmlcpy(response->conttag, cache->png.conttag, etagLen, NULL);
             return 304;
          }
 
@@ -104,7 +113,7 @@
             *response = cache->ico;
          else
          {
-            response->conttag = cache->ico.conttag;
+            strmlcpy(response->conttag, cache->ico.conttag, etagLen, NULL);
             return 304;
          }
 
@@ -112,7 +121,6 @@
    {
       response->contdyn = true;
       response->contlen = 42;
-      response->conttag = NULL;
       response->conttyp = "text/plain";
       response->content = strcpy(allocate((long)response->contlen+1, default_align, false), "The Content Responder Delegate does work.\n");
    }
@@ -131,7 +139,7 @@
          *response = *(Response *)node->value.p;
       else
       {
-         response->conttag = ((Response *)node->value.p)->conttag;
+         strmlcpy(response->conttag, ((Response *)node->value.p)->conttag, etagLen, NULL);
          return 304;
       }
 
@@ -158,7 +166,7 @@
          *response = *(Response *)node->value.p;
       else
       {
-         response->conttag = ((Response *)node->value.p)->conttag;
+         strmlcpy(response->conttag, ((Response *)node->value.p)->conttag, etagLen, NULL);
          return 304;
       }
 
@@ -328,7 +336,6 @@ EXPORT void freeback(Response *response)
 {
    if (response->contdyn)
    {
-      deallocate(VPR(response->conttag), false);
       if (response->contdyn < 0)
          freeDynBuffer((dynptr){response->content});
       else
@@ -366,17 +373,12 @@ static inline llong contread(char *buf, llong size, llong count, FILE *file, Res
 }
 
 
-static inline llong contstat(char *filep, Response *cache)
+static inline llong contstat(char *filep, struct stat *st, Response *cache)
 {
    if (cache)
       return cache->contlen;
-
    else if (filep)
-   {
-      struct stat st;
-      return (stat(filep, &st) == no_error && S_ISREG(st.st_mode)) ? st.st_size : 0;
-   }
-
+      return (stat(filep, st) == no_error && S_ISREG(st->st_mode)) ? st->st_size : 0;
    else
       return 0;
 }
@@ -384,10 +386,11 @@ static inline llong contstat(char *filep, Response *cache)
 
 long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache)
 {
-   long  rc     = 0;
-   int   filepl = 0;
-   char *filep  = NULL;
-   llong filesize;
+   long   rc      = 0;
+   int    filepl  = 0;
+   char  *filep   = NULL;
+   struct stat st = {};
+   llong  filesize;
 
    if (!cache && droot)
    {
@@ -396,7 +399,7 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
       strmlcat(filep, filepl+1, NULL, droot, drootl, "/", 1, entity, el, NULL);
    }
 
-   if (filesize = contstat(filep, cache))
+   if (filesize = contstat(filep, &st, cache))
    {
       FILE *file    = NULL;
       char *content = NULL;
@@ -497,6 +500,8 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
 
          if (contread(content, filesize, 1, file, cache, &contpos) == 1)
          {
+            if (file)
+               httpETag(response->conttag, &st);
             response->contlen = filesize;
             response->content = content;
             rc = 200;
@@ -522,10 +527,11 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
 
 long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache)
 {
-   long   rc     = 0;
-   int    filepl = 0;
-   char  *filep  = NULL;
-   time_t now    = 0;
+   long   rc      = 0;
+   int    filepl  = 0;
+   char  *filep   = NULL;
+   time_t now     = 0;
+   struct stat st = {};
    llong  filesize;
 
    if (droot)
@@ -547,7 +553,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
          strmlcpy(filep+pl, spec, 0, &sl);
       }
 
-   if (filesize = contstat(filep, cache))
+   if (filesize = contstat(filep, &st, cache))
    {
       char *conttyp, *content = NULL;
       llong contlen,  contpos = 0;

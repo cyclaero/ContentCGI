@@ -41,24 +41,25 @@ typedef struct
 
 typedef struct
 {
-   boolean contdyn;
-   llong   contlen;
-   char   *conttag;
-   char   *conttyp;
-   char   *content;
+   llong contdyn;       // llong instead of boolean makes the whole struct vector aligned
+   llong contlen;
+   char *conttyp;
+   char *content;
+   char  conttag[64];   // etagLen is 54, however 64 keeps all cache structs in Sources aligned on 256bit boundaries
 } Response;
 
 
 typedef struct
 {
-   char    *path;
    Response html;
    Response css;
    Response js;
    Response png;
    Response ico;
+
    Node   **models;
    Node   **images;
+   char    *path;
 } Sources;
 
 

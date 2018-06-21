@@ -83,11 +83,11 @@ typedef struct
 
    if (extension)
       if (cmp5(extension, "html"))
-         if (!etag || strstr(etag, cache->html.conttag) != etag+1)
+         if (!etag || !*etag || strstr(etag, cache->html.conttag) != etag+1)
             *response = cache->html;
          else
          {
-            response->conttag = cache->html.conttag;
+            strmlcpy(response->conttag, cache->html.conttag, etagLen, NULL);
             return 304;
          }
 
@@ -96,7 +96,7 @@ typedef struct
             *response = cache->css;
          else
          {
-            response->conttag = cache->css.conttag;
+            strmlcpy(response->conttag, cache->css.conttag, etagLen, NULL);
             return 304;
          }
 
@@ -105,7 +105,16 @@ typedef struct
             *response = cache->js;
          else
          {
-            response->conttag = cache->js.conttag;
+            strmlcpy(response->conttag, cache->js.conttag, etagLen, NULL);
+            return 304;
+         }
+
+      else if (cmp4(extension, "png"))
+         if (!etag || strstr(etag, cache->png.conttag) != etag+1)
+            *response = cache->png;
+         else
+         {
+            strmlcpy(response->conttag, cache->png.conttag, etagLen, NULL);
             return 304;
          }
 
@@ -114,7 +123,7 @@ typedef struct
             *response = cache->ico;
          else
          {
-            response->conttag = cache->ico.conttag;
+            strmlcpy(response->conttag, cache->ico.conttag, etagLen, NULL);
             return 304;
          }
 

@@ -1438,5 +1438,10 @@ int fileCopy(char *src, char *dst, struct stat *st);
 #pragma mark ••• MIME Types •••
 const char *extensionToType(char *fnam, int flen);
 
+#pragma mark ••• HTTP-ETag •••
+#define etagLen 54
+void httpETag(char *etag, struct stat *st);
+
+#pragma mark ••• Path to the Zettair index directory •••
 #define ZETTAIR_DB_PATH "/var/db/zettair/"
 #define ZETTAIR_DB_PLEN 16

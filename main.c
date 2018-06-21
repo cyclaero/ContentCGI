@@ -72,6 +72,12 @@ const char *usocket  = "/tmp/"DAEMON_NAME".sock";
 // defined in firstresponder.c
 extern Plugins *gPlugins;
 
+void cached_response_deallocate(void **p, int32_t offset, boolean cleanout)
+{
+   Response *response = *p; *p = NULL;
+   deallocate_batch(cleanout, VPR(response->content), VPR(response), NULL);
+}
+
 static void loadPlugins(const char *dir, size_t len)
 {
    static const char *plugd  = NULL;
@@ -106,9 +112,9 @@ static void loadPlugins(const char *dir, size_t len)
                      if (pluglib = dlopen(filep, RTLD_NOW|RTLD_LOCAL))
                      {
                         if (!gPlugins)
-                           gPlugins = plugin = allocate(sizeof(Plugins), default_align, true);
+                           gPlugins = plugin = allocate(sizeof(Plugins), vector_align, true);
                         else
-                           prev = plugin, plugin = plugin->next = allocate(sizeof(Plugins), default_align, true);
+                           prev = plugin, plugin = plugin->next = allocate(sizeof(Plugins), vector_align, true);
 
                         if ((plugin->initialize = dlsym(pluglib, "initialize"))
                          && (plugin->respond    = dlsym(pluglib, "respond"))
@@ -129,7 +135,6 @@ static void loadPlugins(const char *dir, size_t len)
                                  if (fread(plugin->cache.html.content, (size_t)st.st_size, 1, srcfile) == 1)
                                  {
                                     plugin->cache.html.content[plugin->cache.html.contlen = st.st_size] = '\0';
-                                    plugin->cache.html.conttag = allocate(etagLen, default_align, false);
                                     httpETag(plugin->cache.html.conttag , &st, false);
                                     plugin->cache.html.conttyp = "text/html; charset=utf-8";
                                  }
@@ -147,7 +152,6 @@ static void loadPlugins(const char *dir, size_t len)
                                  if (fread(plugin->cache.css.content, (size_t)st.st_size, 1, srcfile) == 1)
                                  {
                                     plugin->cache.css.content[plugin->cache.css.contlen = st.st_size] = '\0';
-                                    plugin->cache.css.conttag = allocate(etagLen, default_align, false);
                                     httpETag(plugin->cache.css.conttag , &st, false);
                                     plugin->cache.css.conttyp = "text/css; charset=utf-8";
                                  }
@@ -165,7 +169,6 @@ static void loadPlugins(const char *dir, size_t len)
                                  if (fread(plugin->cache.js.content, (size_t)st.st_size, 1, srcfile) == 1)
                                  {
                                     plugin->cache.js.content[plugin->cache.js.contlen = st.st_size] = '\0';
-                                    plugin->cache.js.conttag = allocate(etagLen, default_align, false);
                                     httpETag(plugin->cache.js.conttag , &st, false);
                                     plugin->cache.js.conttyp = "application/x-javascript";
                                  }
@@ -183,7 +186,6 @@ static void loadPlugins(const char *dir, size_t len)
                                  if (fread(plugin->cache.png.content, (size_t)st.st_size, 1, srcfile) == 1)
                                  {
                                     plugin->cache.png.content[plugin->cache.png.contlen = st.st_size] = '\0';
-                                    plugin->cache.png.conttag = allocate(etagLen, default_align, false);
                                     httpETag(plugin->cache.png.conttag , &st, false);
                                     plugin->cache.png.conttyp = "image/png";
                                  }
@@ -201,7 +203,6 @@ static void loadPlugins(const char *dir, size_t len)
                                  if (fread(plugin->cache.ico.content, (size_t)st.st_size, 1, srcfile) == 1)
                                  {
                                     plugin->cache.ico.content[plugin->cache.ico.contlen = st.st_size] = '\0';
-                                    plugin->cache.ico.conttag = allocate(etagLen, default_align, false);
                                     httpETag(plugin->cache.ico.conttag , &st, false);
                                     plugin->cache.ico.conttyp = "image/x-icon";
                                  }
@@ -219,7 +220,7 @@ static void loadPlugins(const char *dir, size_t len)
                               struct dirent *iep, ibp;
                               if (idp = opendir(modeldir))
                               {
-                                 Value value = {{.p = NULL}, dynamic*Data, 0, 0, NULL};
+                                 Value value = {{.p = NULL}, dynamic*Data, 0, 0, cached_response_deallocate};
 
                                  while (readdir_r(idp, &ibp, &iep) == no_error && iep)
                                     if (iep->d_name[0] != '.' && (iep->d_type == DT_REG || iep->d_type == DT_LNK))
@@ -230,12 +231,11 @@ static void loadPlugins(const char *dir, size_t len)
                                        if (stat(modelp, &st) == no_error && S_ISREG(st.st_mode) && st.st_size && (srcfile = fopen(modelp, "r")))
                                        {
                                           Response *response;
-                                          if (response = allocate(sizeof(Response), default_align, true))
+                                          if (response = allocate(sizeof(Response), vector_align, true))
                                              if (response->content = allocate((ssize_t)st.st_size+1, default_align, false))
                                                 if (fread(response->content, (size_t)st.st_size, 1, srcfile) == 1)
                                                 {
                                                    response->content[response->contlen = st.st_size] = '\0';
-                                                   response->conttag = allocate(etagLen, default_align, false);
                                                    httpETag(response->conttag , &st, false);
                                                    response->conttyp = (char *)extensionToType(iep->d_name, iep->d_namlen);
                                                    value.p = response;
@@ -266,7 +266,7 @@ static void loadPlugins(const char *dir, size_t len)
                               struct dirent *iep, ibp;
                               if (idp = opendir(imagedir))
                               {
-                                 Value value = {{.p = NULL}, dynamic*Data, 0, 0, NULL};
+                                 Value value = {{.p = NULL}, dynamic*Data, 0, 0, cached_response_deallocate};
 
                                  while (readdir_r(idp, &ibp, &iep) == no_error && iep)
                                     if (iep->d_name[0] != '.' && (iep->d_type == DT_REG || iep->d_type == DT_LNK))
@@ -277,12 +277,11 @@ static void loadPlugins(const char *dir, size_t len)
                                        if (stat(imagep, &st) == no_error && S_ISREG(st.st_mode) && st.st_size && (srcfile = fopen(imagep, "r")))
                                        {
                                           Response *response;
-                                          if (response = allocate(sizeof(Response), default_align, true))
+                                          if (response = allocate(sizeof(Response), vector_align, true))
                                              if (response->content = allocate((ssize_t)st.st_size+1, default_align, false))
                                                 if (fread(response->content, (size_t)st.st_size, 1, srcfile) == 1)
                                                 {
                                                    response->content[response->contlen = st.st_size] = '\0';
-                                                   response->conttag = allocate(etagLen, default_align, false);
                                                    httpETag(response->conttag , &st, false);
                                                    response->conttyp = (char *)extensionToType(iep->d_name, iep->d_namlen);
                                                    value.p = response;
@@ -311,11 +310,12 @@ static void loadPlugins(const char *dir, size_t len)
                            {
                               releaseTable(plugin->cache.images);
                               releaseTable(plugin->cache.models);
-                              deallocate_batch(false, VPR(plugin->cache.ico.content),  VPR(plugin->cache.ico.conttag),
-                                                      VPR(plugin->cache.png.content),  VPR(plugin->cache.png.conttag),
-                                                      VPR(plugin->cache.js.content),   VPR(plugin->cache.js.conttag),
-                                                      VPR(plugin->cache.css.content),  VPR(plugin->cache.css.conttag),
-                                                      VPR(plugin->cache.html.content), VPR(plugin->cache.html.conttag),
+                              deallocate_batch(false, VPR(plugin->cache.ico.content),
+                                                      VPR(plugin->cache.png.content),
+                                                      VPR(plugin->cache.js.content),
+                                                      VPR(plugin->cache.css.content),
+                                                      VPR(plugin->cache.html.content),
+                                                      VPR(plugin->cache.path),
                                                       VPR(plugin), NULL);
                               dlclose(pluglib);
 
@@ -348,12 +348,12 @@ static void releasePlugins(void)
       plugin->release();
       releaseTable(plugin->cache.images);
       releaseTable(plugin->cache.models);
-      deallocate_batch(false, VPR(plugin->cache.ico.content),  VPR(plugin->cache.ico.conttag),
-                              VPR(plugin->cache.png.content),  VPR(plugin->cache.png.conttag),
-                              VPR(plugin->cache.js.content),   VPR(plugin->cache.js.conttag),
-                              VPR(plugin->cache.css.content),  VPR(plugin->cache.css.conttag),
-                              VPR(plugin->cache.html.content), VPR(plugin->cache.html.conttag),
-                              VPR(plugin->cache.path),         NULL);
+      deallocate_batch(false, VPR(plugin->cache.ico.content),
+                              VPR(plugin->cache.png.content),
+                              VPR(plugin->cache.js.content),
+                              VPR(plugin->cache.css.content),
+                              VPR(plugin->cache.html.content),
+                              VPR(plugin->cache.path), NULL);
 
       if (dlclose(plugin->pluglib) == -1)
          syslog(LOG_ERR, "Dynamic library was not unloaded: %s.", dlerror());
