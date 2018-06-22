@@ -29,6 +29,7 @@
 #import "CyObject.h"
 #import "delegate-utils.h"
 #import "exports.h"
+#import "content-design.h"
 
 
 #pragma mark •••• Responder Delegate Class ••••
@@ -822,40 +823,12 @@ int stripATags(char *s, int n)
 boolean reindex(char *droot, char *contitle)
 {
    char *idx = newDynBuffer().buf;
-   dynAddString((dynhdl)&idx,
-"<!--S--><!DOCTYPE html><HTML><HEAD>\n"
-"   <TITLE>Résumés</TITLE>\n"
-"   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
-"   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"
-"   <LINK rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\">\n"
-"</HEAD><BODY><DIV class=\"page\"><TABLE>\n"
-"   <TR>\n"
-"      <TH style=\"width:675px;\">\n"
-"         <H1><A href=\"./\">", 362);
+   dynAddString((dynhdl)&idx, INDEX_PREAMBLE, INDEX_PREAMBLE_LEN);
    dynAddString((dynhdl)&idx, contitle, strvlen(contitle));
-   dynAddString((dynhdl)&idx,
-"</A></H1>\n"
-"      </TH>\n"
-"      <TH style=\"width:167px;\"><TABLE class=\"fyi\">\n"
-"         <TR><TH><A href=\"imprint.html\">Imprint</A></TH><TD><A href=\"impressum.html\">Impressum</A></TD></TR>\n"
-"         <TR><TH><A href=\"privacy.html\">Privacy</A></TH><TD><A href=\"datenschutz.html\">Datenschutz</TD></TR>\n"
-"         <TR><TH><A href=\"disclaimer.html\">Disclaimer</A></TH><TD><A href=\"haftung.html\">Haftung</TD></TR>\n"
-"      </TH></TABLE>\n"
-"      <TH style=\"width:96px;\">\n"
-"         <A href=\"/\"><IMG style=\"width:96px;\" src=\"logo.png\"></A>\n"
-"      </TH>\n"
-"   </TR>\n"
-"   <TR>\n"
-"      <TD>\n", 555);
+   dynAddString((dynhdl)&idx, INDEX_BODY_FYI, INDEX_BODY_FYI_LEN);
 
    char *toc = newDynBuffer().buf;
-   dynAddString((dynhdl)&toc,
-"<!--S--><!DOCTYPE html><HTML><HEAD>\n"
-"   <TITLE>Table of Contents</TITLE>\n"
-"   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
-"   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"
-"</HEAD><BODY class=\"toc\">\n"
-"   <FORM action=\"_search\" method=\"POST\" target=\"_top\"><INPUT class=\"search\" name=\"search\" type=\"text\" placeholder=\"Search the Content\"></FORM>\n", 373);
+   dynAddString((dynhdl)&toc, TOC_PREAMBLE, TOC_PREAMBLE_LEN);
 
    int   drootl = strvlen(droot);
    int   adirl  = drootl + 1 + 8 + 1;
@@ -953,16 +926,9 @@ boolean reindex(char *droot, char *contitle)
 
          deallocate(VPR(stamps), false);
 
-         dynAddString((dynhdl)&idx,
-"      </TD>\n"
-"      <TD colspan=\"2\" style=\"padding:9px 3px 3px 27px;\">\n"
-"         <IFRAME name=\"toc\" src=\"toc.html\" align=\"top\" style=\"width:100%; border:0px;\"\n"
-"               onload=\"this.style.height=this.contentDocument.body.scrollHeight+'px';\"></IFRAME>\n"
-"      </TD>\n"
-"   </TR>\n"
-"</TABLE></DIV></BODY><HTML>\n", 302+1);                          // +1 for including the '\0' at the end of the dyn. buffer
+         dynAddString((dynhdl)&idx, INDEX_ADDENDUM, INDEX_ADDENDUM_LEN+1);    // +1 for including the '\0' at the end of the dyn. buffer
 
-         dynAddString((dynhdl)&toc, "</BODY></HTML>", 14+1);      // +1 for ...
+         dynAddString((dynhdl)&toc, TOC_ADDENDUM, TOC_ADDENDUM_LEN+1);        // +1 for ...
 
          boolean ok1 = false,
                  ok2 = false;

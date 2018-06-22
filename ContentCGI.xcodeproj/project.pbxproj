@@ -258,6 +258,7 @@
 		7E6B8BF120C6BF0600A95B6A /* favicon.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; path = favicon.ico; sourceTree = "<group>"; };
 		7E6B8BF220C6BF9200A95B6A /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		7E6B8BFB20C6C6B900A95B6A /* functions.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = functions.js; sourceTree = "<group>"; };
+		7E6D8E3920DD2A6300762A19 /* content-design.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "content-design.h"; sourceTree = "<group>"; };
 		7EA227F520C8855500C3BB78 /* model.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = model.html; sourceTree = "<group>"; };
 		7EB7356B20A2534C00D73FC1 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		7EB7356C20A2534C00D73FC1 /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
@@ -1514,6 +1515,7 @@
 			isa = PBXGroup;
 			children = (
 				7E6B8BED20C6B98600A95B6A /* models */,
+				7E6D8E3920DD2A6300762A19 /* content-design.h */,
 				7EE8829D20AC9F2900CD24F3 /* content-delegate.m */,
 				7EE8829A20AC9F2900CD24F3 /* content-delegate.html */,
 				7EE8829920AC9F2900CD24F3 /* content-delegate.css */,
