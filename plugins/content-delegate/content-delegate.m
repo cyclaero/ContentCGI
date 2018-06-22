@@ -899,11 +899,10 @@ boolean reindex(char *droot, char *contitle)
                         struct tm tm;
                         gmtime_r(&stamps[j], &tm);
 
-                        int sl = stripATags(s, (int)(bskip(t)-s));
                         dynAddString((dynhdl)&idx, "<A class=\"index\" href=\"articles/", 32);
                            dynAddInt((dynhdl)&idx, stamps[j]);
                         dynAddString((dynhdl)&idx, ".html\">\n", 8);
-                        dynAddString((dynhdl)&idx, s, sl);
+                        dynAddString((dynhdl)&idx, s, stripATags(s, (int)(bskip(t)-s)));
                         int m =
                         dynAddString((dynhdl)&idx, "&nbsp;...\n</p>\n<P class=\"stamp\">", 32);
                               dyninc((dynhdl)&idx, snprintf(idx+m, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
@@ -912,7 +911,7 @@ boolean reindex(char *droot, char *contitle)
                         dynAddString((dynhdl)&toc, "   <P><A href=\"articles/", 24);
                            dynAddInt((dynhdl)&toc, stamps[j]);
                         dynAddString((dynhdl)&toc, ".html\" target=\"_top\">", 21);
-                        dynAddString((dynhdl)&toc, p, (int)(q-p));
+                        dynAddString((dynhdl)&toc, p, stripATags(p, (int)(q-p)));
                         dynAddString((dynhdl)&toc, "</A></P>\n", 9);
                      }
                   }
