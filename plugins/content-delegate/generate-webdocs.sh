@@ -3,14 +3,14 @@
 # USAGE:   generate-webdocs.sh <SITE NAME> <WEBDOCS DIRECTORY>
 # Example: generate-webdocs.sh "Example Content" "/usr/local/www/ContentCGI/webdocs"
 
-MODELS="${0%generate-webdocs.sh}models"
-if [ ! -d "$MODELS" ]; then
-   echo "The directory containing the models for the web documents does not exist."
+if [ "$1" == "" ] || [ "$2" == "" ]; then
+   echo "USAGE: generate-webdocs.sh <SITE NAME> <WEBDOCS DIRECTORY>"
    exit 1
 fi
 
-if [ "$1" == "" ] || [ "$2" == "" ]; then
-   echo "USAGE: generate-webdocs.sh <SITE NAME> <WEBDOCS DIRECTORY>"
+MODELS="${0%generate-webdocs.sh}models"
+if [ ! -d "$MODELS" ]; then
+   echo "The directory containing the models for the web documents does not exist."
    exit 1
 fi
 
@@ -25,40 +25,40 @@ fi
 # derive index.html
 /bin/echo -n "<!--S-->" \
 | /bin/cat - "$2/model.html" \
-| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>$1 Résumés<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">BLog<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;/<\!--e-->/d;s/Place a beautiful and descriptive title here!/No articles yet/;/<p>/,/<\!--E-->/d;" \
+| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>Résumés<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">CONTENT_TITLE<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;/<\!--e-->/d;s/Place a beautiful and descriptive title here!/No articles yet/;/<p>/,/<\!--E-->/d;" \
 > "$2/index.html"
 
 # derive imprint.html
 /bin/cat "$2/model.html" \
-| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>Imprint<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">BLog<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;s/Place a beautiful and descriptive title here!/Imprint/;s/The first paragraph.*/The first paragraph \.\.\./;" \
+| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>Imprint<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">CONTENT_TITLE<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;s/Place a beautiful and descriptive title here!/Imprint/;s/The first paragraph.*/The first paragraph \.\.\./;" \
 > "$2/imprint.html"
 
 # derive privacy.html
 /bin/cat "$2/model.html" \
-| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>Privacy and Data Protection<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">BLog<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;s/Place a beautiful and descriptive title here!/Privacy and Data Protection/;s/The first paragraph.*/The first paragraph \.\.\./;" \
+| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>Privacy and Data Protection<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">CONTENT_TITLE<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;s/Place a beautiful and descriptive title here!/Privacy and Data Protection/;s/The first paragraph.*/The first paragraph \.\.\./;" \
 > "$2/privacy.html"
 
 # derive disclaimer.html
 /bin/cat "$2/model.html" \
-| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>Disclaimer<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">BLog<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;s/Place a beautiful and descriptive title here!/Disclaimer/;s/The first paragraph.*/The first paragraph \.\.\./;" \
+| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>Disclaimer<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">CONTENT_TITLE<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;s/Place a beautiful and descriptive title here!/Disclaimer/;s/The first paragraph.*/The first paragraph \.\.\./;" \
 > "$2/disclaimer.html"
 
 # derive impressum.html
 /bin/cat "$2/model.html" \
-| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>Impressum<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">BLog<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;s/Place a beautiful and descriptive title here!/Impressum/;s/The first paragraph.*/Der erste Absatz \.\.\./;s/Another paragraph.*/Nächster Absatz \.\.\./;" \
+| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>Impressum<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">CONTENT_TITLE<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;s/Place a beautiful and descriptive title here!/Impressum/;s/The first paragraph.*/Der erste Absatz \.\.\./;s/Another paragraph.*/Nächster Absatz \.\.\./;" \
 > "$2/impressum.html"
 
 # derive datenschutz.html
 /bin/cat "$2/model.html" \
-| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>Datenschutzerklärung<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">BLog<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;s/Place a beautiful and descriptive title here!/Datenschutzerklärung/;s/The first paragraph.*/Der erste Absatz \.\.\./;s/Another paragraph.*/Nächster Absatz \.\.\./;" \
+| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>Datenschutzerklärung<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">CONTENT_TITLE<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;s/Place a beautiful and descriptive title here!/Datenschutzerklärung/;s/The first paragraph.*/Der erste Absatz \.\.\./;s/Another paragraph.*/Nächster Absatz \.\.\./;" \
 > "$2/datenschutz.html"
 
 # derive haftung.html
 /bin/cat "$2/model.html" \
-| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>Haftungsausschluß<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">BLog<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;s/Place a beautiful and descriptive title here!/Haftungsausschluß/;s/The first paragraph.*/Der erste Absatz \.\.\./;s/Another paragraph.*/Nächster Absatz \.\.\./;" \
+| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>Haftungsausschluß<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">CONTENT_TITLE<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;s/Place a beautiful and descriptive title here!/Haftungsausschluß/;s/The first paragraph.*/Der erste Absatz \.\.\./;s/Another paragraph.*/Nächster Absatz \.\.\./;" \
 > "$2/haftung.html"
 
-# the model file is not mor needed
+# the model file is no more needed
 rm -f "$2/model.html"
 
 # create toc.html

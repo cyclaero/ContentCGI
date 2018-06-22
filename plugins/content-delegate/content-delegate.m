@@ -36,6 +36,7 @@
 @interface Content : CyObject
 {
    Sources *cache;
+   Response htmodel;
 }
 
 - (id)initWithSources:(Sources *)sources;
@@ -62,6 +63,7 @@
 
 - (void)dealloc
 {
+   deallocate(VPR(htmodel.content), false);
    [super dealloc];
 }
 
@@ -185,7 +187,7 @@
 
 long  GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache);
 long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache);
-boolean  reindex(char *droot);
+boolean  reindex(char *droot, char *contitle);
 
 - (long)create:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
 {
@@ -197,10 +199,32 @@ boolean  reindex(char *droot);
          char *droot = node->value.s;
          int  drootl = strvlen(droot);
          if ((node = findName(cache->models, "model.html", 10)) && ((Response *)node->value.p)->contlen)
+         {
+            if (!htmodel.content)
+            {
+               // Need to replace the generic title 'CONTENT_TITLE' by the real one, to be informed by the respective server environment variable
+               llong contlen = ((Response *)node->value.p)->contlen;
+               char *content = ((Response *)node->value.p)->content;
+               char *titlpos = strstr(content, "CONTENT_TITLE");
+               if (titlpos)
+               {
+                  char *contitl = ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content";
+                  int   titllen = strvlen(contitl);
+                  htmodel.contlen = contlen + titllen - 13;
+                  htmodel.content = allocate(htmodel.contlen+1, default_align, false);
+                  llong p = titlpos - content, q = contlen - p - 13;
+                  memvcpy(htmodel.content, content, p);
+                  p += strmlcpy(htmodel.content+p, contitl, 0, &titllen);
+                  memvcpy(htmodel.content+p, titlpos+13, q);
+                  htmodel.content[contlen] = '\0';
+               }
+            }
+
             if (cmp4(method, "GET"))
-               return  GEThandler(droot, drootl, "model", 5, "html", request, response, (Response *)node->value.p);
+               return  GEThandler(droot, drootl, "model", 5, "html", request, response, &htmodel);
             else // POST
-               return POSThandler(droot, drootl, basepath, strvlen(basepath), "html", request, response, (Response *)node->value.p);
+               return POSThandler(droot, drootl, basepath, strvlen(basepath), "html", request, response, &htmodel);
+         }
       }
 
       return 500;
@@ -235,7 +259,7 @@ boolean  reindex(char *droot);
              && fileCopy(artp, delp, &st) == no_error       // the spider of the search-deleagte determines changes by observing the number of hard links for a given
              && unlink(artp) == no_error)                   // inode. For this reason we cannot simply rename the deleted file, because its nlink value wont't change.
             {
-               reindex(droot);
+               reindex(droot, ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content");
                return 303;
             }
             else
@@ -710,7 +734,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 
                               if (ok && (cache || rename(tmpfp, filep) == no_error))
                               {
-                                 if (reindex(droot))
+                                 if (reindex(droot, ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content"))
                                  {
                                     if (!cache)
                                        rc = 204;
@@ -794,19 +818,22 @@ int stripATags(char *s, int n)
    return j;
 }
 
-boolean reindex(char *droot)
+boolean reindex(char *droot, char *contitle)
 {
    char *idx = newDynBuffer().buf;
    dynAddString((dynhdl)&idx,
 "<!--S--><!DOCTYPE html><HTML><HEAD>\n"
-"   <TITLE>BLog Résumés</TITLE>\n"
+"   <TITLE>Résumés</TITLE>\n"
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"
 "   <LINK rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\">\n"
 "</HEAD><BODY><DIV class=\"page\"><TABLE>\n"
 "   <TR>\n"
 "      <TH style=\"width:675px;\">\n"
-"         <H1><A href=\"./\">BLog</A></H1>\n"
+"         <H1><A href=\"./\">", 362);
+   dynAddString((dynhdl)&idx, contitle, strvlen(contitle));
+   dynAddString((dynhdl)&idx,
+"</A></H1>\n"
 "      </TH>\n"
 "      <TH style=\"width:167px;\"><TABLE class=\"fyi\">\n"
 "         <TR><TH><A href=\"imprint.html\">Imprint</A></TH><TD><A href=\"impressum.html\">Impressum</A></TD></TR>\n"
@@ -818,7 +845,7 @@ boolean reindex(char *droot)
 "      </TH>\n"
 "   </TR>\n"
 "   <TR>\n"
-"      <TD>\n", 926);
+"      <TD>\n", 555);
 
    char *toc = newDynBuffer().buf;
    dynAddString((dynhdl)&toc,
