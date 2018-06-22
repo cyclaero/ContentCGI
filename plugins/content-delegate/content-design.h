@@ -55,7 +55,7 @@
 "   <TR>\n"\
 "      <TD>\n"
 
-#define INDEX_ADDENDUM_LEN 301
+#define INDEX_ADDENDUM_LEN 302
 #define INDEX_ADDENDUM \
 "      </TD>\n"\
 "      <TD colspan=\"2\" style=\"padding:9px 3px 3px 27px;\">\n"\
@@ -63,7 +63,7 @@
 "               onload=\"this.style.height=this.contentDocument.body.scrollHeight+'px';\"></IFRAME>\n"\
 "      </TD>\n"\
 "   </TR>\n"\
-"</TABLE></DIV></BODY><HTML>"
+"</TABLE></DIV></BODY><HTML>\n"
 
 #define TOC_PREAMBLE_LEN 413
 #define TOC_PREAMBLE \
@@ -75,9 +75,9 @@
 "</HEAD><BODY class=\"toc\">\n"\
 "   <FORM action=\"_search\" method=\"POST\" target=\"_top\"><INPUT class=\"search\" name=\"search\" type=\"text\" placeholder=\"Search the Content\"></FORM>\n"\
 
-#define TOC_ADDENDUM_LEN 14
+#define TOC_ADDENDUM_LEN 15
 #define TOC_ADDENDUM \
-"</BODY></HTML>"
+"</BODY></HTML>\n"
 
 
 #define SEARCH_PREAMBLE_LEN 425
@@ -114,7 +114,7 @@
 #define SEARCH_NORESULT \
 "<H1>Nothing found.</H1>\n"
 
-#define SEARCH_ADDENDUM_LEN 301
+#define SEARCH_ADDENDUM_LEN 302
 #define SEARCH_ADDENDUM \
 "      </TD>\n"\
 "      <TD colspan=\"2\" style=\"padding:9px 3px 3px 27px;\">\n"\
@@ -122,4 +122,4 @@
 "               onload=\"this.style.height=this.contentDocument.body.scrollHeight+'px';\"></IFRAME>\n"\
 "      </TD>\n"\
 "   </TR>\n"\
-"</TABLE></DIV></BODY><HTML>"
+"</TABLE></DIV></BODY><HTML>\n"

@@ -551,6 +551,36 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
 }
 
 
+int stripATags(char *s, int n)
+{
+   int i, j;
+
+   for (i = 0, j = 0; i < n; i++)
+      switch (s[i])
+      {
+         case '<':
+            if (s[i+1] == 'a' || s[i+1] == 'A')
+            {
+               for (i += 2; s[i] != '>'; i++);
+               break;
+            }
+            else if (cmp2(s+i+1, "/a") || cmp2(s+i+1, "/A"))
+            {
+               for (i += 3; s[i] != '>'; i++);
+               break;
+            }
+
+         default:
+            if (i != j)
+               s[j] = s[i];
+            j++;
+            break;
+      }
+
+   s[j] = '\0';
+   return j;
+}
+
 long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache)
 {
    long   rc      = 0;
@@ -642,6 +672,8 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                   // and in case a heading has been found, replace the content of <TITLE> by it
                   if (heading && headlen)
                   {
+                     memvcpy(p = alloca(headlen+1), heading, headlen);
+                     headlen = stripATags(heading = p, (int)headlen);
                      p = NULL, n = 0;
 
                      char *tb, *te;
@@ -791,35 +823,6 @@ void qdownsort(time_t *a, int l, int r)
    if (i < r) qdownsort(a, i, r);
 }
 
-int stripATags(char *s, int n)
-{
-   int i, j;
-
-   for (i = 0, j = 0; i < n; i++)
-      switch (s[i])
-      {
-         case '<':
-            if (s[i+1] == 'a' || s[i+1] == 'A')
-            {
-               for (i += 2; s[i] != '>'; i++);
-               break;
-            }
-            else if (cmp2(s+i+1, "/a") || cmp2(s+i+1, "/A"))
-            {
-               for (i += 3; s[i] != '>'; i++);
-               break;
-            }
-
-         default:
-            if (i != j)
-               s[j++] = s[i];
-            break;
-      }
-
-   s[j] = '\0';
-   return j;
-}
-
 boolean reindex(char *droot, char *contitle)
 {
    char *idx = newDynBuffer().buf;
@@ -911,7 +914,7 @@ boolean reindex(char *droot, char *contitle)
                         dynAddString((dynhdl)&toc, "   <P><A href=\"articles/", 24);
                            dynAddInt((dynhdl)&toc, stamps[j]);
                         dynAddString((dynhdl)&toc, ".html\" target=\"_top\">", 21);
-                        dynAddString((dynhdl)&toc, p, stripATags(p, (int)(q-p)));
+                        dynAddString((dynhdl)&toc, p, (int)(q-p));
                         dynAddString((dynhdl)&toc, "</A></P>\n", 9);
                      }
                   }
@@ -925,12 +928,10 @@ boolean reindex(char *droot, char *contitle)
 
          deallocate(VPR(stamps), false);
 
-         dynAddString((dynhdl)&idx, INDEX_ADDENDUM, INDEX_ADDENDUM_LEN+1);    // +1 for including the '\0' at the end of the dyn. buffer
+         dynAddString((dynhdl)&idx, INDEX_ADDENDUM, INDEX_ADDENDUM_LEN);
+         dynAddString((dynhdl)&toc, TOC_ADDENDUM, TOC_ADDENDUM_LEN);
 
-         dynAddString((dynhdl)&toc, TOC_ADDENDUM, TOC_ADDENDUM_LEN+1);        // +1 for ...
-
-         boolean ok1 = false,
-                 ok2 = false;
+         boolean ok1 = false, ok2 = false;
 
          int   idxfl = drootl + 1 + 11;
          char  idxf[idxfl+1]; strmlcat(idxf, idxfl+1, NULL, droot, drootl, "/", 1, "index.html", 10, NULL);

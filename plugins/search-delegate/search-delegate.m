@@ -211,7 +211,7 @@ typedef struct
                if (k == 0)
                   dynAddString((dynhdl)&response->content, SEARCH_NORESULT, SEARCH_NORESULT_LEN);
 
-               dynAddString((dynhdl)&response->content, SEARCH_ADDENDUM, SEARCH_ADDENDUM_LEN+1);      // +1 for including the '\0' at the end of the dyn. buffer
+               dynAddString((dynhdl)&response->content, SEARCH_ADDENDUM, SEARCH_ADDENDUM_LEN);
 
                iconv_close(isoToUtf);
 
