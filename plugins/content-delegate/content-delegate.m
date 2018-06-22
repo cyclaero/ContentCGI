@@ -217,6 +217,7 @@ boolean  reindex(char *droot, char *contitle);
                   p += strmlcpy(htmodel.content+p, contitl, 0, &titllen);
                   memvcpy(htmodel.content+p, titlpos+13, q);
                   htmodel.content[contlen] = '\0';
+                  htmodel.conttyp = "text/html; charset=utf-8";
                }
             }
 
@@ -989,7 +990,8 @@ boolean reindex(char *droot, char *contitle)
             }
 
             // touch the re-index token in the zettair index directory
-            fclose(fopen(ZETTAIR_DB_PATH"token", "w"));
+            if (file = fopen(ZETTAIR_DB_PATH"token", "w"))
+               fclose(file);
          }
 
          freeDynBuffer((dynptr){idx});
