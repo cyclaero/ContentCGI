@@ -239,7 +239,7 @@
 		7E0E571D20CF3E5900562DA9 /* search-delegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "search-delegate.m"; sourceTree = "<group>"; };
 		7E0E571E20CF3E5900562DA9 /* search-delegate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "search-delegate.png"; sourceTree = "<group>"; };
 		7E0E573020CF3F1900562DA9 /* search-delegate.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "search-delegate.so"; sourceTree = BUILT_PRODUCTS_DIR; };
-		7E20156120B24587000FC68A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; lineEnding = 0; path = README.md; sourceTree = "<group>"; };
+		7E20156120B24587000FC68A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = net.daringfireball.markdown; lineEnding = 0; path = README.md; sourceTree = "<group>"; tabWidth = 4; };
 		7E20156220B245D0000FC68A /* apache-vhost.conf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; lineEnding = 0; path = "apache-vhost.conf"; sourceTree = "<group>"; };
 		7E2F1B8620A5DBC500B7B848 /* ContentCGI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ContentCGI; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E2F1B8920A608B800B7B848 /* fastcgi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = fastcgi.c; sourceTree = "<group>"; };
