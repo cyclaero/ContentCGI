@@ -2,7 +2,7 @@
 Extensible FastCGI Daemon for FreeBSD
 
 
-### Build, Installation and Launch on FreeBSD in about 5 minutes:
+### Build, Install and Launch on FreeBSD in about 5 minutes:
 
 Login as User root, and install the requisites:
 
@@ -33,18 +33,18 @@ Copy the virtual host configuration file into the Apache `Includes` directory. I
 
     cp -p apache-vhost.conf /usr/local/etc/apache24/Includes/your.content.dom.conf
 
-Use the `sed` command  to set the site's title, and substitute the vhost dummy domains `'example.com'` and `content.examle.com` to the desired domain names, e.g. `"Your Content"` - `content.dom` - `your.content.dom`:
+Use the `sed` command  to set the site's title, and to substitute the virtual host dummy domains `example.com` and `content.example.com` to the desired domain names, e.g. `"Your Content"` - `content.dom` - `your.content.dom`:
 
     sed -i "" -e "s/CONTENT EXAMPLE/Your Content/"         /usr/local/etc/apache24/Includes/your.content.dom.conf
     sed -i "" -e "s/example.com/content.dom/"              /usr/local/etc/apache24/Includes/your.content.dom.conf
     sed -i "" -e "s/content.example.com/your.content.dom/" /usr/local/etc/apache24/Includes/your.content.dom.conf
 
 
-Create the password digest file of the HTTP Digest authentication for editing the content. Inform your real name, because the system will use this name in the signature of the articles.
+Create the password digest file of the HTTP Digest authentication for editing the content. Inform your real name, because the system will use this name in the signature of the articles:
 
     htdigest -c /usr/local/etc/apache24/ContentEditors.passwd ContentEditors "Your Real Name"
 
-We may add more users with the same command but __without__ the `-c` flag
+We may add more users with the same command but __without__ the `-c` flag:
 
     htdigest /usr/local/etc/apache24/ContentEditors.passwd ContentEditors "Author II Real Name"
 
@@ -66,7 +66,7 @@ Enable Apache and ContentCGI in `/etc/rc.conf` by adding the following lines - m
     ContentCGI_flags="-u www:www"
     ContentCGI_enable="YES"
 
-Start Apache and the ContentCGI Daemon
+Start Apache and the ContentCGI Daemon:
 
     service apache24 start
     service ContentCGI start
