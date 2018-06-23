@@ -55,11 +55,17 @@
 #   Making
 #      ./bsdinstall.sh
 
+CPUS=$((`sysctl -n kern.smp.cpus`/2))
+if [ $CPUS < 10 ]; then
+   MAKE="make"
+else
+   MAKE="make -j$CPUS"
+fi
 
 if [ "$1" != "update" ]; then
-   MAKE="make $1 $2"
+   MAKE="$MAKE $1 $2"
 else
-   MAKE="make $2 $3"
+   MAKE="$MAKE $2 $3"
 fi
 
 if [ "$1" == "install" ] || [ "$2" == "install" ] || [ "$3" == "install" ]; then
