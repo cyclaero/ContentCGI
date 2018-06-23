@@ -56,19 +56,11 @@
 #      ./bsdinstall.sh
 
 
-if [ "$1" != "update" ]; then
-   MAKE="make $1 $2"
-else
-   MAKE="make $2 $3"
-fi
-
 if [ "$1" == "install" ] || [ "$2" == "install" ] || [ "$3" == "install" ]; then
    service ContentCGI stop
 fi
 
-CWD=$PWD
-
-if [ "$1" == "update" ]; then
+if [ "$1" == "update" ] || [ "$2" == "update" ] || [ "$3" == "update" ]; then
    cd "$CWD/plugins/search-delegate/zettair-spider"
    svn update
    cd "$CWD/ContentTools"
@@ -77,22 +69,46 @@ if [ "$1" == "update" ]; then
    svn update
 fi
 
+CPUS=$((`sysctl -n kern.smp.cpus`/2))
+if [ $CPUS -gt 1 ]; then
+   MAKE="make -j$CPUS"
+else
+   MAKE="make"
+fi
+
+if [ "$1" != "update" ]; then
+   MAKE1="$MAKE $1"
+   if [ "$2" != "" ]; then
+      MAKE2="$MAKE $2"
+   fi
+else
+   MAKE1="$MAKE $2"
+   if [ "$3" != "" ]; then
+      MAKE2="$MAKE $3"
+   fi
+fi
+
+CWD=$PWD
 cd "$CWD/plugins/search-delegate/zettair-spider"
-$MAKE clean
+$MAKE1
+$MAKE2
 
 cd "$CWD/plugins"
-$MAKE
+$MAKE1
+$MAKE2
 
 for PLUGDIR in *-delegate; do
    if [ -d "$PLUGDIR" ]; then
       cd "$PLUGDIR"
-      $MAKE
+      $MAKE1
+      $MAKE2
       cd ..
    fi
 done
 
 cd "$CWD"
-$MAKE
+$MAKE1
+$MAKE2
 
 cd "$CWD"
 
