@@ -33,6 +33,7 @@
 #include <string.h>
 #include <math.h>
 #include <syslog.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 
@@ -59,13 +60,20 @@ void deallocate_paramsblock(void **p, int32_t offset, boolean cleanout)
 }
 
 
+static inline ssize_t stream_arcv(ConnExec *connex, void *buffer, size_t total)
+{
+   ssize_t rc, received = 0;
+   while ((rc = connex->arcv(&connex->conn, buffer+received, total-received)) >= 0 && (received += rc) < total)
+      usleep(100);
+   return received;
+}
+
 boolean FCGI_Receiver(ConnExec *connex)
 {
-   boolean requestOK  = false;
+   boolean  requestOK = false;
    boolean processing = true;
    FCGI_Header header = {};
-
-   uint8_t *content = NULL;
+   uint8_t   *content = NULL;
 
    while (processing)
    {
@@ -75,7 +83,7 @@ boolean FCGI_Receiver(ConnExec *connex)
       header.requestID     = MapShort(header.requestID);
       header.contentLength = MapShort(header.contentLength);
 
-      if (header.version   == 1)                      // this works only according to CGI 1.1
+      if (header.version == 1)                        // this works only according to CGI 1.1
       {
          if (header.requestID == connex->requestID    // on FCGI_BEGIN_REQUEST the requestID is stored into the connex record,
           || (header.type == FCGI_BEGIN_REQUEST       // and the request is processed either in case the ID's do match
@@ -86,7 +94,9 @@ boolean FCGI_Receiver(ConnExec *connex)
 
             if (header.contentLength)
                if ((content = allocate(header.contentLength+1, default_align, false))
-                && connex->recv(&connex->conn, content, header.contentLength) == header.contentLength)
+                && ((header.type == FCGI_STDIN || header.type <= FCGI_DATA)
+                    ?  stream_arcv(connex,        content, header.contentLength)
+                    : connex->recv(&connex->conn, content, header.contentLength)) == header.contentLength)
                   content[header.contentLength] = '\0';
                else
                   goto cleanup;
