@@ -1090,6 +1090,30 @@ static inline int putu(utf8 u, char *t)
 }
 
 
+char *casefold(char *p);
+
+#if defined __APPLE__
+
+   #define pathfold(p) casefold(p)
+
+#elif defined __FreeBSD__
+
+   #define pathfold(p) (p)
+
+#endif
+
+char *uriDecode(char *element);                                                     // does in-place decoding
+char *uriEncode(char *element, char *buffer);                                       // if buffer is NULL, the space for the encded string is allocated and it needs to be freed
+char *entEncode(char *element, char *buffer);                                       // if buffer is NULL, the space for the encded string is allocated and it needs to be freed
+
+static inline char *postDecode(char *element)
+{
+   for (char *p = element; *p; p++)
+      if (*p == '+') *p = ' ';
+   return uriDecode(element);
+}
+
+
 #pragma mark ••• Fencing Memory Allocation Wrappers •••
 // void pointer reference
 #define VPR(p) (void **)&(p)

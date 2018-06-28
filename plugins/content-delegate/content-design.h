@@ -26,8 +26,8 @@
 //  OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-#define INDEX_PREAMBLE_LEN 402
-#define INDEX_PREAMBLE \
+#define INDEX_PREFIX_LEN 402
+#define INDEX_PREFIX \
 "<!--S--><!DOCTYPE html><HTML><HEAD>\n"\
 "   <TITLE>Résumés</TITLE>\n"\
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"\
@@ -55,8 +55,8 @@
 "   <TR>\n"\
 "      <TD>\n"
 
-#define INDEX_ADDENDUM_LEN 302
-#define INDEX_ADDENDUM \
+#define INDEX_SUFFIX_LEN 302
+#define INDEX_SUFFIX \
 "      </TD>\n"\
 "      <TD colspan=\"2\" style=\"padding:9px 3px 3px 27px;\">\n"\
 "         <IFRAME name=\"toc\" src=\"toc.html\" align=\"top\" style=\"width:100%; border:0px;\"\n"\
@@ -65,8 +65,8 @@
 "   </TR>\n"\
 "</TABLE></DIV></BODY><HTML>\n"
 
-#define TOC_PREAMBLE_LEN 413
-#define TOC_PREAMBLE \
+#define TOC_PREFIX_LEN 413
+#define TOC_PREFIX \
 "<!--S--><!DOCTYPE html><HTML><HEAD>\n"\
 "   <TITLE>Table of Contents</TITLE>\n"\
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"\
@@ -75,13 +75,37 @@
 "</HEAD><BODY class=\"toc\">\n"\
 "   <FORM action=\"_search\" method=\"POST\" target=\"_top\"><INPUT class=\"search\" name=\"search\" type=\"text\" placeholder=\"Search the Content\"></FORM>\n"\
 
-#define TOC_ADDENDUM_LEN 15
-#define TOC_ADDENDUM \
+#define TOC_SUFFIX_LEN 15
+#define TOC_SUFFIX \
 "</BODY></HTML>\n"
 
 
-#define SEARCH_PREAMBLE_LEN 425
-#define SEARCH_PREAMBLE \
+#define STAMP_DATA_LEN 24
+#define STAMP_DATA \
+"<data id=\"stamp\" value=\""
+
+#define STAMP_VALUE_LEN 12
+// "xx1530060745", 12
+
+#define CLOSE_DATA_LEN 11
+#define CLOSE_DATA \
+"\"></data>\r\n"
+
+#define STAMP_PREFIX_LEN 36
+#define STAMP_PREFIX \
+"<p class=\"stamp\">\r\n" \
+"    Copyright © "
+
+#define DATE_TIME_STAMP_LEN 24
+//" – YYYY-MM-DD hh:mm:ss", 24
+
+#define STAMP_SUFFIX_LEN 8
+#define STAMP_SUFFIX \
+"\r\n" \
+"</p>\r\n"
+
+#define SEARCH_PREFIX_LEN 425
+#define SEARCH_PREFIX \
 "<!DOCTYPE html><HTML><HEAD>\n"\
 "   <TITLE>Search Results</TITLE>\n"\
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"\
@@ -114,8 +138,8 @@
 #define SEARCH_NORESULT \
 "<H1>Nothing found.</H1>\n"
 
-#define SEARCH_ADDENDUM_LEN 302
-#define SEARCH_ADDENDUM \
+#define SEARCH_SUFFIX_LEN 302
+#define SEARCH_SUFFIX \
 "      </TD>\n"\
 "      <TD colspan=\"2\" style=\"padding:9px 3px 3px 27px;\">\n"\
 "         <IFRAME name=\"toc\" src=\"toc.html\" align=\"top\" style=\"width:100%; border:0px;\"\n"\

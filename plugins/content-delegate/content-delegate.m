@@ -44,6 +44,7 @@
 - (long)content:(char *)extension :(char *)method :(Request *)request :(Response *)response;
 - (long)models:(char *)name :(char *)method :(Request *)request :(Response *)response;
 - (long)images:(char *)name :(char *)method :(Request *)request :(Response *)response;
+- (long)upload:(char *)name :(char *)method :(Request *)request :(Response *)response;
 - (long)create:(char *)name :(char *)method :(Request *)request :(Response *)response;
 - (long)delete:(char *)name :(char *)method :(Request *)request :(Response *)response;
 
@@ -186,6 +187,59 @@
 }
 
 
+- (long)upload:(char *)name :(char *)method :(Request *)request :(Response *)response
+{
+   long  rc = 500;
+
+   char *conttyp, *content;
+   llong contlen;
+   Node *node;
+   if ((node = findName(request->serverTable, "CONTENT_TYPE", 12)) && (conttyp = strstr(node->value.s, "multipart/form-data"))
+    && (node = findName(request->serverTable, "CONTENT_DATA", 12)) && (contlen = node->value.size) &&(content  = node->value.s))
+   {
+      rc = 400;
+
+      char *boundary = conttyp+vnamlen(conttyp)-1; cpy2(boundary, "--");
+      int   boundlen = strvlen(boundary);
+      char *r, *s, *t;
+
+      for (s = strstr(content, boundary) + boundlen, t = content+contlen-1; t > s
+                                                                         && !(cmp2(t, "--")
+                                                                         && strstr(t-boundlen, boundary) == t-boundlen); t--);
+      if (t > s)
+      {
+         *(t -= boundlen) = '\0';
+
+         for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++); *r = '\0'; r += 4;
+         if (r >= t)
+            return rc;
+
+         char *filename, *imagtype;
+         if (strstr(s, "name=\"image\"")
+          && (filename = strstr(s, "filename=\"")))
+         {
+            imagtype = strstr(s, "Content-Type: ");
+
+            char *p;
+            for (p = filename += 10; *p && *p != '"'; p++); *p = 0;
+
+            if (imagtype)
+            {
+               imagtype += 14;
+               imagtype[wordlen(imagtype)] = '\0';
+            }
+            else
+               imagtype = (char *)extensionToType(filename, (int)(p-filename));
+
+            printf("%s\n%s\n", uriDecode(filename), imagtype);
+         }
+      }
+   }
+
+   return rc;
+}
+
+
 long  GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache);
 long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache);
 boolean  reindex(char *droot, char *contitle);
@@ -325,7 +379,8 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
          spec = msg+8, msg[ml = 7] = '\0';
 
       else if (cmp7(msg, "models/")
-            || cmp7(msg, "images/"))
+            || cmp7(msg, "images/")
+            || cmp7(msg, "upload/"))
          spec = msg+7, msg[ml = 6] = '\0';
 
       else if (cmp8(msg+ml-7, "/create")
@@ -430,7 +485,7 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
       FILE *file    = NULL;
       char *content = NULL;
       llong contlen, contpos = 0;
-      if ((content = allocate((contlen = filesize + 64 + 39 + 69)+1, default_align, false))
+      if ((content = allocate((contlen = filesize + 64 + 39 + STAMP_DATA_LEN + STAMP_VALUE_LEN + CLOSE_DATA_LEN + 69)+1, default_align, false))
        && (cache || (file = fopen(filep, "r"))))
       {
          int32_t loext = FourLoChars(spec);
@@ -503,12 +558,19 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
 
                         if (l >= 8)
                         {
-                           for (l -= 8, m = n-l, p = content+l, q = content+l+69, i = m-1; i >= 0; i--)
+                           intStr stamp;
+                           k = (cache) ? int2str(stamp, time(NULL), intLen, 0) : 0;
+                           for (l -= 8, m = n-l, p = content+l, q = content+l+((cache)?STAMP_DATA_LEN+k+CLOSE_DATA_LEN:0)+69, i = m-1; i >= 0; i--)
                               q[i] = p[i];
-                           memvcpy(content+l,
-                                   "</DIV><SCRIPT type=\"text/javascript\" src=\"/edit/content.js\"></SCRIPT>", 69);
-                                                                                                          n += 69;
-                           response->contlen = n;
+
+                           if (cache)
+                           {
+                              memvcpy(content+l, STAMP_DATA, STAMP_DATA_LEN);        l += STAMP_DATA_LEN, n += STAMP_DATA_LEN;
+                              memvcpy(content+l, stamp, k);                          l += k,              n += k;
+                              memvcpy(content+l, CLOSE_DATA, CLOSE_DATA_LEN);        l += CLOSE_DATA_LEN, n += CLOSE_DATA_LEN;
+                           }
+                           memvcpy(content+l, "</DIV><SCRIPT type=\"text/javascript\" src=\"/edit/content.js\"></SCRIPT>", 69);
+                           response->contlen =                                                            n += 69;
                            response->content = content;
                            rc = 200;
                            goto finish;
@@ -583,14 +645,15 @@ int stripATags(char *s, int n)
 
 long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache)
 {
-   long   rc      = 0;
-   int    filepl  = 0;
-   char  *filep   = NULL;
-   time_t now     = 0;
-   struct stat st = {};
+   long   rc       = 500;
+   int    filepl   = 0;
+   char  *filep    = NULL;
+   time_t creatime = 0;
+   struct stat  st = {};
    llong  filesize;
 
    if (droot)
+   {
       if (!cache)
       {
          filepl = drootl + 1 + el;
@@ -598,202 +661,225 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
          strmlcat(filep, filepl+1, NULL, droot, drootl, "/", 1, entity, el, NULL);
       }
 
-      else // cache
+      if (filesize = contstat(filep, &st, cache))
       {
-         int pl, sl = strvlen(spec);
-         filepl = drootl + 1 + el + 1 + 10 + 1 + sl;     // for example $DOCUMENT_ROOT/articles/1527627185.html
-         filep  = alloca(filepl+1);
-         pl  = strmlcat(filep, filepl+1, NULL, droot, drootl, "/", 1, entity, el, "/", 1, NULL);
-         pl += int2str(filep+pl, now = time(NULL), 11, 0);
-         filep[pl++] = '.';
-         strmlcpy(filep+pl, spec, 0, &sl);
-      }
-
-   if (filesize = contstat(filep, &st, cache))
-   {
-      char *conttyp, *content = NULL;
-      llong contlen,  contpos = 0;
-      Node *node;
-      if ((node = findName(request->serverTable, "CONTENT_TYPE", 12)) && (conttyp = strstr(node->value.s, "multipart/form-data"))
-       && (node = findName(request->serverTable, "CONTENT_DATA", 12)) && (contlen = node->value.size))
-      {
-         rc = 400;
-
-         char *boundary = conttyp+vnamlen(conttyp)-1; cpy2(boundary, "--");
-         int   boundlen = strvlen(boundary);
-         char *replace  = node->value.s;
-         llong replen   = 0;
-         char *s, *t;
-
-         for (s = strstr(replace, boundary) + boundlen, t = replace+contlen-1; t > s && !(cmp2(t, "--") && strstr(t-boundlen, boundary) == t-boundlen); t--);
-         if (t > s)
+         char *conttyp, *content = NULL;
+         llong contlen,  contpos = 0;
+         Node *node;
+         if ((node = findName(request->serverTable, "CONTENT_TYPE", 12)) && (conttyp = strstr(node->value.s, "multipart/form-data"))
+          && (node = findName(request->serverTable, "CONTENT_DATA", 12)) && (contlen = node->value.size))
          {
-            *(t -= boundlen) = '\0';
-            for (; s < t && !cmp4(s, "\r\n\r\n"); s++);
-            if ((s+=3) < t)      // leave 1 line feed at the beginning of the replacement text
-            {
-               replace = s;
-               replen  = t-s;
+            rc = 400;
 
-               int  stampl = 0;
-               char *stamp = NULL;
-               if (cache)
+            char *boundary = conttyp+vnamlen(conttyp)-1; cpy2(boundary, "--");
+            int   boundlen = strvlen(boundary);
+            char *replace  = node->value.s;
+            llong replen   = 0;
+            char *r, *s, *t;
+
+            for (s = strstr(replace, boundary) + boundlen, t = replace+contlen-1; t > s
+                                                                               && !(cmp2(t, "--")
+                                                                               && strstr(t-boundlen, boundary) == t-boundlen); t--);
+            if (t > s)
+            {
+               *(t -= boundlen) = '\0';
+
+               for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++); *r = '\0'; r += 3;     // leave 1 line feed at the beginning of the replacement text
+               if (r >= t)
+                  return rc;
+
+               if (strstr(s, "name=\"images\""))
                {
-                  struct tm tm;
-                  gmtime_r(&now, &tm);
-                  char *user = ((node = findName(request->serverTable, "REMOTE_USER", 11)) && node->value.s) ? node->value.s : "";
-                  stampl = 68 + strvlen(user);
-                  stamp  = alloca(stampl+1);
-                  snprintf(stamp, stampl+1,
-"<p class=\"stamp\">\r\n"
-"    Copyright © %s – %04d-%02d-%02d %02d:%02d:%02d\r\n"
-"</p>\r\n", user, tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+                  // parse the images list
+
+                  s = strstr(r, boundary) + boundlen;
+                  for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++); *r = '\0'; r += 3;  // leave 1 line feed at the beginning of the replacement text
+                  if (r >= t)
+                     return rc;
                }
 
-               llong extlen = replen + stampl;
-
-               int32_t loex = FourLoChars(spec);
-               FILE   *file = NULL;
-               if ((loex == 'html' && spec[4] == '\0' || loex == 'htm\0')
-                && (content = allocate(filesize + extlen+1, default_align, false))
-                && (cache || (file = fopen(filep, "r"))))
+               if (strstr(s, "name=\"content\""))
                {
-                  llong i, k, l, m, n;
-                  char  b[1536]; cpy8(b, "********"); b[1535] = 0;
-                  char *o, *p, *q = b+8;
-
-                  // find the heading in the replacement tag by purposely being restrictive on what to accept as a new title to be injected
-                  char *heading = (*replace == '\n' && cmp4(replace+1, "<h1>"))
-                                ? skip(replace+5) : NULL;
-                  llong headlen = (heading && (p = strstr(heading, "</h1>")))
-                                ? bskip(p) - heading : 0;
-
-                  // extract the preamble section of the HTML document until the <!--e--> tag
-                  // and in case a heading has been found, replace the content of <TITLE> by it
-                  if (heading && headlen)
+                  int stampl = 0;
+                  char *user = NULL;
+                  if (cache)
                   {
-                     memvcpy(p = alloca(headlen+1), heading, headlen);
-                     headlen = stripATags(heading = p, (int)headlen);
-                     p = NULL, n = 0;
+                     user   = ((node = findName(request->serverTable, "REMOTE_USER", 11)) && node->value.s) ? node->value.s : "";
+                     stampl = STAMP_PREFIX_LEN
+                            + strvlen(user)
+                            + DATE_TIME_STAMP_LEN
+                            + STAMP_SUFFIX_LEN;
 
-                     char *tb, *te;
-                     if ((l = m = contread(q, 1, sizeof(b)-9, file, cache, &contpos))
-                         && (tb = strstr(q, "<TITLE>"))     // inject the new title only if the respective
-                         && (te = strstr(q, "</TITLE>")))   // tags are all in capital letters
+                     if (s = strstr(t - CLOSE_DATA_LEN - STAMP_VALUE_LEN - STAMP_DATA_LEN, STAMP_DATA))
+                        t = s, creatime = strtol(t + STAMP_DATA_LEN, NULL, 10);
+
+                     if (!creatime)
+                        creatime = time(NULL);
+                  }
+
+                  replace = r;
+                  replen  = t-r;
+                  llong extlen = replen + stampl;
+
+                  int32_t loex = FourLoChars(spec);
+                  FILE   *file = NULL;
+                  if ((loex == 'html' && spec[4] == '\0' || loex == 'htm\0')
+                   && (content = allocate(filesize + extlen+1, default_align, false))
+                   && (cache || (file = fopen(filep, "r"))))
+                  {
+                     llong i, k, l, m, n;
+                     char  b[1536]; cpy8(b, "********"); b[1535] = 0;
+                     char *o, *p, *q = b+8;
+
+                     // find the heading in the replacement tag by purposely being restrictive on what to accept as a new title to be injected
+                     char *heading = (*replace == '\n' && cmp4(replace+1, "<h1>"))
+                                   ? skip(replace+5) : NULL;
+                     llong headlen = (heading && (p = strstr(heading, "</h1>")))
+                                   ? bskip(p) - heading : 0;
+
+                     // extract the preamble section of the HTML document until the <!--e--> tag
+                     // and in case a heading has been found, replace the content of <TITLE> by it
+                     if (heading && headlen)
                      {
-                        cpy8(b, q+m-8);
+                        memvcpy(p = alloca(headlen+1), heading, headlen);
+                        headlen = stripATags(heading = p, (int)headlen);
+                        p = NULL, n = 0;
 
-                        tb += 7;
-                        memvcpy(content,   q, k = tb-q);                         n  = k;
-                        memvcpy(content+n, heading, headlen);         m -= te-q, n += headlen;
-                           cpy8(content+n, te);                q = te+8, m -= 8, n += 8;
-
-                        if (!(p = strstr(b, "<!--e-->")))
+                        char *tb, *te;
+                        if ((l = m = contread(q, 1, sizeof(b)-9, file, cache, &contpos))
+                            && (tb = strstr(q, "<TITLE>"))     // inject the new title only if the respective
+                            && (te = strstr(q, "</TITLE>")))   // tags are all in capital letters
                         {
-                           memvcpy(content+n, q, m);                             n += m;
-                           for (p = NULL; q = b+8, ((l += m = contread(q, 1, sizeof(b)-9, file, cache, &contpos)), m) && !(p = strstr(b, "<!--e-->")); cpy8(b, q+m-8), n += m)
-                              memvcpy(content+n, q, m);
+                           cpy8(b, q+m-8);
+
+                           tb += 7;
+                           memvcpy(content,   q, k = tb-q);                         n  = k;
+                           memvcpy(content+n, heading, headlen);         m -= te-q, n += headlen;
+                              cpy8(content+n, te);                q = te+8, m -= 8, n += 8;
+
+                           if (!(p = strstr(b, "<!--e-->")))
+                           {
+                              memvcpy(content+n, q, m);                             n += m;
+                              for (p = NULL; q = b+8, ((l += m = contread(q, 1, sizeof(b)-9, file, cache, &contpos)), m) && !(p = strstr(b, "<!--e-->")); cpy8(b, q+m-8), n += m)
+                                 memvcpy(content+n, q, m);
+                           }
                         }
                      }
-                  }
-                  else
-                     for (p = NULL, l = 0, n = 0; ((l += m = contread(q, 1, sizeof(b)-9, file, cache, &contpos)), m) && !(p = strstr(b, "<!--e-->")); cpy8(b, q+m-8), n += m)
-                        memvcpy(content+n, q, m);
+                     else
+                        for (p = NULL, l = 0, n = 0; ((l += m = contread(q, 1, sizeof(b)-9, file, cache, &contpos)), m) && !(p = strstr(b, "<!--e-->")); cpy8(b, q+m-8), n += m)
+                           memvcpy(content+n, q, m);
 
-                  if (p)
-                  {
-                     if (p == q)
-                           cpy8(content+n, p),                   p += 8, m -= 8, n += 8;
-
-                     else if (p < q)
-                           cpy8(content+n+(k = p-q), p), k += 8, p += 8, m -= k, n += k;
-
-                     else // (p > q)
+                     if (p)
                      {
-                        memvcpy(content+n, q, k = p-q),                  m -= k, n += k;
-                           cpy8(content+n, p),                   p += 8, m -= 8, n += 8;
-                     }
+                        if (p == q)
+                              cpy8(content+n, p),                   p += 8, m -= 8, n += 8;
 
-                     memvcpy(o = content+n, p, m);                               n += m;
+                        else if (p < q)
+                              cpy8(content+n+(k = p-q), p), k += 8, p += 8, m -= k, n += k;
 
-                     if (!(l = filesize - l) || contread(content+n, l, 1, file, cache, &contpos) == 1)
-                     {
-                        if (file)
-                           fclose(file);
-                        n += l;
-
-                        // find the closing <!--E--> tag, and move it togehther with everything beyond it to the new end of the document
-                        for (l = n-1; l >= 8; l--)
-                           if (cmp8(content+l-8, "<!--E-->"))
-                              break;
-
-                        if (l >= 8)
+                        else // (p > q)
                         {
-                           l -= 8;
-                           p = content+l;
-                           k = p - o;
-                           q = content+l+extlen-k;
-                           if (k > extlen)
-                              for (m = n-l, i = 0; i < m; i++)
-                                 q[i] = p[i];
-                           else if (k < extlen)
-                              for (m = n-l, i = m-1; i >= 0; i--)
-                                 q[i] = p[i];
+                           memvcpy(content+n, q, k = p-q),                  m -= k, n += k;
+                              cpy8(content+n, p),                   p += 8, m -= 8, n += 8;
+                        }
 
-                           memvcpy(o, replace, replen),                          n += replen-k;
-                           if (stamp)
-                              memvcpy(o+replen, stamp, stampl),                  n += stampl;
+                        memvcpy(o = content+n, p, m);                               n += m;
 
-
-                           // write out the changes to the file in a safe manner
-                           rc = 500;
-
-                           int  tmpfpl, j;
-                           char *tmpfp = NULL;
-                           if (!cache)
-                           {
-                              for (j = 1; entity[el-j] != '/' && j <= el; j++);
-                              tmpfpl = 5 + --j;
-                              tmpfp = alloca(tmpfpl+1);
-                              strmlcat(tmpfp, tmpfpl+1, NULL, "/tmp/", 5, filep+filepl-j, j, NULL);
-                              file = fopen(tmpfp, "w");
-                           }
-                           else
-                              file = fopen(filep, "w");
-
+                        if (!(l = filesize - l) || contread(content+n, l, 1, file, cache, &contpos) == 1)
+                        {
                            if (file)
-                           {
-                              boolean ok = (fwrite(content, n, 1, file) == 1);
                               fclose(file);
+                           n += l;
 
-                              if (ok && (cache || rename(tmpfp, filep) == no_error))
+                           // find the closing <!--E--> tag, and move it togehther with everything beyond it to the new end of the document
+                           for (l = n-1; l >= 8; l--)
+                              if (cmp8(content+l-8, "<!--E-->"))
+                                 break;
+
+                           if (l >= 8)
+                           {
+                              l -= 8;
+                              p = content+l;
+                              k = p - o;
+                              q = content+l+extlen-k;
+                              if (k > extlen)
+                                 for (m = n-l, i = 0; i < m; i++)
+                                    q[i] = p[i];
+                              else if (k < extlen)
+                                 for (m = n-l, i = m-1; i >= 0; i--)
+                                    q[i] = p[i];
+
+                              memvcpy(o, replace, replen),                          n += replen-k;
+                              if (cache)
                               {
-                                 if (reindex(droot, ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content"))
-                                 {
-                                    if (!cache)
-                                       rc = 204;
+                                 struct tm tm;
+                                 localtime_r(&creatime, &tm);
+                                 char c = o[replen+stampl];       // backup the char where snprintf() puts the terminating '\0'
+                                 n += snprintf(o+replen, stampl+1,
+                                               STAMP_PREFIX"%s – %04d-%02d-%02d %02d:%02d:%02d"STAMP_SUFFIX,
+                                               user, tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+                                 o[replen+stampl] = c;            // restore
+                              }
 
-                                    else if (response->content = allocate(filepl -= drootl, default_align, false))
+                              // write out the changes to the file in a safe manner
+                              rc = 500;
+
+                              int  tmpfpl, j;
+                              char *tmpfp = NULL;
+                              if (!cache)
+                              {
+                                 for (j = 1; entity[el-j] != '/' && j <= el; j++);
+                                 tmpfpl = 5 + --j;
+                                 tmpfp = alloca(tmpfpl+1);
+                                 strmlcat(tmpfp, tmpfpl+1, NULL, "/tmp/", 5, filep+filepl-j, j, NULL);
+                                 file = fopen(tmpfp, "w");
+                              }
+                              else
+                              {
+                                 int pl, sl = strvlen(spec);
+                                 filepl = drootl + 1 + el + 1 + 10 + 1 + sl;     // for example $DOCUMENT_ROOT/articles/1527627185.html
+                                 filep  = alloca(filepl+1);
+                                 pl  = strmlcat(filep, filepl+1, NULL, droot, drootl, "/", 1, entity, el, "/", 1, NULL);
+                                 pl += int2str(filep+pl, creatime, 11, 0);
+                                 filep[pl++] = '.';
+                                 strmlcpy(filep+pl, spec, 0, &sl);
+                                 file = fopen(filep, "w");
+                              }
+
+                              if (file)
+                              {
+                                 boolean ok = (fwrite(content, n, 1, file) == 1);
+                                 fclose(file);
+
+                                 if (ok && (cache || rename(tmpfp, filep) == no_error))
+                                 {
+                                    if (reindex(droot, ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content"))
                                     {
-                                       response->contdyn = true;
-                                       response->contlen = strmlcpy(response->content, filep+drootl, 0, &filepl);
-                                       rc = 201;
+                                       if (!cache)
+                                          rc = 204;
+
+                                       else if (response->content = allocate(filepl -= drootl, default_align, false))
+                                       {
+                                          response->contdyn = true;
+                                          response->contlen = strmlcpy(response->content, filep+drootl, 0, &filepl);
+                                          rc = 201;
+                                       }
                                     }
                                  }
                               }
                            }
                         }
-                     }
 
-                     else
-                     {
-                        if (file)
-                           fclose(file);
+                        else
+                        {
+                           if (file)
+                              fclose(file);
+                        }
                      }
                   }
-               }
 
-               deallocate(VPR(content), false);
+                  deallocate(VPR(content), false);
+               }
             }
          }
       }
@@ -826,12 +912,12 @@ void qdownsort(time_t *a, int l, int r)
 boolean reindex(char *droot, char *contitle)
 {
    char *idx = newDynBuffer().buf;
-   dynAddString((dynhdl)&idx, INDEX_PREAMBLE, INDEX_PREAMBLE_LEN);
+   dynAddString((dynhdl)&idx, INDEX_PREFIX, INDEX_PREFIX_LEN);
    dynAddString((dynhdl)&idx, contitle, strvlen(contitle));
    dynAddString((dynhdl)&idx, INDEX_BODY_FYI, INDEX_BODY_FYI_LEN);
 
    char *toc = newDynBuffer().buf;
-   dynAddString((dynhdl)&toc, TOC_PREAMBLE, TOC_PREAMBLE_LEN);
+   dynAddString((dynhdl)&toc, TOC_PREFIX, TOC_PREFIX_LEN);
 
    int   drootl = strvlen(droot);
    int   adirl  = drootl + 1 + 8 + 1;
@@ -900,7 +986,7 @@ boolean reindex(char *droot, char *contitle)
                       && (t = strcasestr(s += 8, "</P>")))
                      {
                         struct tm tm;
-                        gmtime_r(&stamps[j], &tm);
+                        localtime_r(&stamps[j], &tm);
 
                         dynAddString((dynhdl)&idx, "<A class=\"index\" href=\"articles/", 32);
                            dynAddInt((dynhdl)&idx, stamps[j]);
@@ -928,8 +1014,8 @@ boolean reindex(char *droot, char *contitle)
 
          deallocate(VPR(stamps), false);
 
-         dynAddString((dynhdl)&idx, INDEX_ADDENDUM, INDEX_ADDENDUM_LEN);
-         dynAddString((dynhdl)&toc, TOC_ADDENDUM, TOC_ADDENDUM_LEN);
+         dynAddString((dynhdl)&idx, INDEX_SUFFIX, INDEX_SUFFIX_LEN);
+         dynAddString((dynhdl)&toc, TOC_SUFFIX, TOC_SUFFIX_LEN);
 
          boolean ok1 = false, ok2 = false;
 

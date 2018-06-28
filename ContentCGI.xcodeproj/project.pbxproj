@@ -31,6 +31,9 @@
 		7E6B8BF920C6C3CE00A95B6A /* favicon.ico in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BF120C6BF0600A95B6A /* favicon.ico */; };
 		7E6B8BFA20C6C3CE00A95B6A /* searchpict.svg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BF020C6BC2300A95B6A /* searchpict.svg */; };
 		7E6B8BFC20C6CC9700A95B6A /* functions.js in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BFB20C6C6B900A95B6A /* functions.js */; };
+		7E7F7EBF20E5246A0027EC85 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5069D9209FE0CB00D15F5A /* libicucore.dylib */; };
+		7E7F7EC020E5247C0027EC85 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5069D9209FE0CB00D15F5A /* libicucore.dylib */; };
+		7E7F7EC120E524830027EC85 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5069D9209FE0CB00D15F5A /* libicucore.dylib */; };
 		7E9433A520B6F64D00855520 /* delegate-utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7E324E5C20B616E8001E29F9 /* delegate-utils.c */; };
 		7E9433A620B6F65600855520 /* delegate-utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7E324E5C20B616E8001E29F9 /* delegate-utils.c */; };
 		7EBD78E520AE0F960035901F /* hello-delegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EBD78C220ADAC660035901F /* hello-delegate.m */; };
@@ -669,6 +672,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7E7F7EC120E524830027EC85 /* libicucore.dylib in Frameworks */,
 				7EC953A320D921AD00E67E97 /* libiconv.tbd in Frameworks */,
 				7EF44C4D20D2D12100EF8AD1 /* libz.tbd in Frameworks */,
 				7E0E572620CF3F1900562DA9 /* libcyobj.so in Frameworks */,
@@ -686,6 +690,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7E7F7EC020E5247C0027EC85 /* libicucore.dylib in Frameworks */,
 				7EE7B83B20B913B700D6DBCB /* libcyobj.so in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -694,6 +699,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7E7F7EBF20E5246A0027EC85 /* libicucore.dylib in Frameworks */,
 				7EE7B83A20B913B100D6DBCB /* libcyobj.so in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

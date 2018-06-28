@@ -51,7 +51,7 @@ CFLAGS += -fsigned-char
 CFLAGS += -std=c11 -fpic -fvisibility=hidden -fstrict-aliasing -fno-common -fobjc-nonfragile-abi \
           -Wno-multichar -Wno-parentheses -Wno-empty-body -Wno-switch -Wno-deprecated-declarations \
           -I/usr/local/include -I../ -Izettair-spider/include/  -Izettair-spider/include/compat/
-LDFLAGS = -shared -L/usr/local/lib -lm -lpthread -liconv -lz -lobjc -rpath $(PLUGINS) -L$(PLUGINS) -lcyobj
+LDFLAGS = -shared -L/usr/local/lib -lm -lpthread -licuuc -liconv -lz -lobjc -rpath $(PLUGINS) -L$(PLUGINS) -lcyobj
 
 SOURCESm = $(PROJECT).m
 OBJECTSm = $(SOURCESm:.m=.o)

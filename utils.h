@@ -1049,6 +1049,18 @@ static inline int putu(utf8 u, char *t)
    return l;
 }
 
+char *casefold(char *p);
+
+#if defined __APPLE__
+
+   #define pathfold(p) casefold(p)
+
+#elif defined __FreeBSD__
+
+   #define pathfold(p) (p)
+
+#endif
+
 char *uriDecode(char *element);                                                     // does in-place decoding
 char *uriEncode(char *element, char *buffer);                                       // if buffer is NULL, the space for the encded string is allocated and it needs to be freed
 char *entEncode(char *element, char *buffer);                                       // if buffer is NULL, the space for the encded string is allocated and it needs to be freed
@@ -1062,19 +1074,6 @@ static inline char *postDecode(char *element)
 
 #define etagLen 54
 char *httpETag(char *etag, struct stat *st, boolean quotes);
-
-
-char *casefold(char *p);
-
-#if defined __APPLE__
-
-   #define pathfold(p) casefold(p)
-
-#elif defined __FreeBSD__
-
-   #define pathfold(p) (p)
-
-#endif
 
 
 int hex2val(char hex);

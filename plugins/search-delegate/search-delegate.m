@@ -163,7 +163,7 @@ typedef struct
              && (isoToUtf = iconv_open("UTF-8//TRANSLIT//IGNORE", "ISO-8859-1")))
             {
                response->content = newDynBuffer().buf;
-               dynAddString((dynhdl)&response->content, SEARCH_PREAMBLE, SEARCH_PREAMBLE_LEN);
+               dynAddString((dynhdl)&response->content, SEARCH_PREFIX, SEARCH_PREFIX_LEN);
                dynAddString((dynhdl)&response->content, ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content", 0);
                dynAddString((dynhdl)&response->content, SEARCH_BODY_FYI, SEARCH_BODY_FYI_LEN);
 
@@ -211,7 +211,7 @@ typedef struct
                if (k == 0)
                   dynAddString((dynhdl)&response->content, SEARCH_NORESULT, SEARCH_NORESULT_LEN);
 
-               dynAddString((dynhdl)&response->content, SEARCH_ADDENDUM, SEARCH_ADDENDUM_LEN);
+               dynAddString((dynhdl)&response->content, SEARCH_SUFFIX, SEARCH_SUFFIX_LEN);
 
                iconv_close(isoToUtf);
 
