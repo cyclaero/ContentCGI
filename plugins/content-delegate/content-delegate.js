@@ -14,7 +14,7 @@ window.addEventListener('load', function() {
 });
 
 ContentTools.StylePalette.add([
-   new ContentTools.Style('Stamp',        'stamp', ['p']),
+   new ContentTools.Style('Stamp',        'stamp',        ['p']),
    new ContentTools.Style('Align center', 'align-center', ['img']),
    new ContentTools.Style('Shade',        'shade',        ['img']),
    new ContentTools.Style('Shade center', 'shade-center', ['img'])
@@ -34,11 +34,9 @@ function getImages() {
       descendants = editor.regions()[name].descendants();
       for (i = 0; i < descendants.length; i++) {
          // Filter out elements that are not images
-         if (descendants[i].type() !== 'Image') {
+         if (descendants[i].type() !== 'Image')
             continue;
-         }
-
-         images += '\v"'+descendants[i].attr('src')+'":'+descendants[i].size()[0];
+         images += descendants[i].attr('src') + '\n';
       }
    }
 
@@ -63,7 +61,7 @@ editor.addEventListener('saved', function (ev) {
       if (regions.hasOwnProperty(name)) {
          var images = getImages();
          if (images != "")
-            payload.append('images', images+'\v');
+            payload.append('images', images);
          payload.append('content', regions[name]);
       }
    }
@@ -150,14 +148,10 @@ function imageUploader(dialog) {
 
          // Handle the result of the upload
          if (parseInt(ev.target.status) == 200) {
-            // Unpack the response (from JSON)
-            response = JSON.parse(ev.target.responseText);
+            response = ev.target.responseText.split('\n');
 
             // Store the image details
-            image = {
-               size: response.size,
-               url: response.url
-            };
+            image = {url:response[0], size:[response[1], response[2]]};
 
             // Populate the dialog
             dialog.populate(image.url, image.size);
@@ -186,7 +180,7 @@ function imageUploader(dialog) {
          var uppath = "/"+pathcomps[1]+"/upload";
          for (i = 2; i < n; i++)
             uppath += "/"+pathcomps[i];
-         uppath += "/"+stamp;
+         uppath += "/media/"+stamp;
 
          // Make the request
          xhr = new XMLHttpRequest();
@@ -260,8 +254,9 @@ function imageUploader(dialog) {
       rotateImage('CW');
    });
 
+
    dialog.addEventListener('imageuploader.save', function () {
-      var crop, cropRegion, formData;
+      var crop, cropRegion, textData;
 
       // Define a function to handle the request completion
       xhrComplete = function (ev) {
@@ -279,17 +274,10 @@ function imageUploader(dialog) {
 
          // Handle the result of the rotation
          if (parseInt(ev.target.status) === 200) {
-            // Unpack the response (from JSON)
-            var response = JSON.parse(ev.target.responseText);
+            var response = ev.target.responseText.split('\n');
 
             // Trigger the save event against the dialog with details of the image to be inserted.
-            dialog.save(
-               response.url,
-               response.size,
-               {
-                  'alt': response.alt,
-                  'data-ce-max-width': response.size[0]
-               });
+            dialog.save(response[0], [response[1], response[2]]);
 
          } else {
             // The request failed, notify the user
@@ -300,23 +288,19 @@ function imageUploader(dialog) {
       // Set the dialog to busy while the rotate is performed
       dialog.busy(true);
 
-      // Build the form data to post to the server
-      formData = new FormData();
-      formData.append('url', image.url);
+      // Build the request data set
+      textData = image.size + '\n' + dialog.cropRegion() + '\n';
 
-      // Set the width of the image when it's inserted, this is a default the user will be able to resize the image afterwards.
-      formData.append('width', 670);
-
-      // Check if a crop region has been defined by the user
-      if (dialog.cropRegion()) {
-         formData.append('crop', dialog.cropRegion());
-      }
+      // Construct the insert path
+      var pathcomps = location.pathname.split('/');
+      var inpath = "/"+pathcomps[1]+"/insert/"+image.url;
 
       // Make the request
       xhr = new XMLHttpRequest();
       xhr.addEventListener('readystatechange', xhrComplete);
-      xhr.open('POST', '/insert-image', true);
-      xhr.send(formData);
+      xhr.open('POST', inpath, true);
+      xhr.setRequestHeader("Content-type", "text/plain;charset=UTF-8");
+      xhr.send(textData);
    });
 }
 

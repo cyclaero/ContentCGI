@@ -34,6 +34,7 @@
 		7E7F7EBF20E5246A0027EC85 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5069D9209FE0CB00D15F5A /* libicucore.dylib */; };
 		7E7F7EC020E5247C0027EC85 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5069D9209FE0CB00D15F5A /* libicucore.dylib */; };
 		7E7F7EC120E524830027EC85 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5069D9209FE0CB00D15F5A /* libicucore.dylib */; };
+		7E7F7EC320E5ACAD0027EC85 /* libGraphicsMagick.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E7F7EC220E5ACAD0027EC85 /* libGraphicsMagick.dylib */; };
 		7E9433A520B6F64D00855520 /* delegate-utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7E324E5C20B616E8001E29F9 /* delegate-utils.c */; };
 		7E9433A620B6F65600855520 /* delegate-utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7E324E5C20B616E8001E29F9 /* delegate-utils.c */; };
 		7EBD78E520AE0F960035901F /* hello-delegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EBD78C220ADAC660035901F /* hello-delegate.m */; };
@@ -262,6 +263,7 @@
 		7E6B8BF220C6BF9200A95B6A /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		7E6B8BFB20C6C6B900A95B6A /* functions.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = functions.js; sourceTree = "<group>"; };
 		7E6D8E3920DD2A6300762A19 /* content-design.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "content-design.h"; sourceTree = "<group>"; };
+		7E7F7EC220E5ACAD0027EC85 /* libGraphicsMagick.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGraphicsMagick.dylib; path = /opt/local/lib/libGraphicsMagick.dylib; sourceTree = "<absolute>"; };
 		7EA227F520C8855500C3BB78 /* model.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = model.html; sourceTree = "<group>"; };
 		7EB7356B20A2534C00D73FC1 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		7EB7356C20A2534C00D73FC1 /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
@@ -700,6 +702,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7E7F7EBF20E5246A0027EC85 /* libicucore.dylib in Frameworks */,
+				7E7F7EC320E5ACAD0027EC85 /* libGraphicsMagick.dylib in Frameworks */,
 				7EE7B83A20B913B100D6DBCB /* libcyobj.so in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1490,12 +1493,13 @@
 		7EE307CA209E83980037022B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7E324E8820B62BD9001E29F9 /* libcyobj.so */,
 				7EFDF50820A471C3006BACAF /* libcrypto.dylib */,
 				7EFDF50A20A471CC006BACAF /* libssl.dylib */,
 				7E5069D9209FE0CB00D15F5A /* libicucore.dylib */,
+				7E324E8820B62BD9001E29F9 /* libcyobj.so */,
 				7EC953A220D921AD00E67E97 /* libiconv.tbd */,
 				7EF44C4C20D2D12100EF8AD1 /* libz.tbd */,
+				7E7F7EC220E5ACAD0027EC85 /* libGraphicsMagick.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2163,11 +2167,13 @@
 				HEADER_SEARCH_PATHS = (
 					../,
 					/usr/local/include,
+					/opt/local/include/GraphicsMagick,
 				);
 				INSTALL_PATH = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/plugins",
+					/opt/local/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -2188,11 +2194,13 @@
 				HEADER_SEARCH_PATHS = (
 					../,
 					/usr/local/include,
+					/opt/local/include/GraphicsMagick,
 				);
 				INSTALL_PATH = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/plugins",
+					/opt/local/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

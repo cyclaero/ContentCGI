@@ -26,6 +26,8 @@
 //  OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+#import <magick/api.h>
+
 #import "CyObject.h"
 #import "delegate-utils.h"
 #import "exports.h"
@@ -45,8 +47,11 @@
 - (long)models:(char *)name :(char *)method :(Request *)request :(Response *)response;
 - (long)images:(char *)name :(char *)method :(Request *)request :(Response *)response;
 - (long)upload:(char *)name :(char *)method :(Request *)request :(Response *)response;
-- (long)create:(char *)name :(char *)method :(Request *)request :(Response *)response;
-- (long)delete:(char *)name :(char *)method :(Request *)request :(Response *)response;
+- (long)insert:(char *)name :(char *)method :(Request *)request :(Response *)response;
+- (long)rotate:(char *)name :(char *)method :(Request *)request :(Response *)response;
+
+- (long)create:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
+- (long)delete:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
 
 @end
 
@@ -191,11 +196,12 @@
 {
    long  rc = 500;
 
-   char *conttyp, *content;
+   char *conttyp, *content, *droot;
    llong contlen;
    Node *node;
-   if ((node = findName(request->serverTable, "CONTENT_TYPE", 12)) && (conttyp = strstr(node->value.s, "multipart/form-data"))
-    && (node = findName(request->serverTable, "CONTENT_DATA", 12)) && (contlen = node->value.size) &&(content  = node->value.s))
+   if ((node = findName(request->serverTable, "DOCUMENT_ROOT", 13)) && (droot = node->value.s) && *droot
+    && (node = findName(request->serverTable, "CONTENT_TYPE",  12)) && (conttyp = strstr(node->value.s, "multipart/form-data"))
+    && (node = findName(request->serverTable, "CONTENT_DATA",  12)) && (contlen = node->value.size) && (content = node->value.s))
    {
       rc = 400;
 
@@ -208,13 +214,18 @@
                                                                          && strstr(t-boundlen, boundary) == t-boundlen); t--);
       if (t > s)
       {
-         *(t -= boundlen) = '\0';
+         t -= boundlen;
+         if (cmp2(t-2, "\r\n"))
+            t -= 2;
+         else if (*(t-1) == '\n' || *(t-1) == '\r')
+            t--;
+         *t = '\0';
 
+         char *filename, *imagtype;
          for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++); *r = '\0'; r += 4;
          if (r >= t)
             return rc;
 
-         char *filename, *imagtype;
          if (strstr(s, "name=\"image\"")
           && (filename = strstr(s, "filename=\"")))
          {
@@ -222,6 +233,7 @@
 
             char *p;
             for (p = filename += 10; *p && *p != '"'; p++); *p = 0;
+            int fl = (int)(p-filename);
 
             if (imagtype)
             {
@@ -229,10 +241,189 @@
                imagtype[wordlen(imagtype)] = '\0';
             }
             else
-               imagtype = (char *)extensionToType(filename, (int)(p-filename));
+               imagtype = (char *)extensionToType(filename, fl);
 
-            printf("%s\n%s\n", uriDecode(filename), imagtype);
+            if (cmp6(imagtype, "image/"))
+            {
+               int  cl,
+                    rl = strvlen(droot),
+                    nl = strvlen(name),
+                    imgpl = rl + 1 + nl + 1 + fl;     // for example $DOCUMENT_ROOT/articles/media/1527627185/image_to_be_uploaded.jpg
+               char imgp[imgpl+1];
+               cl = strmlcat(imgp, imgpl+1, NULL,  droot, rl, "/", 1, name, nl, NULL);
+
+               struct stat st;                        // check whether the target directory exist
+               if ((stat(imgp, &st) == no_error       // in case it does not
+                || (mkdir(imgp, 0770) == no_error     // then try to create it
+                 && stat(imgp, &st) == no_error))     // by purpose we won't resolve inssues with intermediate path components
+                && S_ISDIR(st.st_mode))               // final check, and let's go
+               {
+                  FILE *file;
+                  cl += strmlcat(imgp+cl, imgpl-cl+1, NULL, "/", 1, filename, fl, NULL);
+                  if (file = fopen(imgp, "w"))
+                     if (fwrite(r, t-r, 1, file) == 1)
+                     {
+                        fclose(file);
+
+                        // involve GraphicsMagick
+                        InitializeMagick(NULL);
+                        ExceptionInfo excepInfo = {};
+                        GetExceptionInfo(&excepInfo);
+                        ImageInfo *imageInfo = CloneImageInfo(0);
+
+                        // infer the image format conforming to the uploded file name
+                        strmlcpy(imageInfo->filename, imgp, MaxTextExtent, &cl);
+                        Image *image;
+
+                        if (image = PingBlob(imageInfo, r, t-r, &excepInfo))
+                        {
+                           // only the image dimensions are neded in this stage
+                           ulong imgWidth  = image->columns;
+                           ulong imgHeight = image->rows;
+                           DestroyImage(image);
+                           DestroyImageInfo(imageInfo);
+                           DestroyExceptionInfo(&excepInfo);
+                           DestroyMagick();
+                                                                        // vv -- max. string size of ulong is 20 -- 18446744073709551616
+                           response->content = allocate((cl -= rl+1) + 1 + 20 + 1 + 20, default_align, false);
+                           strmlcpy(response->content, imgp+rl+1, 0, &cl);
+                           response->content[cl++] = '\n';
+                           cl += int2str(response->content+cl, imgWidth, 21, 0);
+                           response->content[cl++] = '\n';
+                           cl += int2str(response->content+cl, imgHeight, 21, 0);
+                           response->contlen = cl;
+                           response->contdyn = true;
+                           response->conttyp = "text/plain";
+
+                           rc = 200;
+                        }
+                     }
+                     else
+                        fclose(file);
+               }
+            }
          }
+      }
+   }
+
+   return rc;
+}
+
+
+- (long)insert:(char *)name :(char *)method :(Request *)request :(Response *)response
+{
+   long  rc = 500;
+
+   char *conttyp, *content, *droot;
+   llong contlen;
+   Node *node;
+   if ((node = findName(request->serverTable, "DOCUMENT_ROOT", 13)) && (droot = node->value.s)
+    && (node = findName(request->serverTable, "CONTENT_TYPE",  12)) && (conttyp = strstr(node->value.s, "text/plain"))
+    && (node = findName(request->serverTable, "CONTENT_DATA",  12)) && (contlen = node->value.size) && (content = node->value.s))
+   {
+      rc = 400;
+
+      int   rl, nl, sl, cl;
+      char *size = content,
+           *crop = NULL;
+
+      if ((rl = strvlen(droot))
+       && (nl = strvlen(name))
+       && (sl = linelen(size))
+       && (cl = linelen(crop = size + sl+1)))
+      {
+         size[sl] = crop[cl] = '\0';
+
+         int  imgpl = rl + 1 + nl + 5;       // for example $DOCUMENT_ROOT/articles/media/1527627185/image_to_be_inserted.jpg[.png]
+         char imgp[imgpl+1];
+         nl = strmlcat(imgp, imgpl+1, NULL,  droot, rl, "/", 1, name, nl, NULL);
+
+         struct stat st;
+         ulong  imgWidth, imgHeight;
+         double top, left, bottom, right;
+         char  *h;
+         if (stat(imgp, &st) == no_error && S_ISREG(st.st_mode)
+          && (imgWidth  = strtoul(size, &h, 10))
+          && (imgHeight = strtoul(h+1, NULL, 10))
+          && 0   <= (top    = strtod(crop, &h)) && top     < 1
+          && 0   <= (left   = strtod(h+1,  &h)) && left    < 1
+          && top  < (bottom = strtod(h+1,  &h)) && bottom <= 1
+          && left < (right  = strtod(h+1,  &h)) && right  <= 1)
+         {
+            RectangleInfo croprect = {lround((right - left)*imgWidth),
+                                      lround((bottom - top)*imgHeight),
+                                      lround(left*imgWidth),
+                                      lround(top*imgHeight)};
+            // involve GraphicsMagick
+            InitializeMagick(NULL);
+            ExceptionInfo excepInfo = {};
+            GetExceptionInfo(&excepInfo);
+            ImageInfo *imageInfo = CloneImageInfo(0);
+
+            // infer the image format conforming to the uploded file name
+            strmlcpy(imageInfo->filename, imgp, MaxTextExtent, &nl);
+            Image *original, *derivate;
+            if (original = ReadImage(imageInfo, &excepInfo))
+               if (derivate = CropImage(original, &croprect, &excepInfo))
+               {
+                  DestroyImage(original);
+
+                  cpy5(derivate->filename+nl, ".png");
+                  cpy4(derivate->magick, "PNG");
+                  WriteImage(imageInfo, derivate);
+                  DestroyImage(derivate);
+
+                  cpy5(imgp+nl, ".png"); nl += 4;              // vv -- max. string size of uint is 10 -- 4294967294
+                  response->content = allocate((nl -= rl+1) + 1 + 10 + 1 + 10, default_align, false);
+                  strmlcpy(response->content, imgp+rl+1, 0, &nl);
+                  response->content[nl++] = '\n';
+                  nl += int2str(response->content+nl, croprect.width, 11, 0);
+                  response->content[nl++] = '\n';
+                  nl += int2str(response->content+nl, croprect.height, 11, 0);
+                  response->contlen = nl;
+                  response->contdyn = true;
+                  response->conttyp = "text/plain";
+
+                  rc = 200;
+               }
+               else
+                  DestroyImage(original);
+
+            DestroyImageInfo(imageInfo);
+            DestroyExceptionInfo(&excepInfo);
+            DestroyMagick();
+         }
+      }
+   }
+
+   return rc;
+}
+
+
+- (long)rotate:(char *)name :(char *)method :(Request *)request :(Response *)response
+{
+   long  rc = 500;
+
+   char *conttyp, *content, *droot;
+   llong contlen;
+   Node *node;
+   if ((node = findName(request->serverTable, "DOCUMENT_ROOT", 13)) && (droot = node->value.s) && *droot
+    && (node = findName(request->serverTable, "CONTENT_TYPE",  12)) && (conttyp = strstr(node->value.s, "text/plain"))
+    && (node = findName(request->serverTable, "CONTENT_DATA",  12)) && (contlen = node->value.size) && (content = node->value.s))
+   {
+      rc = 400;
+
+      int   ul, sl = 0, cl = 0;
+      char *uri = content, *size = NULL, *crop = NULL;
+
+      if (ul = linelen(uri))
+         if (sl = linelen(size = uri + ul+1))
+            if (cl = linelen(crop = size + sl+1))
+               uri[ul] = '\0', size[sl] = '\0', crop[cl] = '\0';
+
+      if (ul && sl && cl)
+      {
+         printf("%s\n%s\n%s\n", uri, size, crop);
       }
    }
 
@@ -253,34 +444,47 @@ boolean  reindex(char *droot, char *contitle);
       {
          char *droot = node->value.s;
          int  drootl = strvlen(droot);
-         if ((node = findName(cache->models, "model.html", 10)) && ((Response *)node->value.p)->contlen)
-         {
-            if (!htmodel.content)
-            {
-               // Need to replace the generic title 'CONTENT_TITLE' by the real one, to be informed by the respective server environment variable
-               llong contlen = ((Response *)node->value.p)->contlen;
-               char *content = ((Response *)node->value.p)->content;
-               char *titlpos = strstr(content, "CONTENT_TITLE");
-               if (titlpos)
-               {
-                  char *contitl = ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content";
-                  int   titllen = strvlen(contitl);
-                  htmodel.contlen = contlen + titllen - 13;
-                  htmodel.content = allocate(htmodel.contlen+1, default_align, false);
-                  llong p = titlpos - content, q = contlen - p - 13;
-                  memvcpy(htmodel.content, content, p);
-                  p += strmlcpy(htmodel.content+p, contitl, 0, &titllen);
-                  memvcpy(htmodel.content+p, titlpos+13, q);
-                  htmodel.content[contlen] = '\0';
-                  htmodel.conttyp = "text/html; charset=utf-8";
-               }
-            }
 
-            if (cmp4(method, "GET"))
-               return  GEThandler(droot, drootl, "model", 5, "html", request, response, &htmodel);
-            else // POST
-               return POSThandler(droot, drootl, basepath, strvlen(basepath), "html", request, response, &htmodel);
+         int  bl = strvlen(basepath);
+         int  artdl = drootl + 1 + bl; // for example $DOCUMENT_ROOT/articles
+         char artd[artdl+1];
+         strmlcat(artd, artdl+1, NULL, droot, drootl, "/", 1, basepath, bl, NULL);
+
+         struct stat st;
+         if (stat(artd, &st) == no_error && S_ISDIR(st.st_mode))
+         {
+            if ((node = findName(cache->models, "model.html", 10)) && ((Response *)node->value.p)->contlen)
+            {
+               if (!htmodel.content)
+               {
+                  // Need to replace the generic title 'CONTENT_TITLE' by the real one, which must be informed by the respective server environment variable
+                  llong contlen = ((Response *)node->value.p)->contlen;
+                  char *content = ((Response *)node->value.p)->content;
+                  char *titlpos = strstr(content, "CONTENT_TITLE");
+                  if (titlpos)
+                  {
+                     char *contitl = ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content";
+                     int   titllen = strvlen(contitl);
+                     htmodel.contlen = contlen + titllen - 13;
+                     htmodel.content = allocate(htmodel.contlen+1, default_align, false);
+                     llong p = titlpos - content, q = contlen - p - 13;
+                     memvcpy(htmodel.content, content, p);
+                     p += strmlcpy(htmodel.content+p, contitl, 0, &titllen);
+                     memvcpy(htmodel.content+p, titlpos+13, q);
+                     htmodel.content[contlen] = '\0';
+                     htmodel.conttyp = "text/html; charset=utf-8";
+                  }
+               }
+
+               if (cmp4(method, "GET"))
+                  return  GEThandler(droot, drootl, "model", 5, "html", request, response, &htmodel);
+               else // POST
+                  return POSThandler(droot, drootl, basepath, strvlen(basepath), "html", request, response, &htmodel);
+            }
          }
+
+         else
+            return 404;
       }
 
       return 500;
@@ -303,7 +507,7 @@ boolean  reindex(char *droot, char *contitle);
          {
             int  bl = strvlen(basepath),
                  dl = strvlen(node->value.s);
-            int  artpl = drootl + 1 + bl + 1 + 10 + 1 + dl; // for example $DOCUMENT_ROOT/articles/1527627185.html
+            int  artpl = drootl + 1 + bl + 1 + dl;          // for example $DOCUMENT_ROOT/articles/1527627185.html
             char artp[artpl+1];
             strmlcat(artp, artpl+1, NULL, droot, drootl, "/", 1, basepath, bl, "/", 1, node->value.s, dl, NULL);
             int  delpl = 5+dl;                              // for example /tmp/1527627185.html
@@ -363,7 +567,7 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
 
    if ((node = findName(request->serverTable, "REQUEST_METHOD", 14))
     && (cmp4(method = node->value.s, "GET") || cmp5(method, "POST"))    // only respond to GET or POST requests
-    && cmp6(entity, "/edit/")                                           // only be reponsible for everything below the /edit/ path
+    && cmp6(entity, "/edit/") && entity[6] != '/'                       // only be reponsible for everything below the /edit/ path
     && entity[6] != '_')                                                // but do not respond to other dynamic calls
    {
       if (*(entity += 6) != '\0')
@@ -380,7 +584,9 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
 
       else if (cmp7(msg, "models/")
             || cmp7(msg, "images/")
-            || cmp7(msg, "upload/"))
+            || cmp7(msg, "upload/")
+            || cmp7(msg, "insert/")
+            || cmp7(msg, "rotate/"))
          spec = msg+7, msg[ml = 6] = '\0';
 
       else if (cmp8(msg+ml-7, "/create")
@@ -711,7 +917,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                             + STAMP_SUFFIX_LEN;
 
                      if (s = strstr(t - CLOSE_DATA_LEN - STAMP_VALUE_LEN - STAMP_DATA_LEN, STAMP_DATA))
-                        t = s, creatime = strtol(t + STAMP_DATA_LEN, NULL, 10);
+                        t = s, creatime = strtoul(t + STAMP_DATA_LEN, NULL, 10);
 
                      if (!creatime)
                         creatime = time(NULL);
@@ -837,10 +1043,10 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                               else
                               {
                                  int pl, sl = strvlen(spec);
-                                 filepl = drootl + 1 + el + 1 + 10 + 1 + sl;     // for example $DOCUMENT_ROOT/articles/1527627185.html
+                                 filepl = drootl + 1 + el + 1 + 12 + 1 + sl;     // for example $DOCUMENT_ROOT/articles/1527627185.html
                                  filep  = alloca(filepl+1);
                                  pl  = strmlcat(filep, filepl+1, NULL, droot, drootl, "/", 1, entity, el, "/", 1, NULL);
-                                 pl += int2str(filep+pl, creatime, 11, 0);
+                                 pl += int2str(filep+pl, creatime, 13, 0);
                                  filep[pl++] = '.';
                                  strmlcpy(filep+pl, spec, 0, &sl);
                                  file = fopen(filep, "w");
