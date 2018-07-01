@@ -29,7 +29,7 @@ Enable `SSE`
 <img src="https://obsigna.com/articles/media/1529528376/GM-Options.png">
 
     make install clean
-   
+   
 
 Prepare the installation directory and checkout the sources:
 
