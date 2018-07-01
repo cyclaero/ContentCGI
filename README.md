@@ -26,7 +26,7 @@ For image processing we would employ GraphicsMagic. The default options drag-in 
 
 Disable `Jasper`, `OpenMP`, `X11`
 Enable `SSE`
-<img src="articles/media/1529528376/GM-Options.png">
+<img src="https://obsigna.com/articles/media/1529528376/GM-Options.png">
 
     make install clean
 
