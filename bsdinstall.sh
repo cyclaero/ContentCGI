@@ -28,9 +28,24 @@
 
 # REQUIREMENTS (install from the packages system of FreeBSD -- onetime operation)
 #
-#   pkg install subversion
-#   pkg install libojc2
-#   pkg install icu
+#   pkg install -y apache24
+#   pkg install -y clone
+#   pkg install -y subversion
+#   pkg install -y libobjc2
+#   pkg install -y icu
+#
+# GraphicsMagick for the image management facility
+#   pkg install -y freetype2
+#   pkg install -y jbigkit
+#   pkg install -y lcms2
+#   pkg install -y png
+#   pkg install -y webp
+#   pkg install -y libwmf-nox11
+#
+#   cd /usr/ports/graphics/GraphicsMagick
+#   make config
+#   -- Disable Jasper, OpenMP, X11 -- Enable SSE
+#   make install clean
 #
 # PREPARATION (cheking out the sources of ContentCGI and ContentTools from GitHub)
 #
@@ -60,6 +75,8 @@ if [ "$1" == "install" ] || [ "$2" == "install" ] || [ "$3" == "install" ]; then
    service ContentCGI stop
 fi
 
+CWD=$PWD
+
 if [ "$1" == "update" ] || [ "$2" == "update" ] || [ "$3" == "update" ]; then
    cd "$CWD/plugins/search-delegate/zettair-spider"
    svn update
@@ -88,7 +105,6 @@ else
    fi
 fi
 
-CWD=$PWD
 cd "$CWD/plugins/search-delegate/zettair-spider"
 $MAKE1
 $MAKE2

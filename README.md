@@ -4,13 +4,31 @@ Extensible FastCGI Daemon for FreeBSD
 
 ### Build, Install and Launch on FreeBSD in about 5 minutes:
 
-Login as User root, and install the requisites:
+Login as User root, and install the requisites by the way of the FreeBSD package+ports system:
 
     pkg install apache24
     pkg install clone
     pkg install subversion
     pkg install libobjc2
     pkg install icu
+
+For image processing we would employ GraphicsMagic. The default options drag-in a lot of unfortunate stuff from the GNU Compiler Collection and from X11. Therefore, add the few really needed dependencies of GraphicsMagic from the FreeBSD package repository, and build+install graphic/GraphicsMagick from the ports with a custom option-set.
+
+    pkg install -y freetype2
+    pkg install -y jbigkit
+    pkg install -y lcms2
+    pkg install -y png
+    pkg install -y webp
+    pkg install -y libwmf-nox11
+
+    cd /usr/ports/graphics/GraphicsMagick
+    make config
+
+Disable `Jasper`, `OpenMP`, `X11`
+Enable `SSE`
+<img src="articles/media/1529528376/GM-Options.png">
+
+    make install clean
 
 
 Prepare the installation directory and checkout the sources:
