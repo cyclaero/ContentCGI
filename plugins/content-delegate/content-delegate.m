@@ -360,7 +360,7 @@
             GetExceptionInfo(&excepInfo);
             ImageInfo *imageInfo = CloneImageInfo(0);
 
-            // infer the image format conforming to the uploded file name
+            // infer the image format conforming to the uploaded file name
             strmlcpy(imageInfo->filename, imgp, MaxTextExtent, &nl);
             Image *original, *derivate;
             if (original = ReadImage(imageInfo, &excepInfo))
@@ -371,15 +371,17 @@
                   cpy5(derivate->filename+nl, ".png");
                   cpy4(derivate->magick, "PNG");
                   WriteImage(imageInfo, derivate);
+                  imgWidth  = derivate->columns;
+                  imgHeight = derivate->rows;
                   DestroyImage(derivate);
 
                   cpy5(imgp+nl, ".png"); nl += 4;              // vv -- max. string size of uint is 10 -- 4294967294
                   response->content = allocate((nl -= rl+1) + 1 + 10 + 1 + 10, default_align, false);
                   strmlcpy(response->content, imgp+rl+1, 0, &nl);
                   response->content[nl++] = '\n';
-                  nl += int2str(response->content+nl, croprect.width, 11, 0);
+                  nl += int2str(response->content+nl, imgWidth, 11, 0);
                   response->content[nl++] = '\n';
-                  nl += int2str(response->content+nl, croprect.height, 11, 0);
+                  nl += int2str(response->content+nl, imgHeight, 11, 0);
                   response->contlen = nl;
                   response->contdyn = true;
                   response->conttyp = "text/plain";
@@ -407,23 +409,77 @@
    char *conttyp, *content, *droot;
    llong contlen;
    Node *node;
-   if ((node = findName(request->serverTable, "DOCUMENT_ROOT", 13)) && (droot = node->value.s) && *droot
+   if ((node = findName(request->serverTable, "DOCUMENT_ROOT", 13)) && (droot = node->value.s)
     && (node = findName(request->serverTable, "CONTENT_TYPE",  12)) && (conttyp = strstr(node->value.s, "text/plain"))
     && (node = findName(request->serverTable, "CONTENT_DATA",  12)) && (contlen = node->value.size) && (content = node->value.s))
    {
       rc = 400;
 
-      int   ul, sl = 0, cl = 0;
-      char *uri = content, *size = NULL, *crop = NULL;
+      int   rl, nl, sl, al;
+      char *size  = content,
+           *angle = NULL;
 
-      if (ul = linelen(uri))
-         if (sl = linelen(size = uri + ul+1))
-            if (cl = linelen(crop = size + sl+1))
-               uri[ul] = '\0', size[sl] = '\0', crop[cl] = '\0';
-
-      if (ul && sl && cl)
+      if ((rl = strvlen(droot))
+       && (nl = strvlen(name))
+       && (sl = linelen(size))
+       && (al = linelen(angle = size + sl+1)))
       {
-         printf("%s\n%s\n%s\n", uri, size, crop);
+         size[sl] = angle[al] = '\0';
+
+         int  imgpl = rl + 1 + nl + 5;       // for example $DOCUMENT_ROOT/articles/media/1527627185/image_to_be_inserted.jpg[.png]
+         char imgp[imgpl+1];
+         nl = strmlcat(imgp, imgpl+1, NULL,  droot, rl, "/", 1, name, nl, NULL);
+
+         struct stat st;
+         ulong  imgWidth, imgHeight;
+         double alpha;
+         char  *h;
+         if (stat(imgp, &st) == no_error && S_ISREG(st.st_mode)
+          && (imgWidth  = strtoul(size, &h, 10))
+          && (imgHeight = strtoul(h+1, NULL, 10))
+          && -180 <= (alpha = strtod(angle, NULL)) && alpha <= 180)
+         {
+            // involve GraphicsMagick
+            InitializeMagick(NULL);
+            ExceptionInfo excepInfo = {};
+            GetExceptionInfo(&excepInfo);
+            ImageInfo *imageInfo = CloneImageInfo(0);
+
+            // infer the image format conforming to the uploaded file name
+            strmlcpy(imageInfo->filename, imgp, MaxTextExtent, &nl);
+            Image *original, *derivate;
+            if (original = ReadImage(imageInfo, &excepInfo))
+               if (derivate = RotateImage(original, alpha, &excepInfo))
+               {
+                  DestroyImage(original);
+
+                  cpy5(derivate->filename+nl, ".png");
+                  cpy4(derivate->magick, "PNG");
+                  WriteImage(imageInfo, derivate);
+                  imgWidth  = derivate->columns;
+                  imgHeight = derivate->rows;
+                  DestroyImage(derivate);
+
+                  cpy5(imgp+nl, ".png"); nl += 4;              // vv -- max. string size of uint is 10 -- 4294967294
+                  response->content = allocate((nl -= rl+1) + 1 + 10 + 1 + 10, default_align, false);
+                  strmlcpy(response->content, imgp+rl+1, 0, &nl);
+                  response->content[nl++] = '\n';
+                  nl += int2str(response->content+nl, imgWidth, 11, 0);
+                  response->content[nl++] = '\n';
+                  nl += int2str(response->content+nl, imgHeight, 11, 0);
+                  response->contlen = nl;
+                  response->contdyn = true;
+                  response->conttyp = "text/plain";
+
+                  rc = 200;
+               }
+               else
+                  DestroyImage(original);
+
+            DestroyImageInfo(imageInfo);
+            DestroyExceptionInfo(&excepInfo);
+            DestroyMagick();
+         }
       }
    }
 
@@ -896,6 +952,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 
                if (strstr(s, "name=\"images\""))
                {
+                  r++;
                   // parse the images list
 
                   s = strstr(r, boundary) + boundlen;

@@ -1,15 +1,9 @@
 /* Editor JS of the Content Responder Delegate */
 
-var qargs = {};
-location.search.substr(1).split("&").forEach(function(item) {
-   var s = item.split("="), k = s[0], v = s[1] && decodeURIComponent(s[1]);
-   (qargs[k] = qargs[k] || []).push(v)
-})
-
-
 ContentEdit.TRIM_WHITESPACE = false;
 
-window.addEventListener('load', function() {
+window.addEventListener('load', function()
+{
    var editor;
 });
 
@@ -24,16 +18,16 @@ editor = ContentTools.EditorApp.get();
 editor.init('[data-editable], [data-fixture]', 'data-name');
 
 
-function getImages() {
-   // Return an object containing image URLs and widths for all regions
+function getImages()
+{
    var descendants, i, images;
 
    images = "";
-   for (name in editor.regions()) {
-      // Search each region for images
+   for (name in editor.regions())
+   {
       descendants = editor.regions()[name].descendants();
-      for (i = 0; i < descendants.length; i++) {
-         // Filter out elements that are not images
+      for (i = 0; i < descendants.length; i++)
+      {
          if (descendants[i].type() !== 'Image')
             continue;
          images += descendants[i].attr('src') + '\n';
@@ -43,22 +37,21 @@ function getImages() {
    return images;
 }
 
-editor.addEventListener('saved', function (ev) {
+editor.addEventListener('saved', function (ev)
+{
    var name, payload, regions, xhr;
 
-   // Check that something changed
    regions = ev.detail().regions;
-   if (Object.keys(regions).length == 0) {
+   if (Object.keys(regions).length == 0)
       return;
-   }
 
-   // Set the editor as busy while we save our changes
    this.busy(true);
 
-   // Collect the contents of each region into a FormData instance
    payload = new FormData();
-   for (name in regions) {
-      if (regions.hasOwnProperty(name)) {
+   for (name in regions)
+   {
+      if (regions.hasOwnProperty(name))
+      {
          var images = getImages();
          if (images != "")
             payload.append('images', images);
@@ -66,13 +59,14 @@ editor.addEventListener('saved', function (ev) {
       }
    }
 
-   // Send the update content to the server to be saved
-   function onStateChange(ev) {
-      // Check if the request is finished
-      if (ev.target.readyState == 4) {
+   function onStateChange(ev)
+   {
+      if (ev.target.readyState == 4)
+      {
          editor.busy(false);
-         switch (ev.target.status) {
-            // Save was successful, notify the user with the OK flash
+
+         switch (ev.target.status)
+         {
             case 200:
             case 204:
                new ContentTools.FlashUI('ok');
@@ -85,7 +79,6 @@ editor.addEventListener('saved', function (ev) {
                   setTimeout(function(){window.location = location}, 1000);
                break;
 
-            // Save failed, notify the user with the nOK flash
             default:
                new ContentTools.FlashUI('no');
          }
@@ -99,74 +92,61 @@ editor.addEventListener('saved', function (ev) {
 });
 
 
-function imageUploader(dialog) {
+function imageUploader(dialog)
+{
    var image, xhr, xhrComplete, xhrProgress;
 
-// Set up the event handlers
-   // Cancel the current upload
-   dialog.addEventListener('imageuploader.cancelupload', function () {
-      // Stop the upload
-      if (xhr) {
+   dialog.addEventListener('imageuploader.cancelupload', function ()
+   {
+      if (xhr)
+      {
          xhr.upload.removeEventListener('progress', xhrProgress);
          xhr.removeEventListener('readystatechange', xhrComplete);
          xhr.abort();
       }
 
-      // Set the dialog to empty
       dialog.state('empty');
    });
 
-   // Clear the current image
-   dialog.addEventListener('imageuploader.clear', function () {
+
+   dialog.addEventListener('imageuploader.clear', function ()
+   {
       dialog.clear();
       image = null;
    });
 
-// Upload a file to the server
-   dialog.addEventListener('imageuploader.fileready', function (ev) {
-      var formData;
-      var file = ev.detail().file;
 
-      // Define functions to handle upload progress and completion
-      xhrProgress = function (ev) {
-         // Set the progress for the upload
+   dialog.addEventListener('imageuploader.fileready', function (ev)
+   {
+      var formData, file = ev.detail().file;
+
+      xhrProgress = function (ev)
+      {
          dialog.progress((ev.loaded/ev.total)*100);
       }
 
-      xhrComplete = function (ev) {
-         var response;
-
-         // Check the request is complete
-         if (ev.target.readyState != 4) {
+      xhrComplete = function (ev)
+      {
+         if (ev.target.readyState != 4)
             return;
-         }
 
-         // Clear the request
          xhr = null
          xhrProgress = null
          xhrComplete = null
 
-         // Handle the result of the upload
-         if (parseInt(ev.target.status) == 200) {
-            response = ev.target.responseText.split('\n');
-
-            // Store the image details
-            image = {url:response[0], size:[response[1], response[2]]};
-
-            // Populate the dialog
+         if (parseInt(ev.target.status) == 200)
+         {
+            var response = ev.target.responseText.split('\n');
+            image = {url:encodeURI(response[0]), size:[response[1], response[2]]};
             dialog.populate(image.url, image.size);
-
-         } else {
-            // The request failed, notify the user
-            new ContentTools.FlashUI('no');
          }
+         else
+            new ContentTools.FlashUI('no');
       }
 
-      // Set the dialog state to uploading and reset the progress bar to 0
       dialog.state('uploading');
       dialog.progress(0);
 
-      // Build the form data to post to the server
       formData = new FormData();
       formData.append('image', file);
 
@@ -182,7 +162,6 @@ function imageUploader(dialog) {
             uppath += "/"+pathcomps[i];
          uppath += "/media/"+stamp;
 
-         // Make the request
          xhr = new XMLHttpRequest();
          xhr.upload.addEventListener('progress', xhrProgress);
          xhr.addEventListener('readystatechange', xhrComplete);
@@ -191,111 +170,85 @@ function imageUploader(dialog) {
       }
    });
 
-   function rotateImage(direction) {
-      // Request a rotated version of the image from the server
-      var formData;
 
-      // Define a function to handle the request completion
-      xhrComplete = function (ev) {
-         var response;
-
-         // Check the request is complete
-         if (ev.target.readyState != 4) {
+   function rotateImage(angle)
+   {
+      xhrComplete = function (ev)
+      {
+         if (ev.target.readyState !== 4)
             return;
-         }
 
-         // Clear the request
          xhr = null
          xhrComplete = null
 
-         // Free the dialog from its busy state
          dialog.busy(false);
 
-         // Handle the result of the rotation
-         if (parseInt(ev.target.status) == 200) {
-            // Unpack the response (from JSON)
-            response = JSON.parse(ev.target.responseText);
-
-            // Store the image details (use fake param to force refresh)
-            image = {
-               size: response.size,
-               url: response.url + '?_ignore=' + Date.now()
-            };
-
-            // Populate the dialog
-            dialog.populate(image.url, image.size);
-
-         } else {
-            // The request failed, notify the user
-            new ContentTools.FlashUI('no');
+         if (parseInt(ev.target.status) === 200)
+         {
+            var response = ev.target.responseText.split('\n');
+            image = {url:encodeURI(response[0]), size:[response[1], response[2]]};
+            dialog.save(image.url, image.size);
          }
+         else
+            new ContentTools.FlashUI('no');
       }
 
-      // Set the dialog to busy while the rotate is performed
       dialog.busy(true);
 
-      // Build the form data to post to the server
-      formData = new FormData();
-      formData.append('url', image.url);
-      formData.append('direction', direction);
+      var textData = image.size + '\n' + angle + '\n';
 
-      // Make the request
+      // Construct the rotate path
+      var pathcomps = location.pathname.split('/');
+      var rotpath = "/"+pathcomps[1]+"/rotate/"+image.url;
+
       xhr = new XMLHttpRequest();
       xhr.addEventListener('readystatechange', xhrComplete);
-      xhr.open('POST', '/rotate-image', true);
-      xhr.send(formData);
+      xhr.open('POST', rotpath, true);
+      xhr.setRequestHeader("Content-type", "text/plain;charset=UTF-8");
+      xhr.send(textData);
    }
 
-   dialog.addEventListener('imageuploader.rotateccw', function () {
-      rotateImage('CCW');
+   dialog.addEventListener('imageuploader.rotateccw', function ()
+   {
+      rotateImage(90);
    });
 
-   dialog.addEventListener('imageuploader.rotatecw', function () {
-      rotateImage('CW');
+   dialog.addEventListener('imageuploader.rotatecw', function ()
+   {
+      rotateImage(-90);
    });
 
 
-   dialog.addEventListener('imageuploader.save', function () {
-      var crop, cropRegion, textData;
-
-      // Define a function to handle the request completion
-      xhrComplete = function (ev) {
-         // Check the request is complete
-         if (ev.target.readyState !== 4) {
+   dialog.addEventListener('imageuploader.save', function ()
+   {
+      xhrComplete = function (ev)
+      {
+         if (ev.target.readyState !== 4)
             return;
-         }
 
-         // Clear the request
          xhr = null
          xhrComplete = null
 
-         // Free the dialog from its busy state
          dialog.busy(false);
 
-         // Handle the result of the rotation
-         if (parseInt(ev.target.status) === 200) {
+         if (parseInt(ev.target.status) === 200)
+         {
             var response = ev.target.responseText.split('\n');
-
-            // Trigger the save event against the dialog with details of the image to be inserted.
-            dialog.save(response[0], [response[1], response[2]]);
-
-         } else {
-            // The request failed, notify the user
-            new ContentTools.FlashUI('no');
+            image = {url:encodeURI(response[0]), size:[response[1], response[2]]};
+            dialog.save(image.url, image.size);
          }
+         else
+            new ContentTools.FlashUI('no');
       }
 
-      // Set the dialog to busy while the rotate is performed
       dialog.busy(true);
 
-      // Build the request data set
-      textData = image.size + '\n' + dialog.cropRegion() + '\n';
+      var textData = image.size + '\n' + dialog.cropRegion() + '\n';
 
       // Construct the insert path
       var pathcomps = location.pathname.split('/');
       var inpath = "/"+pathcomps[1]+"/insert/"+image.url;
 
-      // Make the request
       xhr = new XMLHttpRequest();
       xhr.addEventListener('readystatechange', xhrComplete);
       xhr.open('POST', inpath, true);
