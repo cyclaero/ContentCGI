@@ -1199,7 +1199,7 @@ boolean reindex(char *droot, char *contitle)
                         dynAddString((dynhdl)&idx, ".html\">\n", 8);
                         dynAddString((dynhdl)&idx, s, stripATags(s, (int)(bskip(t)-s)));
                         int m =
-                        dynAddString((dynhdl)&idx, "&nbsp;...\n</p>\n<P class=\"stamp\">", 32);
+                        dynAddString((dynhdl)&idx, " ...\n</p>\n<P class=\"stamp\">", 27);
                               dyninc((dynhdl)&idx, snprintf(idx+m, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
                                                             tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec));
 
