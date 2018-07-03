@@ -972,8 +972,16 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 
                if (strstr(s, "name=\"images\""))
                {
-                  r++;
-                  // parse the images list
+                  int ll;
+                  for (r++; !cmp2(r, "\r\n") && (ll = linelen(r)); r += ll+1)
+                  {
+                     if (r[ll-1] == '\r')
+                        r[ll-1] = '\0';
+                     else
+                        r[ll] = '\0';
+
+                     printf("%s\n", uriDecode(r));
+                  }
 
                   s = strstr(r, boundary) + boundlen;
                   for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++); *r = '\0'; r += 3;  // leave 1 line feed at the beginning of the replacement text

@@ -64,7 +64,7 @@ static inline ssize_t stream_arcv(ConnExec *connex, void *buffer, size_t total)
 {
    ssize_t rc, received = 0;
    while ((rc = connex->arcv(&connex->conn, buffer+received, total-received)) >= 0 && (received += rc) < total)
-      usleep(100);
+      usleep(1000);
    return received;
 }
 

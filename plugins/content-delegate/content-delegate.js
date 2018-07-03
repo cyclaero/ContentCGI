@@ -18,16 +18,16 @@ editor = ContentTools.EditorApp.get();
 editor.init('[data-editable], [data-fixture]', 'data-name');
 
 
-var ROTATION_STEP = 15;
+var IMG_MAX_WIDTH = 675,
+    ROTATION_STEP = 15;
 
-function getImages()
+
+function enumerateImages()
 {
-   var descendants, i, images;
-
-   images = "";
+   var images = "";
    for (name in editor.regions())
    {
-      descendants = editor.regions()[name].descendants();
+      var i, descendants = editor.regions()[name].descendants();
       for (i = 0; i < descendants.length; i++)
       {
          if (descendants[i].type() !== 'Image')
@@ -54,7 +54,7 @@ editor.addEventListener('saved', function (ev)
    {
       if (regions.hasOwnProperty(name))
       {
-         var images = getImages();
+         var images = enumerateImages();
          if (images != "")
             payload.append('images', images);
          payload.append('content', regions[name]);
@@ -246,6 +246,11 @@ function imageUploader(dialog)
          {
             var response = ev.target.responseText.split('\n');
             image = {url:encodeURI(response[0]+'.png'), size:[response[1], response[2]]};
+            if (image.size[0] > IMG_MAX_WIDTH)
+            {
+               image.size[1] = Math.round(image.size[1]*675.0/image.size[0]);
+               image.size[0] = 675;
+            }
             dialog.save(image.url, image.size);
          }
          else

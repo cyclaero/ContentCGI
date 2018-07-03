@@ -3,7 +3,7 @@
 .ct-widget.ct-ignition                 { top:3px; left:  3px; }
 .ct-widget.ct-toolbox                  { top:9px; left:999px; }
 
-.ce-element--type-image                { margin:13px 0 13px 0; }
-.ce-element--type-image.align-center   { clear:both; display: block; margin-left:auto; margin-right:auto; max-width:100%; }
+.ce-element--type-image                { margin:13px 0 13px 0; max-width:100%; height:auto; }
+.ce-element--type-image.align-center   { clear:both; display: block; margin-left:auto; margin-right:auto; }
 .ce-element--type-image.shade          { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; }
-.ce-element--type-image.shade-center   { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; clear:both; display: block; margin-left:auto; margin-right:auto; max-width:100%; }
+.ce-element--type-image.shade-center   { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; clear:both; display: block; margin-left:auto; margin-right:auto; }

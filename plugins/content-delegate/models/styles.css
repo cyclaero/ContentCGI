@@ -31,11 +31,11 @@ A:hover.index P.stamp   { color:#777; }
 
 PRE                     { font-family:monospace; font-size:12px; padding:11px; margin:11px 0; max-height:420px; overflow:auto; border:1px solid #ddd; border-radius:7px; background-color:#f7f7ff; -webkit-hyphens:none; -moz-hyphens:none; hyphens:none; }
 
-IMG                     { margin:13px 0 13px 0; }
+IMG                     { margin:13px 0 13px 0; max-width:100%; height:auto; }
 IMG.mailto              { margin:0; vertical-align:-50%; }
-IMG.align-center        { clear:both; display: block; margin-left:auto; margin-right:auto; max-width:100%; }
+IMG.align-center        { clear:both; display: block; margin-left:auto; margin-right:auto; }
 IMG.shade               { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; }
-IMG.shade-center        { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; clear:both; display: block; margin-left:auto; margin-right:auto; max-width:100%; }
+IMG.shade-center        { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; clear:both; display: block; margin-left:auto; margin-right:auto; }
 
 TABLE                   { width:100%; table-layout:fixed; margin:0; padding:0; border-width:0; border-spacing:0; border-collapse:collapse; }
 TH                      { text-align:right; }
