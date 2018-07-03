@@ -275,7 +275,8 @@
                         strmlcpy(imageInfo->filename, imgp, MaxTextExtent, &cl);
                         Image *image;
 
-                        if (image = PingBlob(imageInfo, r, t-r, &excepInfo))
+                        if ((image = PingBlob(imageInfo, r, t-r, &excepInfo))       // ping the blob first, however, some image formats can not
+                         || (image = BlobToImage(imageInfo, r, t-r, &excepInfo)))   // be pinged from blob, so try again by reading the whole thing
                         {
                            // only the image dimensions are neded in this stage
                            ulong imgWidth  = image->columns;
@@ -982,6 +983,8 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 
                      printf("%s\n", uriDecode(r));
                   }
+
+                  printf("%s\n", entity);
 
                   s = strstr(r, boundary) + boundlen;
                   for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++); *r = '\0'; r += 3;  // leave 1 line feed at the beginning of the replacement text
