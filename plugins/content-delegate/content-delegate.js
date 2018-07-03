@@ -248,8 +248,8 @@ function imageUploader(dialog)
             image = {url:encodeURI(response[0]+'.png'), size:[response[1], response[2]]};
             if (image.size[0] > IMG_MAX_WIDTH)
             {
-               image.size[1] = Math.round(image.size[1]*675.0/image.size[0]);
-               image.size[0] = 675;
+               image.size[1] = Math.round(image.size[1]*IMG_MAX_WIDTH/image.size[0]);
+               image.size[0] = Math.round(IMG_MAX_WIDTH);
             }
             dialog.save(image.url, image.size);
          }
