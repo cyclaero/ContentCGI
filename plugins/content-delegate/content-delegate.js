@@ -18,6 +18,8 @@ editor = ContentTools.EditorApp.get();
 editor.init('[data-editable], [data-fixture]', 'data-name');
 
 
+var ROTATION_STEP = 15;
+
 function getImages()
 {
    var descendants, i, images;
@@ -94,7 +96,7 @@ editor.addEventListener('saved', function (ev)
 
 function imageUploader(dialog)
 {
-   var image, xhr, xhrComplete, xhrProgress;
+   var original, image, angle, xhr, xhrComplete, xhrProgress;
 
    dialog.addEventListener('imageuploader.cancelupload', function ()
    {
@@ -137,7 +139,8 @@ function imageUploader(dialog)
          if (parseInt(ev.target.status) == 200)
          {
             var response = ev.target.responseText.split('\n');
-            image = {url:encodeURI(response[0]), size:[response[1], response[2]]};
+            image = original = {url:encodeURI(response[0]), size:[response[1], response[2]]};
+            angle = 0;
             dialog.populate(image.url, image.size);
          }
          else
@@ -171,51 +174,59 @@ function imageUploader(dialog)
    });
 
 
-   function rotateImage(angle)
+   function rotateImage()
    {
-      xhrComplete = function (ev)
+      if (Math.abs(angle) < 0.001)
+         dialog.populate(original.url, original.size);
+
+      else
       {
-         if (ev.target.readyState !== 4)
-            return;
-
-         xhr = null
-         xhrComplete = null
-
-         dialog.busy(false);
-
-         if (parseInt(ev.target.status) === 200)
+         xhrComplete = function (ev)
          {
-            var response = ev.target.responseText.split('\n');
-            image = {url:encodeURI(response[0]), size:[response[1], response[2]]};
-            dialog.save(image.url, image.size);
+            if (ev.target.readyState !== 4)
+               return;
+
+            xhr = null
+            xhrComplete = null
+
+            dialog.busy(false);
+
+            if (parseInt(ev.target.status) === 200)
+            {
+               var response = ev.target.responseText.split('\n');
+               image = {url:encodeURI(response[0]+'.png'), size:[response[1], response[2]]};
+               dialog.populate(image.url+'?'+ + Date.now(), image.size);
+            }
+            else
+               new ContentTools.FlashUI('no');
          }
-         else
-            new ContentTools.FlashUI('no');
+
+         dialog.busy(true);
+
+         var textData = original.size + '\n' + angle + '\n';
+
+         // Construct the rotate path
+         var pathcomps = location.pathname.split('/');
+         var rotpath = "/"+pathcomps[1]+"/rotate/"+original.url;
+
+         xhr = new XMLHttpRequest();
+         xhr.addEventListener('readystatechange', xhrComplete);
+         xhr.open('POST', rotpath, true);
+         xhr.setRequestHeader("Content-type", "text/plain;charset=UTF-8");
+         xhr.send(textData);
       }
-
-      dialog.busy(true);
-
-      var textData = image.size + '\n' + angle + '\n';
-
-      // Construct the rotate path
-      var pathcomps = location.pathname.split('/');
-      var rotpath = "/"+pathcomps[1]+"/rotate/"+image.url;
-
-      xhr = new XMLHttpRequest();
-      xhr.addEventListener('readystatechange', xhrComplete);
-      xhr.open('POST', rotpath, true);
-      xhr.setRequestHeader("Content-type", "text/plain;charset=UTF-8");
-      xhr.send(textData);
    }
 
    dialog.addEventListener('imageuploader.rotateccw', function ()
    {
-      rotateImage(90);
+      angle -= ROTATION_STEP;
+      rotateImage();
    });
 
    dialog.addEventListener('imageuploader.rotatecw', function ()
    {
-      rotateImage(-90);
+      angle += ROTATION_STEP;
+      rotateImage();
    });
 
 
@@ -234,7 +245,7 @@ function imageUploader(dialog)
          if (parseInt(ev.target.status) === 200)
          {
             var response = ev.target.responseText.split('\n');
-            image = {url:encodeURI(response[0]), size:[response[1], response[2]]};
+            image = {url:encodeURI(response[0]+'.png'), size:[response[1], response[2]]};
             dialog.save(image.url, image.size);
          }
          else
@@ -243,11 +254,11 @@ function imageUploader(dialog)
 
       dialog.busy(true);
 
-      var textData = image.size + '\n' + dialog.cropRegion() + '\n';
+      var textData = image.size + '\n' + angle + '\n' + dialog.cropRegion() + '\n';
 
       // Construct the insert path
       var pathcomps = location.pathname.split('/');
-      var inpath = "/"+pathcomps[1]+"/insert/"+image.url;
+      var inpath = "/"+pathcomps[1]+"/insert/"+original.url;
 
       xhr = new XMLHttpRequest();
       xhr.addEventListener('readystatechange', xhrComplete);
