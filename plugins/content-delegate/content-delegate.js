@@ -18,7 +18,7 @@ editor = ContentTools.EditorApp.get();
 editor.init('[data-editable], [data-fixture]', 'data-name');
 
 
-var IMG_MAX_WIDTH = 675,
+var IMG_MAX_WIDTH = 675.0,
     ROTATION_STEP = 15;
 
 
@@ -248,7 +248,7 @@ function imageUploader(dialog)
             image = {url:encodeURI(response[0]+'.png'), size:[response[1], response[2]]};
             if (image.size[0] > IMG_MAX_WIDTH)
             {
-               image.size[1] = Math.round(image.size[1]*IMG_MAX_WIDTH/image.size[0]);
+               image.size[1] = Math.round((IMG_MAX_WIDTH*image.size[1])/image.size[0]);
                image.size[0] = Math.round(IMG_MAX_WIDTH);
             }
             dialog.save(image.url, image.size);
