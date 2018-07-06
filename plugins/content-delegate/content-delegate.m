@@ -52,6 +52,7 @@
 
 - (long)create:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
 - (long)delete:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
+- (long)revive:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
 
 @end
 
@@ -507,7 +508,7 @@
 
 long  GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache);
 long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache);
-boolean  reindex(char *droot, char *contitle);
+boolean  reindex(char *droot, char *updtname, char *contitle);
 
 - (long)create:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
 {
@@ -582,31 +583,63 @@ boolean  reindex(char *droot, char *contitle);
            || (node = findName(request->QueryTable, "article", 7)))
           && node->value.s && *node->value.s)
          {
+            char *article = node->value.s;
             int  bl = strvlen(basepath),
-                 dl = strvlen(node->value.s);
-            int  artpl = drootl + 1 + bl + 1 + dl;          // for example $DOCUMENT_ROOT/articles/1527627185.html
+                 al = strvlen(article);
+            int  artpl = drootl + 1 + bl + 1 + al;          // for example $DOCUMENT_ROOT/articles/1527627185.html
             char artp[artpl+1];
-            strmlcat(artp, artpl+1, NULL, droot, drootl, "/", 1, basepath, bl, "/", 1, node->value.s, dl, NULL);
-            int  delpl = 5+dl;                              // for example /tmp/1527627185.html
-            char delp[delpl+1];
-            strmlcat(delp, delpl+1, NULL, "/tmp/", 5, node->value.s, dl, NULL);
+            strmlcat(artp, artpl+1, NULL, droot, drootl, "/", 1, basepath, bl, "/", 1, article, al, NULL);
+            int  dl = domlen(article);
+            int  medpl = drootl + 1 + bl + 1 + 5 + 1 + dl;  // for example $DOCUMENT_ROOT/articles/media/1527627185
+            char medp[medpl+1];
+            strmlcat(medp, medpl+1, NULL, droot, drootl, "/", 1, basepath, bl, "/media/", 7, article, dl, NULL);
 
+            // 1. move the respective media directory into /tmp
             struct stat st;
+            int  tmppl = 5+al;                              // for example /tmp/1527627185.html
+            char tmpp[tmppl+1];
+            strmlcat(tmpp, tmppl+1, NULL, "/tmp/", 5, article, dl, NULL);
+            if (stat(medp, &st) == no_error && S_ISDIR(st.st_mode))
+               rename(medp, tmpp);
+
+            // 2. move the article file into /tmp (actually do copy/delete, s. below)
+            strmlcat(tmpp, tmppl+1, NULL, "/tmp/", 5, article, al, NULL);
             if (stat(artp, &st) == no_error && S_ISREG(st.st_mode)
-             && fileCopy(artp, delp, &st) == no_error       // the spider of the search-deleagte determines changes by observing the number of hard links for a given
+             && fileCopy(artp, tmpp, &st) == no_error       // the spider of the search-deleagte determines changes by observing the number of hard links for a given
              && unlink(artp) == no_error)                   // inode. For this reason we cannot simply rename the deleted file, because its nlink value wont't change.
             {
-               reindex(droot, ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content");
+               reindex(droot, NULL,
+                       ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content");
                return 303;
             }
             else
-               return 500;
+               return 404;
          }
 
-         return 404;
+         return 400;
       }
 
       return 500;
+   }
+
+   return 400;
+}
+
+
+- (long)revive:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
+{
+   if (basepath && *basepath && cmp4(method, "GET"))
+   {
+      Node *node;
+      if ((node = findName(request->serverTable, "DOCUMENT_ROOT", 13)) && node->value.s && *node->value.s)
+      {
+         char *droot = node->value.s;
+         reindex(droot, NULL,
+                 ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content");
+         return 303;
+      }
+      else
+         return 500;
    }
 
    return 400;
@@ -667,7 +700,8 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
          spec = msg+7, msg[ml = 6] = '\0';
 
       else if (cmp8(msg+ml-7, "/create")
-            || cmp8(msg+ml-7, "/delete"))
+            || cmp8(msg+ml-7, "/delete")
+            || cmp8(msg+ml-7, "/revive"))
          spec = msg, msg += ml-6, spec[ml-7] = '\0', ml = 6;
 
       else
@@ -896,7 +930,7 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
 }
 
 
-int stripATags(char *s, int n)
+int stripATags(char *s, ssize_t n)
 {
    int i, j;
 
@@ -973,6 +1007,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 
                if (strstr(s, "name=\"images\""))
                {
+/* parse the image URI list
                   int ll;
                   for (r++; !cmp2(r, "\r\n") && (ll = linelen(r)); r += ll+1)
                   {
@@ -985,6 +1020,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                   }
 
                   printf("%s\n", entity);
+*/
 
                   s = strstr(r, boundary) + boundlen;
                   for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++); *r = '\0'; r += 3;  // leave 1 line feed at the beginning of the replacement text
@@ -1036,7 +1072,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                      if (heading && headlen)
                      {
                         memvcpy(p = alloca(headlen+1), heading, headlen);
-                        headlen = stripATags(heading = p, (int)headlen);
+                        headlen = stripATags(heading = p, headlen);
                         p = NULL, n = 0;
 
                         char *tb, *te;
@@ -1147,7 +1183,8 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 
                                  if (ok && (cache || rename(tmpfp, filep) == no_error))
                                  {
-                                    if (reindex(droot, ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content"))
+                                    if (reindex(droot, filep+drootl+1,
+                                                ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content"))
                                     {
                                        if (!cache)
                                           rc = 204;
@@ -1183,6 +1220,48 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 }
 
 
+void enumerateImageTags(Node **imageFileNames, char *contemp, time_t stamp, int prefixLen)
+{
+   char *p, *q = contemp;
+
+   skip: while (p = strcasestr(q, "<img "))
+   {
+      char *u, *v = q;
+      while (u = strcasestr(v, "<pre"))
+      {
+         if (u < p && p < (q = strcasestr(u, "</pre")))
+            goto skip;
+         v = u + 4;
+      }
+
+      boolean sglq = false,
+              dblq = false;
+
+      for (q = p += 5; *q != '>' || sglq || dblq; q++)
+         if (*q == '\'')
+            sglq = !sglq && !dblq;
+         else if (*q == '"')
+            dblq = !dblq && !sglq;
+      *q++ = '\0';
+
+      if ((p = strcasestr(p, "src")) && p < q)
+      {
+         for (; *p != '\'' && *p != '"'; p++);
+
+         char *imgName = ++p;
+
+         if (*(p-1) == '\'')
+            for (; *p != '\''; p++);
+         else if (*(p-1) == '"')
+            for (; *p != '"'; p++);
+         *p = '\0';
+
+         if (strtoul(imgName+prefixLen, NULL, 10) == stamp)
+            storeName(imageFileNames, uriDecode(imgName+prefixLen), 0, NULL);
+      }
+   }
+}
+
 void qdownsort(time_t *a, int l, int r)
 {
    time_t m = a[(l + r)/2];
@@ -1203,19 +1282,15 @@ void qdownsort(time_t *a, int l, int r)
    if (i < r) qdownsort(a, i, r);
 }
 
-boolean reindex(char *droot, char *contitle)
+boolean reindex(char *droot, char *updtname, char *contitle)
 {
-   char *idx = newDynBuffer().buf;
-   dynAddString((dynhdl)&idx, INDEX_PREFIX, INDEX_PREFIX_LEN);
-   dynAddString((dynhdl)&idx, contitle, strvlen(contitle));
-   dynAddString((dynhdl)&idx, INDEX_BODY_FYI, INDEX_BODY_FYI_LEN);
-
-   char *toc = newDynBuffer().buf;
-   dynAddString((dynhdl)&toc, TOC_PREFIX, TOC_PREFIX_LEN);
-
-   int   drootl = strvlen(droot);
-   int   adirl  = drootl + 1 + 8 + 1;
-   char  adir[adirl+1]; strmlcat(adir, adirl+1, NULL, droot, drootl, "/articles/", 10, NULL);
+   int    drootl = strvlen(droot);
+   int    adirl  = drootl + 1 + 8 + 1;  // articels directory, e.g.:  $DOCUMENT_ROOT/articles/
+   int    mdirl  = adirl  + 5 + 1;      // extent for the media dir:  $DOCUMENT_ROOT/articles/media/
+   char   adir[mdirl+1]; strmlcat(adir, adirl+1, NULL, droot, drootl, "/articles/", 10, NULL);
+   time_t updtstamp = (updtname && *updtname)
+                    ? strtol(updtname+segmlen(updtname)+1, NULL, 10)
+                    : 0;
 
    struct stat st;
    if (stat(adir, &st) == no_error && S_ISDIR(st.st_mode))
@@ -1223,30 +1298,32 @@ boolean reindex(char *droot, char *contitle)
       DIR *dp;
       if (dp = opendir(adir))
       {
+         Node **imageFileNames = createTable(256);
+
+         char *idx = newDynBuffer().buf;
+         dynAddString((dynhdl)&idx, INDEX_PREFIX, INDEX_PREFIX_LEN);
+         dynAddString((dynhdl)&idx, contitle, strvlen(contitle));
+         dynAddString((dynhdl)&idx, INDEX_BODY_FYI, INDEX_BODY_FYI_LEN);
+
+         char *toc = newDynBuffer().buf;
+         dynAddString((dynhdl)&toc, TOC_PREFIX, TOC_PREFIX_LEN);
+
          struct dirent *ep, bp;
          int     fcnt = 0, fcap = 1024;
          time_t *stamps = allocate(fcap*sizeof(time_t), default_align, false);
 
          while (readdir_r(dp, &bp, &ep) == no_error && ep)
-         {
             if (ep->d_name[0] != '.' && (ep->d_type == DT_REG || ep->d_type == DT_LNK))
             {
-               int   artpl = adirl+ep->d_namlen;
-               char  artp[artpl+1];
-               strmlcat(artp, artpl+1, NULL, adir, adirl, ep->d_name, ep->d_namlen, NULL);
-               if (stat(artp, &st) == no_error && S_ISREG(st.st_mode))
+               char  *chk = NULL;
+               time_t stamp = strtoul(ep->d_name, &chk, 10);
+               if (stamp && chk && cmp6(chk, ".html"))
                {
-                  char  *chk = NULL;
-                  time_t stamp = strtoul(ep->d_name, &chk, 10);
-                  if (stamp && chk && cmp6(chk, ".html"))
-                  {
-                     if (fcnt == fcap)
-                        stamps = reallocate(stamps, (fcap += 1024)*sizeof(time_t), false, false);
-                     stamps[fcnt++] = stamp;
-                  }
+                  if (fcnt == fcap)
+                     stamps = reallocate(stamps, (fcap += 1024)*sizeof(time_t), false, false);
+                  stamps[fcnt++] = stamp;
                }
             }
-         }
 
          closedir(dp);
 
@@ -1279,17 +1356,27 @@ boolean reindex(char *droot, char *contitle)
                       && (s =     strstr(q +  8, "<!--e-->"))
                       && (t = strcasestr(s += 8, "</P>")))
                      {
+                        if (updtstamp == 0 || updtstamp == stamps[j])
+                           enumerateImageTags(imageFileNames, s, stamps[j], mdirl-drootl-1);
+
+                        boolean needEllipsis = !cmp16(t+6, "<p class=\"stamp\"");
                         struct tm tm;
                         localtime_r(&stamps[j], &tm);
 
-                        dynAddString((dynhdl)&idx, "<A class=\"index\" href=\"articles/", 32);
+                        s = skip(s);
+                        t = bskip(t);
+                        dynAddString((dynhdl)&idx, "<A id=\"", 7);
+                           dynAddInt((dynhdl)&idx, stamps[j]);
+                        dynAddString((dynhdl)&idx, "\" class=\"index\" href=\"articles/", 31);
                            dynAddInt((dynhdl)&idx, stamps[j]);
                         dynAddString((dynhdl)&idx, ".html\">\n", 8);
-                        dynAddString((dynhdl)&idx, s, stripATags(s, (int)(bskip(t)-s)));
-                        int m =
-                        dynAddString((dynhdl)&idx, " ...\n</p>\n<P class=\"stamp\">", 27);
-                              dyninc((dynhdl)&idx, snprintf(idx+m, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
-                                                            tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec));
+                        dynAddString((dynhdl)&idx, s, stripATags(s, t-s));
+                        if (needEllipsis)
+                           dynAddString((dynhdl)&idx, " ...", 4);
+                        dynAddString((dynhdl)&idx, "\n</p>\n<P class=\"stamp\">", 23);
+                        dyninc((dynhdl)&idx, 28);
+                        snprintf(idx+dynlen((dynptr){idx})-28, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
+                                                                   tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
                         dynAddString((dynhdl)&toc, "   <P><A href=\"articles/", 24);
                            dynAddInt((dynhdl)&toc, stamps[j]);
@@ -1318,8 +1405,8 @@ boolean reindex(char *droot, char *contitle)
          int   tocfl = drootl + 1 + 9;
          char  tocf[tocfl+1]; strmlcat(tocf, tocfl+1, NULL, droot, drootl, "/", 1, "toc.html", 8, NULL);
 
-         if ((stat(idxf, &st) != no_error || S_ISREG(st.st_mode) && unlink(idxf) == no_error)  // remove an old index.html file
-          || (stat(tocf, &st) != no_error || S_ISREG(st.st_mode) && unlink(tocf) == no_error)) // remove an old toc.html file
+         if ((stat(idxf, &st) != no_error || S_ISREG(st.st_mode) && unlink(idxf) == no_error)   // remove an old index.html file
+          || (stat(tocf, &st) != no_error || S_ISREG(st.st_mode) && unlink(tocf) == no_error))  // remove an old toc.html file
          {
             FILE *file;
 
@@ -1342,6 +1429,55 @@ boolean reindex(char *droot, char *contitle)
 
          freeDynBuffer((dynptr){idx});
          freeDynBuffer((dynptr){toc});
+
+         // image garbage collection in articles/media
+         cpy7(adir+adirl, "media/");
+         if (dp = opendir(adir))
+         {
+            while (readdir_r(dp, &bp, &ep) == no_error && ep)
+               if (ep->d_name[0] != '.' && ep->d_type == DT_DIR
+                && (updtstamp == 0 || updtstamp == strtoul(ep->d_name, NULL, 10)))
+               {
+                  int  mdl = mdirl + ep->d_namlen + 1;
+                  char mdir[mdl+1];
+                  strmlcat(mdir, mdl+1, NULL, adir, mdirl, ep->d_name, ep->d_namlen, "/", 1, NULL);
+                  DIR *mdp;
+                  if (mdp = opendir(mdir))
+                  {
+                     int found = 0;
+                     struct dirent *mep, mbp;
+                     while (readdir_r(mdp, &mbp, &mep) == no_error && mep)
+                        if (mep->d_name[0] != '.' && mep->d_type == DT_REG)
+                        {
+                           int  mfl = mdl + mep->d_namlen;
+                           char mfil[mfl+5];
+                           strmlcat(mfil, mfl+1, NULL, mdir, mdl, mep->d_name, mep->d_namlen, NULL);
+                           if (findName(imageFileNames, mfil+mdirl, ep->d_namlen + 1 + mep->d_namlen))
+                              found++;
+                           else
+                           {
+                              cpy5(mfil+mfl, ".png");
+                              if (findName(imageFileNames, mfil+mdirl, ep->d_namlen + 1 + mep->d_namlen + 4))
+                                 found++;
+                              else
+                              {
+                                 mfil[mfl] = '\0';
+                                 unlink(mfil);
+                              }
+                           }
+                        }
+
+                     closedir(mdp);
+
+                     if (found == 0)
+                        deleteDirEntity(mdir, mdirl, S_IFDIR);
+                  }
+               }
+
+            closedir(dp);
+         }
+
+         releaseTable(imageFileNames);
 
          return ok1 && ok2;
       }

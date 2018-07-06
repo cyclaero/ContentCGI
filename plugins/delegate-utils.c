@@ -1451,7 +1451,7 @@ int sprintTable(Node *table[], uint *namColWidth, dynhdl output)
 }
 
 
-#pragma mark ••• File Copying •••
+#pragma mark ••• File Copying & Recursive Directory Deletion •••
 
 #if defined (__APPLE__)
 
@@ -1511,6 +1511,119 @@ int fileCopy(char *src, char *dst, struct stat *st)
       return -errno;
 
 #undef bufsiz
+}
+
+int dtType2stFmt(int d_type)
+{
+   switch (d_type)
+   {
+      default:
+      case DT_UNKNOWN:  //  0 - The type is unknown.
+         return 0;
+      case DT_FIFO:     //  1 - A named pipe or FIFO.
+         return DT_FIFO;
+      case DT_CHR:      //  2 - A character device.
+         return DT_CHR;
+      case DT_DIR:      //  4 - A directory.
+         return S_IFDIR;
+      case DT_BLK:      //  6 - A block device.
+         return S_IFBLK;
+      case DT_REG:      //  8 - A regular file.
+         return S_IFREG;
+      case DT_LNK:      // 10 - A symbolic link.
+         return S_IFLNK;
+      case DT_SOCK:     // 12 - A local-domain socket.
+         return S_IFSOCK;
+      case DT_WHT:      // 14 - A whiteout file. (somehow deleted, but not eventually yet)
+         return S_IFWHT;
+   }
+}
+
+
+int deleteDirEntity(char *path, size_t pl, llong st_mode)
+{
+   static char errorString[256];
+   const char *ftype;
+   int err, rc = no_error;
+
+   switch (st_mode & S_IFMT)
+   {
+      case S_IFDIR:      // A directory.
+         if (path[pl-1] != '/')
+            cmp2(path+pl++, "/");
+         chflags(path, 0);
+         if (err = deleteDirectory(path, pl))
+            rc = err;
+         else if (rmdir(path) != no_error)
+         {
+            rc = errno;
+            strerror_r(rc, errorString, 256);
+            syslog(LOG_ERR, "\nDirectory %s could not be deleted: %s.\n", path, errorString);
+         }
+         break;
+
+      case S_IFIFO:      // A named pipe or FIFO.
+      case S_IFREG:      // A regular file.
+      case S_IFLNK:      // A symbolic link.
+      case S_IFSOCK:     // A local-domain socket.
+      case S_IFWHT:      // A whiteout file. (somehow deleted, but not eventually yet)
+         lchflags(path, 0);
+         if (unlink(path) != no_error)
+         {
+            rc = errno;
+            strerror_r(rc, errorString, 256);
+            syslog(LOG_ERR, "\nFile %s could not be deleted: %s.\n", path, errorString);
+         }
+         break;
+
+      case S_IFCHR:      // A character device.
+         ftype = "a character device";
+         goto special;
+      case S_IFBLK:      // A block device.
+         ftype = "a block device";
+         goto special;
+      default:
+         ftype = "of unknown type";
+      special:
+         syslog(LOG_ERR, "\n%s is %s, it could not be deleted.\n", path, ftype);
+         break;
+   }
+
+   return rc;
+}
+
+int deleteDirectory(char *path, size_t pl)
+{
+   int rc = no_error;
+
+   DIR   *dp;
+   struct dirent bep, *ep;
+
+   if (dp = opendir(path))
+   {
+      struct stat st;
+      while (readdir_r(dp, &bep, &ep) == 0 && ep)
+         if ( ep->d_name[0] != '.' || (ep->d_name[1] != '\0' &&
+             (ep->d_name[1] != '.' ||  ep->d_name[2] != '\0')))
+         {
+            // next path
+            size_t npl   = pl + ep->d_namlen;
+            char  *npath = strcpy(allocate(npl+2, default_align, false), path); strcpy(npath+pl, ep->d_name);
+
+            if (ep->d_type != DT_UNKNOWN)
+               rc = deleteDirEntity(npath, npl, dtType2stFmt(ep->d_type));
+            else if (lstat(npath, &st) != -1)
+               rc = deleteDirEntity(npath, npl, st.st_mode);
+            else
+               rc = errno;
+
+            deallocate(VPR(npath), false);
+         }
+
+      closedir(dp);
+   }
+
+   return rc;
 }
 
 

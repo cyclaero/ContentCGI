@@ -335,8 +335,9 @@ static inline char *uppercase(char *s)
    static const __m128i nul16 = {0x0000000000000000ULL, 0x0000000000000000ULL};  // 16 bytes with nul
    static const __m128i lfd16 = {0x0A0A0A0A0A0A0A0AULL, 0x0A0A0A0A0A0A0A0AULL};  // 16 bytes with line feed '\n'
    static const __m128i vtt16 = {0x0B0B0B0B0B0B0B0BULL, 0x0B0B0B0B0B0B0B0BULL};  // 16 bytes with vertical tabs '\v'
-   static const __m128i col16 = {0x3A3A3A3A3A3A3A3AULL, 0x3A3A3A3A3A3A3A3AULL};  // 16 bytes with colon ':' limit
-   static const __m128i vtl16 = {0x7C7C7C7C7C7C7C7CULL, 0x7C7C7C7C7C7C7C7CULL};  // 16 bytes with vertical line '|' limit
+   static const __m128i col16 = {0x3A3A3A3A3A3A3A3AULL, 0x3A3A3A3A3A3A3A3AULL};  // 16 bytes with colon ':'
+   static const __m128i grt16 = {0x3E3E3E3E3E3E3E3EULL, 0x3E3E3E3E3E3E3E3EULL};  // 16 bytes with greater sign '>'
+   static const __m128i vtl16 = {0x7C7C7C7C7C7C7C7CULL, 0x7C7C7C7C7C7C7C7CULL};  // 16 bytes with vertical line '|'
    static const __m128i dot16 = {0x2E2E2E2E2E2E2E2EULL, 0x2E2E2E2E2E2E2E2EULL};  // 16 bytes with dots '.'
    static const __m128i sls16 = {0x2F2F2F2F2F2F2F2FULL, 0x2F2F2F2F2F2F2F2FULL};  // 16 bytes with slashes '/'
    static const __m128i amp16 = {0x2626262626262626ULL, 0x2626262626262626ULL};  // 16 bytes with ampersand '&'
@@ -422,6 +423,22 @@ static inline char *uppercase(char *s)
             return len + __builtin_ctz(bmask);
    }
 
+   static inline int collen(const char *col)
+   {
+      if (!col || !*col)
+         return 0;
+
+      unsigned bmask;
+      if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_loadu_si128((__m128i *)col), nul16))
+                | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_loadu_si128((__m128i *)col), col16)))
+         return __builtin_ctz(bmask);
+
+      for (int len = 16 - (intptr_t)col%16;; len += 16)
+         if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&col[len]), nul16))
+                   | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&col[len]), col16)))
+            return len + __builtin_ctz(bmask);
+   }
+
    static inline int taglen(const char *tag)
    {
       if (!tag || !*tag)
@@ -429,12 +446,12 @@ static inline char *uppercase(char *s)
 
       unsigned bmask;
       if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_loadu_si128((__m128i *)tag), nul16))
-                | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_loadu_si128((__m128i *)tag), col16)))
+                | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_loadu_si128((__m128i *)tag), grt16)))
          return __builtin_ctz(bmask);
 
       for (int len = 16 - (intptr_t)tag%16;; len += 16)
          if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&tag[len]), nul16))
-                   | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&tag[len]), col16)))
+                   | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&tag[len]), grt16)))
             return len + __builtin_ctz(bmask);
    }
 
@@ -628,13 +645,24 @@ static inline char *uppercase(char *s)
       return l;
    }
 
+   static inline int collen(const char *col)
+   {
+      if (!col || !*col)
+         return 0;
+
+      int l;
+      for (l = 0; col[l] && col[l] != ':'; l++)
+         ;
+      return l;
+   }
+
    static inline int taglen(const char *tag)
    {
       if (!tag || !*tag)
          return 0;
 
       int l;
-      for (l = 0; tag[l] && tag[l] != ':'; l++)
+      for (l = 0; tag[l] && tag[l] != '>'; l++)
          ;
       return l;
    }
@@ -1484,8 +1512,11 @@ void printTable(Node *table[], uint *nameWidth);
 int sprintTable(Node *table[], uint *nameWidth, dynhdl output);
 
 
-#pragma mark ••• File Copying •••
+#pragma mark ••• File Copying & Recursive Directory Deletion •••
 int fileCopy(char *src, char *dst, struct stat *st);
+int deleteDirEntity(char *path, size_t pl, llong st_mode);
+int deleteDirectory(char *path, size_t pl);
+
 
 #pragma mark ••• MIME Types •••
 const char *extensionToType(char *fnam, int flen);

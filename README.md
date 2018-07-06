@@ -80,6 +80,7 @@ Check the Apache configuration, the output of the following command should be `S
 
 Enable Apache and ContentCGI in `/etc/rc.conf` by adding the following lines - make sure the CGI daemon runs as the non-privileged user `www`:
 
+    clear_tmp_enable="YES"
     apache24_enable="YES"
     ContentCGI_flags="-u www:www"
     ContentCGI_enable="YES"
@@ -104,4 +105,4 @@ Add to `/etc/crontab` the following lines:
    
 
 Point your browser to your domain and explore the system.
-<A href="https://obsigna.com/"><IMG src="https://obsigna.com/articles/media/2018/Obsigna's Test.png"></A>
+<A href="https://obsigna.com/"><IMG src="https://obsigna.com/edit/articles/media/1529528376/Obsigna's%20Test.png"></A>

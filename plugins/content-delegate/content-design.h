@@ -55,7 +55,7 @@
 "   <TR>\n"\
 "      <TD>\n"
 
-#define INDEX_SUFFIX_LEN 302
+#define INDEX_SUFFIX_LEN 303
 #define INDEX_SUFFIX \
 "      </TD>\n"\
 "      <TD colspan=\"2\" style=\"padding:9px 3px 3px 27px;\">\n"\
@@ -63,7 +63,7 @@
 "               onload=\"this.style.height=this.contentDocument.body.scrollHeight+'px';\"></IFRAME>\n"\
 "      </TD>\n"\
 "   </TR>\n"\
-"</TABLE></DIV></BODY><HTML>\n"
+"</TABLE></DIV></BODY></HTML>\n"
 
 #define TOC_PREFIX_LEN 413
 #define TOC_PREFIX \
@@ -138,7 +138,7 @@
 #define SEARCH_NORESULT \
 "<H1>Nothing found.</H1>\n"
 
-#define SEARCH_SUFFIX_LEN 302
+#define SEARCH_SUFFIX_LEN 303
 #define SEARCH_SUFFIX \
 "      </TD>\n"\
 "      <TD colspan=\"2\" style=\"padding:9px 3px 3px 27px;\">\n"\
@@ -146,4 +146,4 @@
 "               onload=\"this.style.height=this.contentDocument.body.scrollHeight+'px';\"></IFRAME>\n"\
 "      </TD>\n"\
 "   </TR>\n"\
-"</TABLE></DIV></BODY><HTML>\n"
+"</TABLE></DIV></BODY></HTML>\n"

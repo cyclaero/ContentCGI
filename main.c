@@ -860,7 +860,7 @@ int main(int argc, char *const argv[])
                {
                   struct passwd *pwd;
 
-                  int fl = taglen(optarg);
+                  int fl = collen(optarg);
                   *(q = optarg + fl) = '\0';
 
                   if ((id = strtol(optarg, &p, 10)) && p == q)
