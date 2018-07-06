@@ -1007,7 +1007,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 
                if (strstr(s, "name=\"images\""))
                {
-/* parse the image URI list
+               /* parse the image URI list
                   int ll;
                   for (r++; !cmp2(r, "\r\n") && (ll = linelen(r)); r += ll+1)
                   {
@@ -1020,7 +1020,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                   }
 
                   printf("%s\n", entity);
-*/
+               */
 
                   s = strstr(r, boundary) + boundlen;
                   for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++); *r = '\0'; r += 3;  // leave 1 line feed at the beginning of the replacement text
