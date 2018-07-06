@@ -105,4 +105,4 @@ Add to `/etc/crontab` the following lines:
    
 
 Point your browser to your domain and explore the system.
-<A href="https://obsigna.com/"><IMG src="https://obsigna.com/edit/articles/media/1529528376/Obsigna's%20Test.png"></A>
+<A href="https://obsigna.com/"><IMG src="https://obsigna.com/articles/media/1529528376/Obsigna's%20Test.png"></A>
