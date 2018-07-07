@@ -23,11 +23,12 @@ P.text-center           { text-align:center; }
 P.text-right            { text-align:right; }
 P.stamp                 { text-align:right; font-size:9px; padding-top:7px; color:#555; }
 
-A.index                 { margin:0; padding:0; }
-A.index P,LI,H2,H3      { color:#000; }
-A.index P.stamp         { color:#555; }
-A:hover.index P         { color:#777; }
-A:hover.index P.stamp   { color:#777; }
+A.index                 { color:#000; margin:0; padding:0; }
+A.index H1              { color:#47A; }
+A.index .stamp          { color:#555; }
+A:hover.index           { color:#777; }
+A:hover.index H1        { color:#777; }
+A:hover.index .stamp    { color:#777; }
 
 PRE                     { font-family:monospace; font-size:12px; padding:11px; margin:11px 0; max-height:420px; overflow:auto; border:1px solid #ddd; border-radius:7px; background-color:#f7f7ff; -webkit-hyphens:none; -moz-hyphens:none; hyphens:none; }
 
