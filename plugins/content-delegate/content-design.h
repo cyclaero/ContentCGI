@@ -55,25 +55,24 @@
 "   <TR>\n"\
 "      <TD>\n"
 
-#define INDEX_SUFFIX_LEN 303
+#define INDEX_SUFFIX_LEN 226
 #define INDEX_SUFFIX \
 "      </TD>\n"\
 "      <TD colspan=\"2\" style=\"padding:9px 3px 3px 27px;\">\n"\
-"         <IFRAME name=\"toc\" src=\"toc.html\" align=\"top\" style=\"width:100%; border:0px;\"\n"\
-"               onload=\"this.style.height=this.contentDocument.body.scrollHeight+'px';\"></IFRAME>\n"\
+"         <IFRAME id=\"toc\" src=\"toc.html\" align=\"top\" style=\"width:100%; height:0px; border:0px;\"></IFRAME>\n"\
 "      </TD>\n"\
 "   </TR>\n"\
 "</TABLE></DIV></BODY></HTML>\n"
 
-#define TOC_PREFIX_LEN 413
+#define TOC_PREFIX_LEN 554
 #define TOC_PREFIX \
 "<!--S--><!DOCTYPE html><HTML><HEAD>\n"\
 "   <TITLE>Table of Contents</TITLE>\n"\
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"\
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"\
 "   <SCRIPT src=\"functions.js\"></SCRIPT>\n"\
-"</HEAD><BODY class=\"toc\">\n"\
-"   <FORM action=\"_search\" method=\"POST\" target=\"_top\"><INPUT class=\"search\" name=\"search\" type=\"text\" placeholder=\"Search the Content\"></FORM>\n"\
+"</HEAD><BODY class=\"toc\" onload=\"var frameStyle=parent.document.getElementById('toc').style;frameStyle.height=0;frameStyle.height=document.body.scrollHeight+5+'px';\">\n"\
+"   <FORM action=\"_search\" method=\"POST\" target=\"_top\"><INPUT class=\"search\" name=\"search\" type=\"text\" placeholder=\"Search the Content\"></FORM>\n"
 
 #define TOC_SUFFIX_LEN 15
 #define TOC_SUFFIX \
@@ -138,12 +137,11 @@
 #define SEARCH_NORESULT \
 "<H1>Nothing found.</H1>\n"
 
-#define SEARCH_SUFFIX_LEN 303
+#define SEARCH_SUFFIX_LEN 226
 #define SEARCH_SUFFIX \
 "      </TD>\n"\
 "      <TD colspan=\"2\" style=\"padding:9px 3px 3px 27px;\">\n"\
-"         <IFRAME name=\"toc\" src=\"toc.html\" align=\"top\" style=\"width:100%; border:0px;\"\n"\
-"               onload=\"this.style.height=this.contentDocument.body.scrollHeight+'px';\"></IFRAME>\n"\
+"         <IFRAME id=\"toc\" src=\"toc.html\" align=\"top\" style=\"width:100%; height:0px; border:0px;\"></IFRAME>\n"\
 "      </TD>\n"\
 "   </TR>\n"\
 "</TABLE></DIV></BODY></HTML>\n"
