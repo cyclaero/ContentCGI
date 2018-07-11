@@ -1378,11 +1378,11 @@ boolean reindex(char *droot, char *updtname, char *contitle)
                         snprintf(idx+dynlen((dynptr){idx})-28, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
                                                                    tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
-                        dynAddString((dynhdl)&toc, "   <P><A href=\"articles/", 24);
+                        dynAddString((dynhdl)&toc, "   <A href=\"articles/", 21);
                            dynAddInt((dynhdl)&toc, stamps[j]);
-                        dynAddString((dynhdl)&toc, ".html\" target=\"_top\">", 21);
+                        dynAddString((dynhdl)&toc, ".html\" target=\"_top\"><P>", 24);
                         dynAddString((dynhdl)&toc, p, (int)(q-p));
-                        dynAddString((dynhdl)&toc, "</A></P>\n", 9);
+                        dynAddString((dynhdl)&toc, "</P></A>\n", 9);
                      }
                   }
 
