@@ -1,6 +1,6 @@
 /* Editor JS of the Content Responder Delegate */
 
-ContentEdit.TRIM_WHITESPACE    = false;
+ContentEdit.TRIM_WHITESPACE = false;
 
 window.addEventListener('load', function()
 {
