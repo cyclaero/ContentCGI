@@ -1,6 +1,6 @@
 /* Editor JS of the Content Responder Delegate */
 
-ContentEdit.TRIM_WHITESPACE = false;
+ContentEdit.TRIM_WHITESPACE    = false;
 
 window.addEventListener('load', function()
 {
@@ -22,23 +22,6 @@ var IMG_MAX_WIDTH = 675.0,
     ROTATION_STEP = 15;
 
 
-function enumerateImages()
-{
-   var images = "";
-   for (name in editor.regions())
-   {
-      var i, descendants = editor.regions()[name].descendants();
-      for (i = 0; i < descendants.length; i++)
-      {
-         if (descendants[i].type() !== 'Image')
-            continue;
-         images += descendants[i].attr('src') + '\n';
-      }
-   }
-
-   return images;
-}
-
 editor.addEventListener('saved', function (ev)
 {
    var name, payload, regions, xhr;
@@ -51,15 +34,8 @@ editor.addEventListener('saved', function (ev)
 
    payload = new FormData();
    for (name in regions)
-   {
       if (regions.hasOwnProperty(name))
-      {
-         var images = enumerateImages();
-         if (images != "")
-            payload.append('images', images);
          payload.append('content', regions[name]);
-      }
-   }
 
    function onStateChange(ev)
    {
@@ -274,3 +250,5 @@ function imageUploader(dialog)
 }
 
 ContentTools.IMAGE_UPLOADER = imageUploader;
+
+editor.ignition().edit();
