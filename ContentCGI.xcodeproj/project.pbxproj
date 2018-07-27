@@ -1710,14 +1710,14 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/plugins/$(PRODUCT_NAME)/$(PRODUCT_NAME).js",
-				"$(SRCROOT)/ContentTools/build/content-tools.min.js",
+				"$(SRCROOT)/ContentTools/build/content-tools.js",
 			);
 			outputPaths = (
 				"$(INSTALL_DIR)/$(PRODUCT_NAME).js",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "printf '\\n\\n' | cat $SRCROOT/ContentTools/build/content-tools.min.js - $SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.js > $INSTALL_DIR/$PRODUCT_NAME.js";
+			shellScript = "printf '\\n\\n' | cat $SRCROOT/ContentTools/build/content-tools.js - $SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.js > $INSTALL_DIR/$PRODUCT_NAME.js";
 			showEnvVarsInLog = 0;
 		};
 		7EE7B83220B90E2300D6DBCB /* ShellScript */ = {
