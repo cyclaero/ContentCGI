@@ -402,7 +402,7 @@ static inline char *uppercase(char *s)
    static const __m128i blk16 = {0x2020202020202020ULL, 0x2020202020202020ULL};  // 16 bytes with inner blank limit
    static const __m128i obl16 = {0x2121212121212121ULL, 0x2121212121212121ULL};  // 16 bytes with outer blank limit
 
-   // Drop-in replacement for strlen() and memvcpy(), utilizing some builtin SSSE3 instructions
+   // Drop-in replacement for strlen() and memcpy(), utilizing some builtin SSSE3 instructions
    static inline int strvlen(const char *str)
    {
       if (!str || !*str)
