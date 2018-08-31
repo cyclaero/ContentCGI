@@ -26,9 +26,9 @@
 //  OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-#define INDEX_PREFIX_LEN 412
+#define INDEX_PREFIX_LEN 402
 #define INDEX_PREFIX \
-"<!--S--><!DOCTYPE html><HTML lang=\"en\"><HEAD>\n"\
+"<!--S--><!DOCTYPE html><HTML><HEAD>\n"\
 "   <TITLE>Résumés</TITLE>\n"\
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"\
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"\
