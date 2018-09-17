@@ -552,7 +552,14 @@ boolean  reindex(char *droot, char *updtname, char *contitle);
                }
 
                if (cmp4(method, "GET"))
+               {
+                  char *plang, *qlang = (request->QueryTable && (node = findName(request->QueryTable, "lang", 4)) && node->value.s && strvlen(node->value.s) == 2)
+                                      ? node->value.s : NULL;
+                  if (qlang && (plang = strcasestr(htmodel.content, "<HTML lang=\"")))
+                     cpy2(plang+12, qlang);
+
                   return  GEThandler(droot, drootl, "model", 5, "html", request, response, &htmodel);
+               }
                else // POST
                   return POSThandler(droot, drootl, basepath, strvlen(basepath), "html", request, response, &htmodel);
             }
@@ -676,9 +683,9 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
    char *method = NULL;
 
    if ((node = findName(request->serverTable, "REQUEST_METHOD", 14))
-    && (cmp4(method = node->value.s, "GET") || cmp5(method, "POST"))    // only respond to GET or POST requests
-    && cmp6(entity, "/edit/") && entity[6] != '/'                       // only be reponsible for everything below the /edit/ path
-    && entity[6] != '_')                                                // but do not respond to other dynamic calls
+    && (cmp4(method = node->value.s, "GET") || cmp5(method, "POST"))          // only respond to GET or POST requests
+    && cmp6(entity, "/edit/") && entity[6] != '/'                             // only be reponsible for everything below the /edit/ path
+    && entity[6] != '_')                                                      // but do not respond to other dynamic calls
    {
       if (*(entity += 6) != '\0')
          el -= 6;
