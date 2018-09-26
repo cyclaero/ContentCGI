@@ -1963,7 +1963,10 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
-				WARNING_CFLAGS = "-Wno-multichar";
+				WARNING_CFLAGS = (
+					"-Wno-multichar",
+					"-Wno-deprecated-declarations",
+				);
 			};
 			name = Debug;
 		};
@@ -2010,7 +2013,10 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
-				WARNING_CFLAGS = "-Wno-multichar";
+				WARNING_CFLAGS = (
+					"-Wno-multichar",
+					"-Wno-deprecated-declarations",
+				);
 			};
 			name = Release;
 		};
