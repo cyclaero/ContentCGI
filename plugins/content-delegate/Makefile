@@ -87,3 +87,4 @@ install: $(PRODUCT)
 	printf '\n\n' | cat ../../ContentTools/build/content-tools.min.css - $(PROJECT).css > "$(PLUGINS)/$(PROJECT)/$(PROJECT).css" 2>/dev/null ||:
 	printf '\n\n' | cat ../../ContentTools/build/content-tools.min.js  - $(PROJECT).js  > "$(PLUGINS)/$(PROJECT)/$(PROJECT).js"  2>/dev/null ||:
 	cp -pr ../../ContentTools/build/images "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
+	sed -e 's/if("editing"===a\._state&&b\.CANCEL_MESSAGE)/if("editing"===a._state\&\&a.history\&\&a.history._snapshotIndex\&\&b.CANCEL_MESSAGE)/' -i "" "$(PLUGINS)/$(PROJECT)/$(PROJECT).js"
