@@ -1717,7 +1717,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "printf '\\n\\n' | cat $SRCROOT/ContentTools/build/content-tools.js - $SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.js > $INSTALL_DIR/$PRODUCT_NAME.js";
+			shellScript = "printf '\\n\\n' | cat $SRCROOT/ContentTools/build/content-tools.js - $SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.js > $INSTALL_DIR/$PRODUCT_NAME.js\n";
 			showEnvVarsInLog = 0;
 		};
 		7EE7B83220B90E2300D6DBCB /* ShellScript */ = {
@@ -1750,7 +1750,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "printf '\\n\\n' | cat $SRCROOT/ContentTools/build/content-tools.min.css - $SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.css > $INSTALL_DIR/$PRODUCT_NAME.css";
+			shellScript = "printf '\\n\\n' | cat $SRCROOT/ContentTools/build/content-tools.min.css - $SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.css > $INSTALL_DIR/$PRODUCT_NAME.css\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1923,6 +1923,7 @@
 		1DEB928A08733DD80010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
@@ -1969,6 +1970,7 @@
 		1DEB928B08733DD80010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;

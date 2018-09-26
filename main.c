@@ -1096,7 +1096,7 @@ int main(int argc, char *const argv[])
             {
                atexit(SSL_CTX_cleanup);
 
-               if ((gCTX = SSL_CTX_new(TLSv1_2_server_method())) &&
+               if ((gCTX = SSL_CTX_new(TLS_server_method())) &&
                    SSL_CTX_use_certificate_chain_file(gCTX, certchain) == 1 &&
                    SSL_CTX_use_RSAPrivateKey_file(gCTX, chainpkey, SSL_FILETYPE_PEM) == 1 &&
                    SSL_CTX_check_private_key(gCTX) == 1 &&
