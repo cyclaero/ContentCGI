@@ -132,10 +132,9 @@ typedef struct
    if (response->contlen)
       return 200;
 
-   else if (request->POSTtable
-         && (node = findName(request->POSTtable, "search", 6))
-         && node->value.s
-         && node->value.s[0] != '\0')
+   else if ((request->POSTtable && (node = findName(request->POSTtable, "search", 6))
+          || request->QueryTable && (node = findName(request->QueryTable, "tag", 3)))
+          && node->value.s && node->value.s[0] != '\0')
    {
       struct stat st;
       if (stat(ZETTAIR_DB_PATH"index.v.0", &st) == no_error)
