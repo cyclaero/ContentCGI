@@ -9,6 +9,7 @@ window.addEventListener('load', function()
 
 ContentTools.StylePalette.add([
    new ContentTools.Style('Stamp',        'stamp',        ['p']),
+   new ContentTools.Style('Full height',  'fullheight',   ['pre']),
    new ContentTools.Style('Align center', 'align-center', ['img']),
    new ContentTools.Style('Shade',        'shade',        ['img']),
    new ContentTools.Style('Shade center', 'shade-center', ['img'])
