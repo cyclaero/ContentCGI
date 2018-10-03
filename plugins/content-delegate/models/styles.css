@@ -12,7 +12,7 @@ BODY.toc                { font-size:11px; line-height:14px; text-align:left; bac
 BODY.toc P              { margin:0; padding-top:7px }
 DIV.page                { width:940px; margin:10px; padding:10px 10px 10px 30px; background-color:#FFF; box-shadow:0 3px 7px rgba(100, 100, 100, 0.25); }
 
-H1                      { font-weight:bold; font-size:19px; line-height:normal; text-align:left; margin:0; padding:31px 0 5px 0; }
+H1                      { font-weight:bold; font-size:19px; line-height:normal; text-align:left; margin:0; padding:27px 0 5px 0; }
 H2                      { font-weight:bold; font-size:17px; line-height:normal; text-align:left; margin:0; padding:23px 0 3px 0; }
 H3                      { font-weight:bold; font-size:13px; line-height:normal; text-align:left; margin:0; padding:19px 0 2px 0; }
 
@@ -47,6 +47,8 @@ TH H1 A:hover           { color:#777 !important; }
 TH IMG                  { margin:0; }
 TD                      { vertical-align:top; }
 TD.found SPAN           { color:#F70; }
+TD.toc                  { padding:9px 3px 3px 27px; }
+TD.toc IFRAME           { width:100%; height:0px; border:0px; }
 
 TABLE.fyi               { width:147px; margin-left:25px; font-size:11px; }
 TABLE.fyi TH            { font-weight:normal; text-align:left; vertical-align:top; width:60px; }

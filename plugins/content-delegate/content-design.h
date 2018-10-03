@@ -56,11 +56,11 @@
 "   <TR>\n"\
 "      <TD>\n"
 
-#define INDEX_SUFFIX_LEN 226
+#define INDEX_SUFFIX_LEN 160
 #define INDEX_SUFFIX \
 "      </TD>\n"\
-"      <TD colspan=\"2\" style=\"padding:9px 3px 3px 27px;\">\n"\
-"         <IFRAME id=\"toc\" src=\"toc.html\" align=\"top\" style=\"width:100%; height:0px; border:0px;\"></IFRAME>\n"\
+"      <TD colspan=\"2\" class=\"toc\">\n"\
+"         <IFRAME id=\"toc\" src=\"toc.html\" align=\"top\"></IFRAME>\n"\
 "      </TD>\n"\
 "   </TR>\n"\
 "</TABLE></DIV></BODY></HTML>\n"
@@ -139,11 +139,11 @@
 #define SEARCH_NORESULT \
 "<H1>Nothing found.</H1>\n"
 
-#define SEARCH_SUFFIX_LEN 226
+#define SEARCH_SUFFIX_LEN 160
 #define SEARCH_SUFFIX \
 "      </TD>\n"\
-"      <TD colspan=\"2\" style=\"padding:9px 3px 3px 27px;\">\n"\
-"         <IFRAME id=\"toc\" src=\"toc.html\" align=\"top\" style=\"width:100%; height:0px; border:0px;\"></IFRAME>\n"\
+"      <TD colspan=\"2\" class=\"toc\">\n"\
+"         <IFRAME id=\"toc\" src=\"toc.html\" align=\"top\"></IFRAME>\n"\
 "      </TD>\n"\
 "   </TR>\n"\
 "</TABLE></DIV></BODY></HTML>\n"
