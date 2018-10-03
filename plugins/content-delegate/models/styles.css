@@ -12,9 +12,9 @@ BODY.toc                { font-size:11px; line-height:14px; text-align:left; bac
 BODY.toc P              { margin:0; padding-top:7px }
 DIV.page                { width:940px; margin:10px; padding:10px 10px 10px 30px; background-color:#FFF; box-shadow:0 3px 7px rgba(100, 100, 100, 0.25); }
 
-H1                      { font-weight:bold; font-size:19px; line-height:normal; text-align:left; margin:0; padding:27px 0 5px 0; }
-H2                      { font-weight:bold; font-size:17px; line-height:normal; text-align:left; margin:0; padding:23px 0 3px 0; }
-H3                      { font-weight:bold; font-size:13px; line-height:normal; text-align:left; margin:0; padding:19px 0 2px 0; }
+H1                      { font-weight:bold; font-size:19px; line-height:normal; text-align:left; margin:0; padding:28px 0 4px 0; }
+H2                      { font-weight:bold; font-size:16px; line-height:normal; text-align:left; margin:0; padding:23px 0 3px 0; }
+H3                      { font-weight:bold; font-size:13px; line-height:normal; text-align:left; margin:0; padding:18px 0 2px 0; }
 
 UL                      { margin:0; padding:0 0 0 17px; }
 P,LI                    { margin:0; padding-top:13px; -webkit-hyphens:auto; -moz-hyphens:auto; -ms-hyphens:auto; hyphens:auto; }
