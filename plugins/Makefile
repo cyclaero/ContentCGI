@@ -47,7 +47,7 @@ CFLAGS += -march=native -mssse3
 CFLAGS += -fsigned-char
 .endif
 
-CFLAGS += -std=c11 -fpic -fstrict-aliasing -fno-common -fobjc-nonfragile-abi \
+CFLAGS += -std=gnu11 -fpic -fstrict-aliasing -fno-common -fobjc-nonfragile-abi \
           -Wno-multichar -Wno-parentheses -Wno-empty-body -Wno-switch -Wno-deprecated-declarations -Wshorten-64-to-32 \
           -I/usr/local/include -I../
 LDFLAGS = -shared -L/usr/local/lib -lm -lpthread -lobjc

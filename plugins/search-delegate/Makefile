@@ -36,10 +36,8 @@ CC = clang
 
 .ifmake debug
 CFLAGS = $(CDEFS) -g -O0
-STRIP  =
 .else
 CFLAGS = $(CDEFS) -g0 -O3
-STRIP  = -s
 .endif
 
 .if $(MACHINE) == "i386" || $(MACHINE) == "amd64" || $(MACHINE) == "x86_64"
@@ -48,7 +46,7 @@ CFLAGS += -march=native -mssse3
 CFLAGS += -fsigned-char
 .endif
 
-CFLAGS += -std=c11 -fpic -fvisibility=hidden -fstrict-aliasing -fno-common -fobjc-nonfragile-abi \
+CFLAGS += -std=gnu11 -fpic -fvisibility=hidden -fstrict-aliasing -fno-common -fobjc-nonfragile-abi \
           -Wno-multichar -Wno-parentheses -Wno-empty-body -Wno-switch -Wno-deprecated-declarations \
           -I/usr/local/include -I../ -Izettair-spider/include/  -Izettair-spider/include/compat/
 LDFLAGS = -shared -L/usr/local/lib -lm -lpthread -licuuc -liconv -lz -lobjc -rpath $(PLUGINS) -L$(PLUGINS) -lcyobj
@@ -135,7 +133,7 @@ update: clean all
 
 install: $(PRODUCT)
 	mkdir -p "$(PLUGINS)/$(PROJECT)"
-	install $(STRIP) $(PRODUCT) "$(PLUGINS)/$(PROJECT)/"
+	install $(PRODUCT) "$(PLUGINS)/$(PROJECT)/"
 	cp -p  $(PROJECT).html "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
 	cp -p  $(PROJECT).css  "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
 	cp -p  $(PROJECT).js   "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:

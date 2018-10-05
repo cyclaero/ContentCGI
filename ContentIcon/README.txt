@@ -13,7 +13,7 @@ How-to create a nice Icon in the ICO file format
    icopacker.c source code file, and compile it using the
    following command:
 
-     clang -g0 -O3 -std=c11 -fno-pic -fstrict-aliasing -fno-common \
+     clang -g0 -O3 -std=gnu11 -fno-pic -fstrict-aliasing -fno-common \
      -fvisibility=hidden -Wno-parentheses icopacker.c -o icopacker
 
 4. Pack the PNG files in ~/Desktop/ICOfiles/ into one ICO
