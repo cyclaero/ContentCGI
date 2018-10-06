@@ -50,7 +50,7 @@ CFLAGS += -fsigned-char
 CFLAGS += -DNOBIOSSL -std=gnu11 -fno-pic -fvisibility=hidden -fstrict-aliasing -fno-common \
           -Wno-multichar -Wno-parentheses -Wno-empty-body -Wno-switch -Wno-deprecated-declarations -Wshorten-64-to-32 \
           -I/usr/local/include
-LDFLAGS = -L/usr/local/lib -lm -lpthread -licuuc -lcrypto -lssl
+LDFLAGS = -L/usr/local/lib -lm -lpthread -lcrypto -lssl
 SOURCES = firstresponder.c fastcgi.c connection.c interim.c utils.c main.c
 OBJECTS = $(SOURCES:.c=.o)
 PRODUCT = ContentCGI

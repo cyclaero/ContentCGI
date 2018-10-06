@@ -151,7 +151,7 @@ typedef struct
          if (index.idx && res && (utfToIso = iconv_open("ISO-8859-1//TRANSLIT//IGNORE", "UTF-8")))
          {
             size_t origLen = strvlen(node->value.s), convLen = 4*origLen;
-            char  *orig = node->value.s, *conv = alloca(convLen + 1), *siso  = conv;
+            char  *orig = node->value.s, *conv = alloca(convLen + 1), *siso = conv;
             iconv(utfToIso, &orig, &origLen, &conv, &convLen); *conv = '\0';
             iconv_close(utfToIso);
 

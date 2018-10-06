@@ -255,7 +255,7 @@
 
                struct stat st;                        // check whether the target directory exist
                if ((stat(imgp, &st) == no_error       // in case it does not
-                || (mkdir(imgp, 0770) == no_error     // then try to create it
+                || (mkdir(imgp, 0775) == no_error     // then try to create it
                  && stat(imgp, &st) == no_error))     // by purpose we won't resolve inssues with intermediate path components
                 && S_ISDIR(st.st_mode))               // final check, and let's go
                {
@@ -1269,6 +1269,25 @@ void enumerateImageTags(Node **imageFileNames, char *contemp, time_t stamp, int 
    }
 }
 
+#ifdef __APPLE__
+
+   Node *findImageName(Node **imageFileNames, const char *name, ssize_t naml)
+   {
+      naml = utf8proc_map((uchar *)name, naml, (uchar **)&name, UTF8PROC_NULLTERM|UTF8PROC_COMPOSE);
+      Node *result = (naml > 0)
+                   ? findName(imageFileNames, name, naml)
+                   : NULL;
+      free((void *)name);
+      return result;
+   }
+
+#else
+
+   #define findImageName(imageFileNames, name, naml) findName(imageFileNames, name, naml)
+
+#endif
+
+
 void qdownsort(time_t *a, int l, int r)
 {
    time_t m = a[(l + r)/2];
@@ -1465,14 +1484,14 @@ boolean reindex(char *droot, char *updtname, char *contitle)
                         if (mep->d_name[0] != '.' && mep->d_type == DT_REG)
                         {
                            int  mfl = mdl + mep->d_namlen;
-                           char mfil[mfl+5];
+                           char  mfil[mfl+5];
                            strmlcat(mfil, mfl+1, NULL, mdir, mdl, mep->d_name, mep->d_namlen, NULL);
-                           if (findName(imageFileNames, mfil+mdirl, ep->d_namlen + 1 + mep->d_namlen))
+                           if (findImageName(imageFileNames, mfil+mdirl, ep->d_namlen + 1 + mep->d_namlen))
                               found++;
                            else
                            {
                               cpy5(mfil+mfl, ".png");
-                              if (findName(imageFileNames, mfil+mdirl, ep->d_namlen + 1 + mep->d_namlen + 4))
+                              if (findImageName(imageFileNames, mfil+mdirl, ep->d_namlen + 1 + mep->d_namlen + 4))
                                  found++;
                               else
                               {

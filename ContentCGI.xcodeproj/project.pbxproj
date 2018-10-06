@@ -24,16 +24,12 @@
 		7E2F1B8B20A608B800B7B848 /* fastcgi.c in Sources */ = {isa = PBXBuildFile; fileRef = 7E2F1B8920A608B800B7B848 /* fastcgi.c */; };
 		7E324E6C20B6292A001E29F9 /* CyObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EE882A220AC9F2900CD24F3 /* CyObject.m */; };
 		7E324E7B20B6296A001E29F9 /* content-delegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EE8829D20AC9F2900CD24F3 /* content-delegate.m */; };
-		7E5069DA209FE0CB00D15F5A /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5069D9209FE0CB00D15F5A /* libicucore.dylib */; };
 		7E6B8BF420C6C2EF00A95B6A /* content-delegate.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BEB20C6AB7200A95B6A /* content-delegate.png */; };
 		7E6B8BF720C6C3CE00A95B6A /* styles.css in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BEF20C6BBDD00A95B6A /* styles.css */; };
 		7E6B8BF820C6C3CE00A95B6A /* logo.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BF220C6BF9200A95B6A /* logo.png */; };
 		7E6B8BF920C6C3CE00A95B6A /* favicon.ico in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BF120C6BF0600A95B6A /* favicon.ico */; };
 		7E6B8BFA20C6C3CE00A95B6A /* searchpict.svg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BF020C6BC2300A95B6A /* searchpict.svg */; };
 		7E6B8BFC20C6CC9700A95B6A /* functions.js in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E6B8BFB20C6C6B900A95B6A /* functions.js */; };
-		7E7F7EBF20E5246A0027EC85 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5069D9209FE0CB00D15F5A /* libicucore.dylib */; };
-		7E7F7EC020E5247C0027EC85 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5069D9209FE0CB00D15F5A /* libicucore.dylib */; };
-		7E7F7EC120E524830027EC85 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E5069D9209FE0CB00D15F5A /* libicucore.dylib */; };
 		7E7F7EC320E5ACAD0027EC85 /* libGraphicsMagick.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E7F7EC220E5ACAD0027EC85 /* libGraphicsMagick.dylib */; };
 		7E9433A520B6F64D00855520 /* delegate-utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7E324E5C20B616E8001E29F9 /* delegate-utils.c */; };
 		7E9433A620B6F65600855520 /* delegate-utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7E324E5C20B616E8001E29F9 /* delegate-utils.c */; };
@@ -105,6 +101,7 @@
 		7EF44C4A20D2CF0800EF8AD1 /* crc.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCBF20D00BB80082B171 /* crc.c */; };
 		7EF44C4B20D2D0EB00EF8AD1 /* docmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCC320D00BB80082B171 /* docmap.c */; };
 		7EF44C4D20D2D12100EF8AD1 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EF44C4C20D2D12100EF8AD1 /* libz.tbd */; };
+		7EFA7018216950A5003BB48E /* libutf8proc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E0BC5C321691AF000FDD7A8 /* libutf8proc.dylib */; };
 		7EFCFEE520B348C300B3D759 /* content-delegate.ico in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EE8829B20AC9F2900CD24F3 /* content-delegate.ico */; };
 		7EFDF50420A4681A006BACAF /* connection.c in Sources */ = {isa = PBXBuildFile; fileRef = 7EFDF50320A4681A006BACAF /* connection.c */; };
 		7EFDF50720A46832006BACAF /* interim.c in Sources */ = {isa = PBXBuildFile; fileRef = 7EFDF50620A46832006BACAF /* interim.c */; };
@@ -234,6 +231,7 @@
 /* Begin PBXFileReference section */
 		08FB7796FE84155DC02AAC07 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = main.c; sourceTree = "<group>"; };
 		7E02668F20BC3C52004C92F9 /* webroot */ = {isa = PBXFileReference; lastKnownFileType = folder; path = webroot; sourceTree = "<group>"; };
+		7E0BC5C321691AF000FDD7A8 /* libutf8proc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libutf8proc.dylib; path = ../../../../../opt/local/lib/libutf8proc.dylib; sourceTree = "<group>"; };
 		7E0E571620CF3A9800562DA9 /* delegate-cloner.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "delegate-cloner.sh"; sourceTree = "<group>"; };
 		7E0E571820CF3E5900562DA9 /* Makefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; usesTabs = 1; };
 		7E0E571920CF3E5900562DA9 /* search-delegate.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = "search-delegate.css"; sourceTree = "<group>"; };
@@ -253,7 +251,6 @@
 		7E324E7920B6292A001E29F9 /* libcyobj.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libcyobj.so; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E324E8820B62BD9001E29F9 /* libcyobj.so */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcyobj.so; path = plugins/libcyobj.so; sourceTree = "<group>"; };
 		7E40AC3420C810B4005E98A8 /* bsdinstall.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = bsdinstall.sh; sourceTree = "<group>"; };
-		7E5069D9209FE0CB00D15F5A /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = /usr/lib/libicucore.dylib; sourceTree = "<absolute>"; };
 		7E5725F720B1173A009D5008 /* ContentCGI.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rc; lineEnding = 0; path = ContentCGI.rc; sourceTree = "<group>"; };
 		7E6B8BEB20C6AB7200A95B6A /* content-delegate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "content-delegate.png"; sourceTree = "<group>"; };
 		7E6B8BEC20C6AC9100A95B6A /* hello-delegate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "hello-delegate.png"; sourceTree = "<group>"; };
@@ -576,7 +573,6 @@
 		7ED3DD1D20D00BB80082B171 /* timings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = timings.h; sourceTree = "<group>"; };
 		7ED3DD1E20D00BB80082B171 /* trec_eval.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = trec_eval.h; sourceTree = "<group>"; };
 		7ED3DD1F20D00BB80082B171 /* uri.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = uri.h; sourceTree = "<group>"; };
-		7ED3DD2020D00BB80082B171 /* utf8.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
 		7ED3DD2120D00BB80082B171 /* vec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vec.h; sourceTree = "<group>"; };
 		7ED3DD2220D00BB80082B171 /* vocab.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vocab.h; sourceTree = "<group>"; };
 		7ED3DD2420D00BB80082B171 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
@@ -633,7 +629,6 @@
 		7ED3DD8920D00BB80082B171 /* testutils.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = testutils.c; sourceTree = "<group>"; };
 		7ED3DD8A20D00BB80082B171 /* trec_eval.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = trec_eval.c; sourceTree = "<group>"; };
 		7ED3DD8B20D00BB80082B171 /* trecrun.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = trecrun.c; sourceTree = "<group>"; };
-		7ED3DD8C20D00BB80082B171 /* utf8.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
 		7ED3DD8D20D00BB80082B171 /* vec.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = vec.c; sourceTree = "<group>"; };
 		7ED3DD8E20D00BB80082B171 /* vocab.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = vocab.c; sourceTree = "<group>"; };
 		7ED3DD8F20D00BB80082B171 /* zpthread.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = zpthread.c; sourceTree = "<group>"; };
@@ -674,7 +669,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7E7F7EC120E524830027EC85 /* libicucore.dylib in Frameworks */,
 				7EC953A320D921AD00E67E97 /* libiconv.tbd in Frameworks */,
 				7EF44C4D20D2D12100EF8AD1 /* libz.tbd in Frameworks */,
 				7E0E572620CF3F1900562DA9 /* libcyobj.so in Frameworks */,
@@ -692,7 +686,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7E7F7EC020E5247C0027EC85 /* libicucore.dylib in Frameworks */,
 				7EE7B83B20B913B700D6DBCB /* libcyobj.so in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -701,7 +694,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7E7F7EBF20E5246A0027EC85 /* libicucore.dylib in Frameworks */,
+				7EFA7018216950A5003BB48E /* libutf8proc.dylib in Frameworks */,
 				7E7F7EC320E5ACAD0027EC85 /* libGraphicsMagick.dylib in Frameworks */,
 				7EE7B83A20B913B100D6DBCB /* libcyobj.so in Frameworks */,
 			);
@@ -711,7 +704,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7E5069DA209FE0CB00D15F5A /* libicucore.dylib in Frameworks */,
 				7EFDF50920A471C3006BACAF /* libcrypto.dylib in Frameworks */,
 				7EFDF50B20A471CD006BACAF /* libssl.dylib in Frameworks */,
 			);
@@ -1304,7 +1296,6 @@
 				7ED3DD8920D00BB80082B171 /* testutils.c */,
 				7ED3DD8A20D00BB80082B171 /* trec_eval.c */,
 				7ED3DD8B20D00BB80082B171 /* trecrun.c */,
-				7ED3DD8C20D00BB80082B171 /* utf8.c */,
 				7ED3DD8D20D00BB80082B171 /* vec.c */,
 				7ED3DD8E20D00BB80082B171 /* vocab.c */,
 				7ED3DD8F20D00BB80082B171 /* zpthread.c */,
@@ -1386,7 +1377,6 @@
 				7ED3DD1D20D00BB80082B171 /* timings.h */,
 				7ED3DD1E20D00BB80082B171 /* trec_eval.h */,
 				7ED3DD1F20D00BB80082B171 /* uri.h */,
-				7ED3DD2020D00BB80082B171 /* utf8.h */,
 				7ED3DD2120D00BB80082B171 /* vec.h */,
 				7ED3DD2220D00BB80082B171 /* vocab.h */,
 				7ED3DD2620D00BB80082B171 /* zettair.h */,
@@ -1495,11 +1485,11 @@
 			children = (
 				7EFDF50820A471C3006BACAF /* libcrypto.dylib */,
 				7EFDF50A20A471CC006BACAF /* libssl.dylib */,
-				7E5069D9209FE0CB00D15F5A /* libicucore.dylib */,
-				7E324E8820B62BD9001E29F9 /* libcyobj.so */,
 				7EC953A220D921AD00E67E97 /* libiconv.tbd */,
 				7EF44C4C20D2D12100EF8AD1 /* libz.tbd */,
+				7E0BC5C321691AF000FDD7A8 /* libutf8proc.dylib */,
 				7E7F7EC220E5ACAD0027EC85 /* libGraphicsMagick.dylib */,
+				7E324E8820B62BD9001E29F9 /* libcyobj.so */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1717,7 +1707,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "printf '\\n\\n' | cat $SRCROOT/ContentTools/build/content-tools.js - $SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.js > $INSTALL_DIR/$PRODUCT_NAME.js\n";
+			shellScript = "printf '\\n\\n' | cat \"$SRCROOT/ContentTools/build/content-tools.js\" - \"$SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.js\" > \"$INSTALL_DIR/$PRODUCT_NAME.js\"\nsed -e 's/if(\"editing\"===a\\._state&&b\\.CANCEL_MESSAGE)/if(\"editing\"===a._state\\&\\&a.history\\&\\&a.history._snapshotIndex\\&\\&b.CANCEL_MESSAGE)/' -i \"\" \"$INSTALL_DIR/$PRODUCT_NAME.js\"\n";
 			showEnvVarsInLog = 0;
 		};
 		7EE7B83220B90E2300D6DBCB /* ShellScript */ = {
@@ -1750,7 +1740,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "printf '\\n\\n' | cat $SRCROOT/ContentTools/build/content-tools.min.css - $SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.css > $INSTALL_DIR/$PRODUCT_NAME.css\n";
+			shellScript = "printf '\\n\\n' | cat \"$SRCROOT/ContentTools/build/content-tools.min.css\" - \"$SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.css\" > \"$INSTALL_DIR/$PRODUCT_NAME.css\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1906,6 +1896,10 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
 				PRODUCT_NAME = ContentCGI;
 			};
 			name = Debug;
@@ -1916,6 +1910,10 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
 				PRODUCT_NAME = ContentCGI;
 			};
 			name = Release;
@@ -1961,7 +1959,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = /usr/local/include;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include,
+					/opt/local/include,
+				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				WARNING_CFLAGS = (
 					"-Wno-multichar",
@@ -2011,7 +2012,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = /usr/local/include;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include,
+					/opt/local/include,
+				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				WARNING_CFLAGS = (
 					"-Wno-multichar",
@@ -2036,12 +2040,13 @@
 				GCC_WARN_SHADOW = NO;
 				HEADER_SEARCH_PATHS = (
 					../,
-					/usr/local/include,
+					"$(inherited)",
 				);
 				INSTALL_PATH = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/plugins",
+					/opt/local/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -2064,12 +2069,13 @@
 				GCC_WARN_SHADOW = NO;
 				HEADER_SEARCH_PATHS = (
 					../,
-					/usr/local/include,
+					"$(inherited)",
 				);
 				INSTALL_PATH = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/plugins",
+					/opt/local/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -2087,7 +2093,6 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = /usr/local/include;
 				INSTALL_PATH = "/plugins/$(PROJECT_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -2106,7 +2111,6 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				HEADER_SEARCH_PATHS = /usr/local/include;
 				INSTALL_PATH = "/plugins/$(PROJECT_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -2125,12 +2129,13 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = (
 					../,
-					/usr/local/include,
+					"$(inherited)",
 				);
 				INSTALL_PATH = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/plugins",
+					/opt/local/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -2150,12 +2155,13 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = (
 					../,
-					/usr/local/include,
+					"$(inherited)",
 				);
 				INSTALL_PATH = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/plugins",
+					/opt/local/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -2174,13 +2180,14 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = (
 					../,
-					/usr/local/include,
+					"$(inherited)",
 					/opt/local/include/GraphicsMagick,
 				);
 				INSTALL_PATH = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/plugins",
+					/usr/lib,
 					/opt/local/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2201,13 +2208,14 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = (
 					../,
-					/usr/local/include,
+					"$(inherited)",
 					/opt/local/include/GraphicsMagick,
 				);
 				INSTALL_PATH = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/plugins",
+					/usr/lib,
 					/opt/local/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";

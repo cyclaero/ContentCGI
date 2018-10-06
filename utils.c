@@ -379,8 +379,6 @@ char *httpETag(char *etag, struct stat *st, boolean quotes)
 #endif
 
 
-utf32 u_foldCase(utf32 u, uint32_t options);
-
 static const uchar trailingBytesForUTF8[256] =
 {
    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -443,53 +441,6 @@ utf8 utf32to8(utf32 u32)
    }
 
    return u8;
-}
-
-
-char *casefold(char *p)
-{
-   utf32  u, v;
-   uchar  c, tl;
-   uchar *s = (uchar *)p;
-   uchar *w = (uchar *)&v;
-
-   if (s)
-      while (c = *s)
-         if ('A' <= c && c <= 'Z')
-            *s++ = c + 0x20;
-
-         else if (c < 0x80)
-            s++;
-
-         else
-         {
-            uchar *t = s;
-            if ((u = utf8to32(&t)) != 0xFFFD)
-            {
-               v = u_foldCase(u, 0);
-               if (v != u)
-                  switch (tl = trailingBytesForUTF8[c])
-                  {
-                     case 1:
-                        *(uint16_t *)s = (uint16_t)utf32to8(v);
-                        break;
-
-                     case 2:
-                        v = utf32to8(v);
-                        s[0] = w[0];
-                        s[1] = w[1];
-                        s[2] = w[2];
-                        break;
-
-                     case 3:
-                        *(uint32_t *)s = utf32to8(v);
-                        break;
-                  }
-            }
-            s = t;
-         }
-
-   return p;
 }
 
 
