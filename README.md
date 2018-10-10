@@ -11,13 +11,12 @@ Login as User root, and install the requisites by the way of the FreeBSD package
     pkg install -y subversion
     pkg install -y libobjc2
     pkg install -y utf8proc
+    pkg install -y iconv
+    pkg install -y poppler-utils
+    pkg install -y clone
 
 For image processing we would employ GraphicsMagic. The default options drag-in a lot of unfortunate stuff from the GNU Compiler Collection and from X11. Therefore, add the few really needed dependencies of GraphicsMagic from the FreeBSD package repository, and build+install graphic/GraphicsMagick from the ports with a custom option-set.
 
-    pkg install -y freetype2
-    pkg install -y jbigkit
-    pkg install -y lcms2
-    pkg install -y png
     pkg install -y webp
     pkg install -y libwmf-nox11
 
@@ -54,8 +53,8 @@ Copy the virtual host configuration file into the Apache `Includes` directory. I
 Use the `sed` command  to set the site's title, and to substitute the virtual host dummy domains `example.com` and `content.example.com` to the desired domain names, e.g. `"Your Content"` - `content.dom` - `your.content.dom`:
 
     sed -i "" -e "s/CONTENT EXAMPLE/Your Content/"         /usr/local/etc/apache24/Includes/your.content.dom.conf
-    sed -i "" -e "s/example.com/content.dom/"              /usr/local/etc/apache24/Includes/your.content.dom.conf
     sed -i "" -e "s/content.example.com/your.content.dom/" /usr/local/etc/apache24/Includes/your.content.dom.conf
+    sed -i "" -e "s/example.com/content.dom/"              /usr/local/etc/apache24/Includes/your.content.dom.conf
    
 
 Create the password digest file of the HTTP Digest authentication for editing the content. Inform your real name, because the system will use this name in the signature of the articles:
@@ -82,7 +81,7 @@ Enable Apache and ContentCGI in `/etc/rc.conf` by adding the following lines - m
 
     clear_tmp_enable="YES"
     apache24_enable="YES"
-    ContentCGI_flags="-u www:www"
+    ContentCGI_flags="-u www:www -w /usr/local/www/ContentCGI/webdocs"
     ContentCGI_enable="YES"
 
 Start Apache and the ContentCGI Daemon:

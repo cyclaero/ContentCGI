@@ -32,13 +32,12 @@
 #   pkg install -y clone
 #   pkg install -y subversion
 #   pkg install -y libobjc2
-#   pkg install -y icu
+#   pkg install -y libutf8
+#   pkg install -y iconv
+#   pkg install -y poppler-utils
+#   pkg install -y clone
 #
 # GraphicsMagick for the image management facility
-#   pkg install -y freetype2
-#   pkg install -y jbigkit
-#   pkg install -y lcms2
-#   pkg install -y png
 #   pkg install -y webp
 #   pkg install -y libwmf-nox11
 #
