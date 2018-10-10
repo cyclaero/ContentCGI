@@ -1069,154 +1069,157 @@ int main(int argc, char *const argv[])
       if (expandCertDir)
          certdir = strcat(strcpy(alloca((certdir_len = homelen + certdir_len-1)+1), userhome), certdir+1);
 
-      char *certchain = strcat(strcpy(alloca(certdir_len+11), certdir), "/chain.crt");
-      char *chainpkey = strcat(strcpy(alloca(certdir_len+11), certdir), "/chain.key");
-      char *dh1024pem = strcat(strcpy(alloca(certdir_len+12), certdir), "/dh1024.pem");
-      char *dh2048pem = strcat(strcpy(alloca(certdir_len+12), certdir), "/dh2048.pem");
-
-      SSL_library_init();
-      SSL_load_error_strings();
-      if (SSL_thread_setup())
+      if (stat(certdir, &st) == no_error)
       {
-         atexit(SSL_thread_cleanup);
+         char *certchain = strcat(strcpy(alloca(certdir_len+11), certdir), "/chain.crt");
+         char *chainpkey = strcat(strcpy(alloca(certdir_len+11), certdir), "/chain.key");
+         char *dh1024pem = strcat(strcpy(alloca(certdir_len+12), certdir), "/dh1024.pem");
+         char *dh2048pem = strcat(strcpy(alloca(certdir_len+12), certdir), "/dh2048.pem");
 
-         DH *dhparam = NULL;
-         FILE *dhfile;
-         if ((dhfile = fopen(dh2048pem, "r"))
-          || (dhfile = fopen(dh1024pem, "r")))
+         SSL_library_init();
+         SSL_load_error_strings();
+         if (SSL_thread_setup())
          {
-            dhparam = PEM_read_DHparams(dhfile, NULL, NULL, NULL);
-            fclose(dhfile);
-         }
+            atexit(SSL_thread_cleanup);
 
-         if (dhparam)
-         {
-            EC_KEY *eckey = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
-            if (eckey && EC_KEY_generate_key(eckey) == 1)
+            DH *dhparam = NULL;
+            FILE *dhfile;
+            if ((dhfile = fopen(dh2048pem, "r"))
+             || (dhfile = fopen(dh1024pem, "r")))
             {
-               atexit(SSL_CTX_cleanup);
+               dhparam = PEM_read_DHparams(dhfile, NULL, NULL, NULL);
+               fclose(dhfile);
+            }
 
-               if ((gCTX = SSL_CTX_new(TLSv1_2_server_method())) &&
-                   SSL_CTX_use_certificate_chain_file(gCTX, certchain) == 1 &&
-                   SSL_CTX_use_RSAPrivateKey_file(gCTX, chainpkey, SSL_FILETYPE_PEM) == 1 &&
-                   SSL_CTX_check_private_key(gCTX) == 1 &&
-                   SSL_CTX_set_tmp_dh(gCTX, dhparam) == 1 &&
-                   SSL_CTX_set_tmp_ecdh(gCTX, eckey) == 1 &&
-                   SSL_CTX_set_cipher_list(gCTX, "HIGH:!aNULL:!SSLv3:!SSLv2") == 1 &&
-                   SSL_CTX_set_options(gCTX, SSL_OP_SINGLE_DH_USE|SSL_OP_CIPHER_SERVER_PREFERENCE|SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3|SSL_OP_NO_TLSv1|SSL_OP_NO_TLSv1_1))
+            if (dhparam)
+            {
+               EC_KEY *eckey = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
+               if (eckey && EC_KEY_generate_key(eckey) == 1)
                {
-                  EC_KEY_free(eckey);
-                  DH_free(dhparam);
+                  atexit(SSL_CTX_cleanup);
 
-            #pragma mark ••• main() -- IPv4 any host TLS setup •••
-                     if ((gListenSSockL_v4 = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-                     {
-                        syslog(LOG_ERR, "Error creating the secure IPv4 listening socket.");
-                        exit(EXIT_FAILURE);
-                     }
+                  if ((gCTX = SSL_CTX_new(TLSv1_2_server_method())) &&
+                      SSL_CTX_use_certificate_chain_file(gCTX, certchain) == 1 &&
+                      SSL_CTX_use_RSAPrivateKey_file(gCTX, chainpkey, SSL_FILETYPE_PEM) == 1 &&
+                      SSL_CTX_check_private_key(gCTX) == 1 &&
+                      SSL_CTX_set_tmp_dh(gCTX, dhparam) == 1 &&
+                      SSL_CTX_set_tmp_ecdh(gCTX, eckey) == 1 &&
+                      SSL_CTX_set_cipher_list(gCTX, "HIGH:!aNULL:!SSLv3:!SSLv2") == 1 &&
+                      SSL_CTX_set_options(gCTX, SSL_OP_SINGLE_DH_USE|SSL_OP_CIPHER_SERVER_PREFERENCE|SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3|SSL_OP_NO_TLSv1|SSL_OP_NO_TLSv1_1))
+                  {
+                     EC_KEY_free(eckey);
+                     DH_free(dhparam);
 
-                     serverAddress_v4.sin_addr = tls_addr4;
-                     serverAddress_v4.sin_port = htons(tls_port);
-                     if (setsockopt(gListenSSockL_v4, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0 ||
-                         setsockopt(gListenSSockL_v4, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int)) < 0 ||
-                         bind(gListenSSockL_v4, (struct sockaddr *)&serverAddress_v4, sizeof(serverAddress_v4)) < 0)
-                     {
-                        syslog(LOG_ERR, "Error calling bind() on the TLS IPv4 socket: %d.", errno);
-                        exit(EXIT_FAILURE);
-                     }
+               #pragma mark ••• main() -- IPv4 any host TLS setup •••
+                        if ((gListenSSockL_v4 = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+                        {
+                           syslog(LOG_ERR, "Error creating the secure IPv4 listening socket.");
+                           exit(EXIT_FAILURE);
+                        }
 
-                     if (listen(gListenSSockL_v4, 5) < 0)
-                     {
-                        syslog(LOG_ERR, "Error calling listen() on the TLS IPv4 socket.");
-                        exit(EXIT_FAILURE);
-                     }
+                        serverAddress_v4.sin_addr = tls_addr4;
+                        serverAddress_v4.sin_port = htons(tls_port);
+                        if (setsockopt(gListenSSockL_v4, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0 ||
+                            setsockopt(gListenSSockL_v4, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int)) < 0 ||
+                            bind(gListenSSockL_v4, (struct sockaddr *)&serverAddress_v4, sizeof(serverAddress_v4)) < 0)
+                        {
+                           syslog(LOG_ERR, "Error calling bind() on the TLS IPv4 socket: %d.", errno);
+                           exit(EXIT_FAILURE);
+                        }
 
-                     if (rc = pthread_create(&thread, &detach, ssocklLoop, &gListenSSockL_v4))
-                     {
-                        syslog(LOG_ERR, "Cannot create thread for responding to IPv4 TLS client connections: %d.", rc);
-                        exit(EXIT_FAILURE);
-                     }
+                        if (listen(gListenSSockL_v4, 5) < 0)
+                        {
+                           syslog(LOG_ERR, "Error calling listen() on the TLS IPv4 socket.");
+                           exit(EXIT_FAILURE);
+                        }
 
-            #pragma mark ••• main() -- IPv6 any host TLS setup •••
-                     if ((gListenSSockL_v6 = socket(AF_INET6, SOCK_STREAM, 0)) < 0)
-                     {
-                        syslog(LOG_ERR, "Error creating the secure IPv6 listening socket.");
-                        exit(EXIT_FAILURE);
-                     }
+                        if (rc = pthread_create(&thread, &detach, ssocklLoop, &gListenSSockL_v4))
+                        {
+                           syslog(LOG_ERR, "Cannot create thread for responding to IPv4 TLS client connections: %d.", rc);
+                           exit(EXIT_FAILURE);
+                        }
 
-                     serverAddress_v6.sin6_addr = tls_addr6;
-                     serverAddress_v6.sin6_port = htons(tls_port);
-                     if (setsockopt(gListenSSockL_v6, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0 ||
-                         setsockopt(gListenSSockL_v6, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int)) < 0 ||
-                         bind(gListenSSockL_v6, (struct sockaddr *)&serverAddress_v6, sizeof(serverAddress_v6)) < 0)
-                     {
-                        syslog(LOG_ERR, "Error calling bind() on the TLS IPv6 socket: %d.", errno);
-                        exit(EXIT_FAILURE);
-                     }
+               #pragma mark ••• main() -- IPv6 any host TLS setup •••
+                        if ((gListenSSockL_v6 = socket(AF_INET6, SOCK_STREAM, 0)) < 0)
+                        {
+                           syslog(LOG_ERR, "Error creating the secure IPv6 listening socket.");
+                           exit(EXIT_FAILURE);
+                        }
 
-                     if (listen(gListenSSockL_v6, 5) < 0)
-                     {
-                        syslog(LOG_ERR, "Error calling listen() on the TLS IPv6 socket.");
-                        exit(EXIT_FAILURE);
-                     }
+                        serverAddress_v6.sin6_addr = tls_addr6;
+                        serverAddress_v6.sin6_port = htons(tls_port);
+                        if (setsockopt(gListenSSockL_v6, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0 ||
+                            setsockopt(gListenSSockL_v6, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int)) < 0 ||
+                            bind(gListenSSockL_v6, (struct sockaddr *)&serverAddress_v6, sizeof(serverAddress_v6)) < 0)
+                        {
+                           syslog(LOG_ERR, "Error calling bind() on the TLS IPv6 socket: %d.", errno);
+                           exit(EXIT_FAILURE);
+                        }
 
-                     if (rc = pthread_create(&thread, &detach, ssocklLoop, &gListenSSockL_v6))
-                     {
-                        syslog(LOG_ERR, "Cannot create thread for responding to IPv6 TLS client connections: %d.", rc);
-                        exit(EXIT_FAILURE);
-                     }
+                        if (listen(gListenSSockL_v6, 5) < 0)
+                        {
+                           syslog(LOG_ERR, "Error calling listen() on the TLS IPv6 socket.");
+                           exit(EXIT_FAILURE);
+                        }
+
+                        if (rc = pthread_create(&thread, &detach, ssocklLoop, &gListenSSockL_v6))
+                        {
+                           syslog(LOG_ERR, "Cannot create thread for responding to IPv6 TLS client connections: %d.", rc);
+                           exit(EXIT_FAILURE);
+                        }
 
 
-            #pragma mark ••• main() -- OpenSSL BIO any host setup •••
-                  #ifndef NOBIOSSL
-                     char bio_listen[32]; snprintf(bio_listen, 32, "%s:%d", bio_addr, bio_port);
+               #pragma mark ••• main() -- OpenSSL BIO any host setup •••
+                     #ifndef NOBIOSSL
+                        char bio_listen[32]; snprintf(bio_listen, 32, "%s:%d", bio_addr, bio_port);
 
-                     if ((gsBIO = BIO_new_ssl(gCTX, 0)) == NULL)
-                     {
-                        syslog(LOG_ERR, "Cannot create the BIO-SSL structure.");
-                        exit(EXIT_FAILURE);
-                     }
+                        if ((gsBIO = BIO_new_ssl(gCTX, 0)) == NULL)
+                        {
+                           syslog(LOG_ERR, "Cannot create the BIO-SSL structure.");
+                           exit(EXIT_FAILURE);
+                        }
 
-                     if ((gAcceptTLSBIO_v4 = BIO_new_accept(bio_listen)) == NULL)
-                     {
-                        BIO_free(gsBIO);
-                        syslog(LOG_ERR, "Cannot create the BIO on hostIP %s.", bio_listen);
-                        exit(EXIT_FAILURE);
-                     }
+                        if ((gAcceptTLSBIO_v4 = BIO_new_accept(bio_listen)) == NULL)
+                        {
+                           BIO_free(gsBIO);
+                           syslog(LOG_ERR, "Cannot create the BIO on hostIP %s.", bio_listen);
+                           exit(EXIT_FAILURE);
+                        }
 
-                     BIO_set_accept_bios(gAcceptTLSBIO_v4, gsBIO);
-                     atexit(SSL_BIO_cleanup);
+                        BIO_set_accept_bios(gAcceptTLSBIO_v4, gsBIO);
+                        atexit(SSL_BIO_cleanup);
 
-                     if ((rc = BIO_do_accept(gAcceptTLSBIO_v4)) <= 0)
-                     {
-                        if (gShutdownFlag)
-                           exit(0);
-                        syslog(LOG_ERR, "Error setting up the accept BIO: %s.", ERR_error_string(rc, NULL));
-                        exit(EXIT_FAILURE);
-                     }
+                        if ((rc = BIO_do_accept(gAcceptTLSBIO_v4)) <= 0)
+                        {
+                           if (gShutdownFlag)
+                              exit(0);
+                           syslog(LOG_ERR, "Error setting up the accept BIO: %s.", ERR_error_string(rc, NULL));
+                           exit(EXIT_FAILURE);
+                        }
 
-                     if (rc = pthread_create(&thread, &detach, biotlsLoop, gAcceptTLSBIO_v4))
-                     {
-                        syslog(LOG_ERR, "Cannot create thread for responding to BIO IPv4 TLS client connections: %d.", rc);
-                        exit(EXIT_FAILURE);
-                     }
-                  #endif
+                        if (rc = pthread_create(&thread, &detach, biotlsLoop, gAcceptTLSBIO_v4))
+                        {
+                           syslog(LOG_ERR, "Cannot create thread for responding to BIO IPv4 TLS client connections: %d.", rc);
+                           exit(EXIT_FAILURE);
+                        }
+                     #endif
+                  }
+
+                  else
+                     syslog(LOG_WARNING, "Cannot establish TLS context - cert dir = %s.", certdir);
                }
 
                else
-                  syslog(LOG_WARNING, "Cannot establish TLS context - cert dir = %s.", certdir);
+                  syslog(LOG_WARNING, "Cannot establish ECDH cryptography.");
             }
 
             else
-               syslog(LOG_WARNING, "Cannot establish ECDH cryptography.");
+               syslog(LOG_WARNING, "DH parameter file not found: %s.", dh1024pem);
          }
 
          else
-            syslog(LOG_WARNING, "DH parameter file not found: %s.", dh1024pem);
+            syslog(LOG_WARNING, "Out of memory error during TLS thread setup.");
       }
-
-      else
-         syslog(LOG_WARNING, "Out of memory error during TLS thread setup.");
 
 
 #pragma mark ••• main() -- main thread loop responding to Unix Domain Socket connections •••
