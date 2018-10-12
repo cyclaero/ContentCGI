@@ -26,7 +26,7 @@
 //  OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-#define INDEX_PREFIX_LEN 402
+#define INDEX_PREFIX_LEN 415
 #define INDEX_PREFIX \
 "<!--S--><!DOCTYPE html><HTML><HEAD>\n"\
 "   <TITLE>Résumés</TITLE>\n"\
@@ -34,7 +34,7 @@
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"\
 "   <LINK rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\">\n"\
 "   <SCRIPT src=\"functions.js\"></SCRIPT>\n"\
-"</HEAD><BODY><DIV class=\"page\"><TABLE>\n"\
+"</HEAD><BODY><DIV class=\"page\"><TABLE class=\"page\">\n"\
 "   <TR>\n"\
 "      <TH style=\"width:675px;\">\n"\
 "         <H1><A href=\"./\">"
@@ -104,7 +104,7 @@
 "\r\n" \
 "</p>\r\n"
 
-#define SEARCH_PREFIX_LEN 425
+#define SEARCH_PREFIX_LEN 438
 #define SEARCH_PREFIX \
 "<!DOCTYPE html><HTML><HEAD>\n"\
 "   <TITLE>Search Results</TITLE>\n"\
@@ -112,7 +112,7 @@
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"\
 "   <LINK rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\">\n"\
 "   <SCRIPT src=\"functions.js\"></SCRIPT>\n"\
-"</HEAD><BODY><DIV class=\"page\"><TABLE>\n"\
+"</HEAD><BODY><DIV class=\"page\"><TABLE class=\"page\">\n"\
 "   <TR>\n"\
 "      <TH style=\"width:675px;\">\n"\
 "         <H1 style=\"line-height:29px;\"><A href=\"./\">"
