@@ -36,6 +36,7 @@ P.text-left              { text-align:left; }
 P.text-center            { text-align:center; }
 P.text-right             { text-align:right; }
 P.stamp                  { text-align:right; font-size:9px; padding-top:7px; color:#555; }
+P.back-gray              { background-color:#eaeaee; }
 
 A.index                  { color:#000; margin:0; padding:0; }
 A.index H1               { color:#47A; }
@@ -53,13 +54,16 @@ IMG.align-center         { clear:both; display: block; margin-left:auto; margin-
 IMG.shade                { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; }
 IMG.shade-center         { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; clear:both; display: block; margin-left:auto; margin-right:auto; }
 
-TABLE                    { width:100%; table-layout:fixed; margin:9px 0 9px 0; padding:0; border-width:0; border-spacing:0; border-collapse:collapse; }
-TH.text-left             { text-align:left; }
-TH.text-center           { text-align:center; }
-TH.text-right            { text-align:right; }
-TD.text-left             { text-align:left; }
-TD.text-center           { text-align:center; }
-TD.text-right            { text-align:right; }
+TABLE                    { width:100%; table-layout:fixed; margin:9px 0 9px 0; padding:0; }
+TR.back-gray             { background-color:#eaeaee; }
+TH.back-gray             { background-color:#eaeaee; }
+TD.back-gray             { background-color:#eaeaee; }
+TH.text-left             { text-align:left   !important; vertical-align:middle  !important; }
+TH.text-center           { text-align:center !important; vertical-align:middle  !important; }
+TH.text-right            { text-align:right  !important; vertical-align:middle  !important; }
+TD.text-left             { text-align:left   !important; vertical-align:middle  !important; }
+TD.text-center           { text-align:center !important; vertical-align:middle  !important; }
+TD.text-right            { text-align:right  !important; vertical-align:middle  !important; }
 
 INPUT,TEXTAREA,SELECT    { font-family:verdana,sans-serif; font-size:12px; border:1px solid #bbb; background-clip:content-box; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box }
 SELECT                   { font-family:verdana,sans-serif; font-size:12px; margin:1px 2px; border:1px solid #bbb; border-radius:5px; background-clip:content-box }
