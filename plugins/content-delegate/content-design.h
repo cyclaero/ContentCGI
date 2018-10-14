@@ -26,7 +26,7 @@
 //  OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-#define INDEX_PREFIX_LEN 415
+#define INDEX_PREFIX_LEN 408
 #define INDEX_PREFIX \
 "<!--S--><!DOCTYPE html><HTML><HEAD>\n"\
 "   <TITLE>Résumés</TITLE>\n"\
@@ -36,30 +36,30 @@
 "   <SCRIPT src=\"functions.js\"></SCRIPT>\n"\
 "</HEAD><BODY><DIV class=\"page\"><TABLE class=\"page\">\n"\
 "   <TR>\n"\
-"      <TH style=\"width:675px;\">\n"\
+"      <TH class=\"title\">\n"\
 "         <H1><A href=\"./\">"
 
-#define INDEX_BODY_FYI_LEN 648
+#define INDEX_BODY_FYI_LEN 629
 #define INDEX_BODY_FYI \
 "</A></H1>\n"\
 "      </TH>\n"\
-"      <TH style=\"width:167px;\"><TABLE class=\"fyi\">\n"\
+"      <TH class=\"fyi\"><TABLE>\n"\
 "         <TR><TH><A href=\"imprint.html\">Imprint</A></TH><TD><A href=\"impressum.html\">Impressum</A></TD></TR>\n"\
 "         <TR><TH><A href=\"privacy.html\">Privacy</A></TH><TD><A href=\"datenschutz.html\">Datenschutz</TD></TR>\n"\
 "         <TR><TH><A href=\"disclaimer.html\">Disclaimer</A></TH><TD><A href=\"haftung.html\">Haftung</TD></TR>\n"\
 "         <TR><TH><A href=\"Downloads/\" target=\"_blank\">Downloads</A></TH><TD>&nbsp;</TD></TR>\n"\
-"      </TH></TABLE>\n"\
-"      <TH style=\"width:96px;\">\n"\
-"         <A href=\"/\"><IMG style=\"width:96px;\" src=\"logo.png\"></A>\n"\
+"      </TABLE></TH>\n"\
+"      <TH class=\"logo\">\n"\
+"         <A href=\"/\"><IMG class=\"logo\" src=\"logo.png\"></A>\n"\
 "      </TH>\n"\
 "   </TR>\n"\
 "   <TR>\n"\
-"      <TD>\n"
+"      <TD class=\"content\">\n"
 
 #define INDEX_SUFFIX_LEN 160
 #define INDEX_SUFFIX \
 "      </TD>\n"\
-"      <TD colspan=\"2\" class=\"toc\">\n"\
+"      <TD class=\"toc\" colspan=\"2\">\n"\
 "         <IFRAME id=\"toc\" src=\"toc.html\" align=\"top\"></IFRAME>\n"\
 "      </TD>\n"\
 "   </TR>\n"\
@@ -104,7 +104,7 @@
 "\r\n" \
 "</p>\r\n"
 
-#define SEARCH_PREFIX_LEN 438
+#define SEARCH_PREFIX_LEN 431
 #define SEARCH_PREFIX \
 "<!DOCTYPE html><HTML><HEAD>\n"\
 "   <TITLE>Search Results</TITLE>\n"\
@@ -114,22 +114,22 @@
 "   <SCRIPT src=\"functions.js\"></SCRIPT>\n"\
 "</HEAD><BODY><DIV class=\"page\"><TABLE class=\"page\">\n"\
 "   <TR>\n"\
-"      <TH style=\"width:675px;\">\n"\
+"      <TH class=\"title\">\n"\
 "         <H1 style=\"line-height:29px;\"><A href=\"./\">"
 
-#define SEARCH_BODY_FYI_LEN 727
+#define SEARCH_BODY_FYI_LEN 692
 #define SEARCH_BODY_FYI \
 "</A><BR>\n"\
 "         <SPAN style=\"font-size:19px;\">Search Results</SPAN></H1>\n"\
 "      </TH>\n"\
-"      <TH style=\"width:167px;\"><TABLE class=\"fyi\">\n"\
+"      <TH class=\"fyi\"><TABLE>\n"\
 "         <TR><TH><A href=\"imprint.html\">Imprint</A></TH><TD><A href=\"impressum.html\">Impressum</A></TD></TR>\n"\
 "         <TR><TH><A href=\"privacy.html\">Privacy</A></TH><TD><A href=\"datenschutz.html\">Datenschutz</TD></TR>\n"\
 "         <TR><TH><A href=\"disclaimer.html\">Disclaimer</A></TH><TD><A href=\"haftung.html\">Haftung</TD></TR>\n"\
 "         <TR><TH><A href=\"Downloads/\" target=\"_blank\">Downloads</A></TH><TD>&nbsp;</TD></TR>\n"\
-"      </TH></TABLE>\n"\
-"      <TH style=\"width:96px;\">\n"\
-"         <A href=\"/\"><IMG style=\"width:96px;\" src=\"logo.png\"></A>\n"\
+"      </TABLE></TH>\n"\
+"      <TH class=\"logo\">\n"\
+"         <A href=\"/\"><IMG class=\"logo\" src=\"logo.png\"></A>\n"\
 "      </TH>\n"\
 "   </TR>\n"\
 "   <TR>\n"\
@@ -142,7 +142,7 @@
 #define SEARCH_SUFFIX_LEN 160
 #define SEARCH_SUFFIX \
 "      </TD>\n"\
-"      <TD colspan=\"2\" class=\"toc\">\n"\
+"      <TD class=\"toc\" colspan=\"2\">\n"\
 "         <IFRAME id=\"toc\" src=\"toc.html\" align=\"top\"></IFRAME>\n"\
 "      </TD>\n"\
 "   </TR>\n"\
