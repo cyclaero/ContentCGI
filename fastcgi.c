@@ -137,7 +137,7 @@ boolean FCGI_Receiver(ConnExec *connex)
                            if ((*(p+1) & 0x80) == 0)
                               valLen = *(p+1) & 0x7F, p += 2;
                            else
-                              valLen = MapInt(*(uint32_t *)(p+1)) & 0x7FFFFFFF, p += 5;
+                              valLen = (int)MapInt(*(uint32_t *)(p+1)) & 0x7FFFFFFF, p += 5;
                         }
                         else
                         {
@@ -145,7 +145,7 @@ boolean FCGI_Receiver(ConnExec *connex)
                            if ((*(p+4) & 0x80) == 0)
                               valLen = *(p+4) & 0x7F, p += 5;
                            else
-                              valLen = MapInt(*(uint32_t *)(p+4)) & 0x7FFFFFFF, p += 8;
+                              valLen = (int)MapInt(*(uint32_t *)(p+4)) & 0x7FFFFFFF, p += 8;
                         }
 
                         *o = '\0';                      // mark the end of the previous value string by disposing the no more used name length byte
@@ -284,7 +284,7 @@ boolean FCGI_Receiver(ConnExec *connex)
                            if ((*(p+1) & 0x80) == 0)
                               valLen = *(p+1) & 0x7F, p += 2;
                            else
-                              valLen = MapInt(*(uint32_t *)(p+1)) & 0x7FFFFFFF, p += 5;
+                              valLen = (int)MapInt(*(uint32_t *)(p+1)) & 0x7FFFFFFF, p += 5;
                         }
                         else
                         {
@@ -292,7 +292,7 @@ boolean FCGI_Receiver(ConnExec *connex)
                            if ((*(p+4) & 0x80) == 0)
                               valLen = *(p+4) & 0x7F, p += 5;
                            else
-                              valLen = MapInt(*(uint32_t *)(p+4)) & 0x7FFFFFFF, p += 8;
+                              valLen = (int)MapInt(*(uint32_t *)(p+4)) & 0x7FFFFFFF, p += 8;
                         }
 
                         p += namLen;
