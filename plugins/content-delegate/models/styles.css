@@ -19,7 +19,7 @@ TH.title H1 A         { color:#000 !important; }
 TH.title H1 A:hover   { color:#777 !important; }
 
 TH.fyi                { width:167px; padding:0; }
-TH.fyi TABLE          { width:147px; margin:0 0 0 25px; font-size:11px; border-width:0; border-spacing:0; border-collapse:collapse; }
+TH.fyi TABLE          { width:147px; margin:0 0 0 26px; font-size:11px; border-width:0; border-spacing:0; border-collapse:collapse; }
 TH.fyi TH             { font-weight:normal; text-align:left;  vertical-align:top; width:60px; }
 TH.fyi TD             { font-weight:normal; text-align:right; padding-right:15px; }
 
