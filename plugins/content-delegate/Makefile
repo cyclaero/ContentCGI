@@ -48,7 +48,7 @@ CFLAGS += -march=native -mssse3
 CFLAGS += -fsigned-char
 .endif
 
-CFLAGS += -std=gnu11 -fpic -fvisibility=hidden -fstrict-aliasing -fno-common -fobjc-nonfragile-abi \
+CFLAGS += -std=gnu11 -fpic -fvisibility=hidden -fstrict-aliasing -fno-common -fstack-protector -fobjc-nonfragile-abi \
           -Wno-multichar -Wno-parentheses -Wno-empty-body -Wno-switch -Wno-deprecated-declarations -Wshorten-64-to-32 \
           -I/usr/local/include -I/opt/local/include -I/usr/local/include/GraphicsMagick -I/opt/local/include/GraphicsMagick -I../
 LDFLAGS = -shared -L/usr/local/lib -L/usr/lib -L/opt/local/lib -lm -lpthread -liconv -lutf8proc -lGraphicsMagick -lobjc -rpath $(PLUGINS) -L$(PLUGINS) -lcyobj

@@ -101,10 +101,10 @@ static void loadPlugins(const char *dir, size_t len)
                if (ep->d_name[0] != '.' && ep->d_type == DT_DIR)
                {
                   int  subdpl = (int)plugdl+1+ep->d_namlen;
-                  char subdp[subdpl+1];
+                  char subdp[OSP(subdpl+1)];
                   strmlcat(subdp, subdpl+1, NULL, plugd, plugdl, "/", 1, ep->d_name, ep->d_namlen, NULL);
                   int  filepl = subdpl+1+ep->d_namlen;
-                  char filep[filepl+6];
+                  char filep[OSP(filepl+6)];
                   strmlcat(filep, filepl+6, NULL, subdp, subdpl, "/", 1, ep->d_name, ep->d_namlen, ".so", 3, NULL);
                   if (stat(filep, &st) == no_error && S_ISREG(st.st_mode))
                   {
@@ -212,7 +212,7 @@ static void loadPlugins(const char *dir, size_t len)
                            }
 
                            // load the files of a possible models directory into the plugins cache
-                           char *modeldir = strcpy(alloca(subdpl+7+1), subdp);
+                           char *modeldir = strcpy(alloca(OSP(subdpl+7+1)), subdp);
                            cpy8(modeldir+subdpl, "/models");
                            if (stat(modeldir, &st) == no_error && S_ISDIR(st.st_mode))
                            {
@@ -226,7 +226,7 @@ static void loadPlugins(const char *dir, size_t len)
                                     if (iep->d_name[0] != '.' && (iep->d_type == DT_REG || iep->d_type == DT_LNK))
                                     {
                                        int  modelpl = subdpl+7+1+iep->d_namlen;
-                                       char modelp[modelpl+1];
+                                       char modelp[OSP(modelpl+1)];
                                        strmlcat(modelp, modelpl+1, NULL, modeldir, subdpl+7, "/", 1, iep->d_name, iep->d_namlen, NULL);
                                        if (stat(modelp, &st) == no_error && S_ISREG(st.st_mode) && st.st_size && (srcfile = fopen(modelp, "r")))
                                        {
@@ -258,7 +258,7 @@ static void loadPlugins(const char *dir, size_t len)
                            }
 
                            // load the files of a possible images directory into the plugins cache
-                           char *imagedir = strcpy(alloca(subdpl+7+1), subdp);
+                           char *imagedir = strcpy(alloca(OSP(subdpl+7+1)), subdp);
                            cpy8(imagedir+subdpl, "/images");
                            if (stat(imagedir, &st) == no_error && S_ISDIR(st.st_mode))
                            {
@@ -272,7 +272,7 @@ static void loadPlugins(const char *dir, size_t len)
                                     if (iep->d_name[0] != '.' && (iep->d_type == DT_REG || iep->d_type == DT_LNK))
                                     {
                                        int  imagepl = subdpl+7+1+iep->d_namlen;
-                                       char imagep[imagepl+1];
+                                       char imagep[OSP(imagepl+1)];
                                        strmlcat(imagep, imagepl+1, NULL, imagedir, subdpl+7, "/", 1, iep->d_name, iep->d_namlen, NULL);
                                        if (stat(imagep, &st) == no_error && S_ISREG(st.st_mode) && st.st_size && (srcfile = fopen(imagep, "r")))
                                        {
@@ -949,7 +949,7 @@ int main(int argc, char *const argv[])
 
 #pragma mark ••• main() -- web root •••
    if (expandWebRoot)
-      webroot = strcat(strcpy(alloca(homelen + strvlen(webroot)), userhome), webroot+1);
+      webroot = strcat(strcpy(alloca(OSP(homelen + strvlen(webroot))), userhome), webroot+1);
 
    if ((rc = chdir(webroot)) == no_error)
    {
@@ -975,7 +975,7 @@ int main(int argc, char *const argv[])
 
 #pragma mark ••• main() -- Unix Domain Socket setup •••
       if (expandUSocket)
-         usocket = strcat(strcpy(alloca(homelen + strvlen(usocket)), userhome), usocket+1);
+         usocket = strcat(strcpy(alloca(OSP(homelen + strvlen(usocket))), userhome), usocket+1);
       unlink(usocket);
 
       if ((gListenSocket_ud = socket(AF_LOCAL, SOCK_STREAM, 0)) < 0)
@@ -1067,14 +1067,14 @@ int main(int argc, char *const argv[])
 #pragma mark ••• main() -- TLS setup •••
       size_t certdir_len = strvlen(certdir);
       if (expandCertDir)
-         certdir = strcat(strcpy(alloca((certdir_len = homelen + certdir_len-1)+1), userhome), certdir+1);
+         certdir = strcat(strcpy(alloca(OSP((certdir_len = homelen + certdir_len-1)+1)), userhome), certdir+1);
 
       if (stat(certdir, &st) == no_error)
       {
-         char *certchain = strcat(strcpy(alloca(certdir_len+11), certdir), "/chain.crt");
-         char *chainpkey = strcat(strcpy(alloca(certdir_len+11), certdir), "/chain.key");
-         char *dh1024pem = strcat(strcpy(alloca(certdir_len+12), certdir), "/dh1024.pem");
-         char *dh2048pem = strcat(strcpy(alloca(certdir_len+12), certdir), "/dh2048.pem");
+         char *certchain = strcat(strcpy(alloca(OSP(certdir_len+11)), certdir), "/chain.crt");
+         char *chainpkey = strcat(strcpy(alloca(OSP(certdir_len+11)), certdir), "/chain.key");
+         char *dh1024pem = strcat(strcpy(alloca(OSP(certdir_len+12)), certdir), "/dh1024.pem");
+         char *dh2048pem = strcat(strcpy(alloca(OSP(certdir_len+12)), certdir), "/dh2048.pem");
 
          SSL_library_init();
          SSL_load_error_strings();

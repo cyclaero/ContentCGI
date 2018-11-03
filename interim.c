@@ -517,7 +517,7 @@ static void quicksort(Node *a[], int l, int r)
 void printTable(Node *table[], uint *nameColWidth)
 {
    uint  i, m = 0, n = 2 + *(uint *)&table[0];
-   Node *sort[*(uint *)&table[1]];
+   Node *sort[OSP(*(uint *)&table[1])];
    for (m = 0, i = 2; i < n; i++)
       if (table[i])
          serializeTree(sort, nameColWidth, &m, table[i]);
@@ -538,7 +538,7 @@ int sprintTable(Node *table[], uint *namColWidth, dynhdl output)
          *output = newDynBuffer();
 
       uint  i, m = 0, n = 2 + *(uint *)&table[0];
-      Node *sort[*(uint *)&table[1]];
+      Node *sort[OSP(*(uint *)&table[1])];
       for (m = 0, i = 2; i < n; i++)
          if (table[i])
             serializeTree(sort, namColWidth, &m, table[i]);
@@ -547,7 +547,7 @@ int sprintTable(Node *table[], uint *namColWidth, dynhdl output)
       {
          quicksort(sort, 0, m-1);
 
-         char namColumn[1+*namColWidth+5+1];
+         char namColumn[OSP(1+*namColWidth+5+1)];
          for (i = 0; i < m; i++)
          {
             dynAddString(output, namColumn, snprintf(namColumn, 3+*namColWidth+2+1, "   %*s: ", *namColWidth, sort[i]->name));

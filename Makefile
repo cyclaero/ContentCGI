@@ -47,7 +47,7 @@ CFLAGS += -march=native -mssse3
 CFLAGS += -fsigned-char
 .endif
 
-CFLAGS += -DNOBIOSSL -std=gnu11 -fno-pic -fvisibility=hidden -fstrict-aliasing -fno-common \
+CFLAGS += -DNOBIOSSL -std=gnu11 -fno-pic -fvisibility=hidden -fstrict-aliasing -fno-common -fstack-protector \
           -Wno-multichar -Wno-parentheses -Wno-empty-body -Wno-switch -Wno-deprecated-declarations -Wshorten-64-to-32 \
           -I/usr/local/include
 LDFLAGS = -L/usr/local/lib -lm -lpthread -lcrypto -lssl

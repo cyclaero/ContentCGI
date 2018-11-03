@@ -250,7 +250,7 @@
                     rl = strvlen(droot),
                     nl = strvlen(name),
                     imgpl = rl + 1 + nl + 1 + fl;     // for example $DOCUMENT_ROOT/articles/media/1527627185/image_to_be_uploaded.jpg
-               char imgp[imgpl+1];
+               char imgp[OSP(imgpl+1)];
                cl = strmlcat(imgp, imgpl+1, NULL,  droot, rl, "/", 1, name, nl, NULL);
 
                struct stat st;                        // check whether the target directory exist
@@ -339,7 +339,7 @@
          size[sl] = angle[al] = crop[cl] = '\0';
 
          int  imgpl = rl + 1 + nl + 5;       // for example $DOCUMENT_ROOT/articles/media/1527627185/image_to_be_inserted.jpg[.png]
-         char imgp[imgpl+1];
+         char imgp[OSP(imgpl+1)];
          nl = strmlcat(imgp, imgpl+1, NULL,  droot, rl, "/", 1, name, nl, NULL);
 
          struct stat st;
@@ -447,7 +447,7 @@
          size[sl] = angle[al] = '\0';
 
          int  imgpl = rl + 1 + nl + 5;       // for example $DOCUMENT_ROOT/articles/media/1527627185/image_to_be_inserted.jpg[.png]
-         char imgp[imgpl+1];
+         char imgp[OSP(imgpl+1)];
          nl = strmlcat(imgp, imgpl+1, NULL,  droot, rl, "/", 1, name, nl, NULL);
 
          struct stat st;
@@ -522,7 +522,7 @@ boolean  reindex(char *droot, char *updtname, char *contitle);
 
          int  bl = strvlen(basepath);
          int  artdl = drootl + 1 + bl; // for example $DOCUMENT_ROOT/articles
-         char artd[artdl+1];
+         char artd[OSP(artdl+1)];
          strmlcat(artd, artdl+1, NULL, droot, drootl, "/", 1, basepath, bl, NULL);
 
          struct stat st;
@@ -594,17 +594,17 @@ boolean  reindex(char *droot, char *updtname, char *contitle);
             int  bl = strvlen(basepath),
                  al = strvlen(article);
             int  artpl = drootl + 1 + bl + 1 + al;          // for example $DOCUMENT_ROOT/articles/1527627185.html
-            char artp[artpl+1];
+            char artp[OSP(artpl+1)];
             strmlcat(artp, artpl+1, NULL, droot, drootl, "/", 1, basepath, bl, "/", 1, article, al, NULL);
             int  dl = domlen(article);
             int  medpl = drootl + 1 + bl + 1 + 5 + 1 + dl;  // for example $DOCUMENT_ROOT/articles/media/1527627185
-            char medp[medpl+1];
+            char medp[OSP(medpl+1)];
             strmlcat(medp, medpl+1, NULL, droot, drootl, "/", 1, basepath, bl, "/media/", 7, article, dl, NULL);
 
             // 1. move the respective media directory into /tmp
             struct stat st;
             int  tmppl = 5+al;                              // for example /tmp/1527627185.html
-            char tmpp[tmppl+1];
+            char tmpp[OSP(tmppl+1)];
             strmlcat(tmpp, tmppl+1, NULL, "/tmp/", 5, article, dl, NULL);
             if (stat(medp, &st) == no_error && S_ISDIR(st.st_mode))
                rename(medp, tmpp);
@@ -670,7 +670,7 @@ SEL makeSelector(char *message, int ml)
 {
    if (!ml)
       ml = strvlen(message);
-   char sel[ml+4+1];
+   char sel[OSP(ml+4+1)];
    strmlcpy(sel, message, 0, &ml);
    cpy5(sel+ml, "::::");
    return sel_registerName(sel);
@@ -693,7 +693,7 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
          el = 10, entity = "index.html";
 
       int     ml = el;
-      char  *msg = strcpy(alloca(ml+5), entity);
+      char  *msg = strcpy(alloca(OSP(ml+5)), entity);
       char *spec = NULL;
 
       if (cmp8(msg, "content."))
@@ -800,7 +800,7 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
    if (!cache && droot)
    {
       filepl = drootl + 1 + el;
-      filep = alloca(filepl+1);
+      filep = alloca(OSP(filepl+1));
       strmlcat(filep, filepl+1, NULL, droot, drootl, "/", 1, entity, el, NULL);
    }
 
@@ -981,7 +981,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
       if (!cache)
       {
          filepl = drootl + 1 + el;
-         filep  = alloca(filepl+1);
+         filep  = alloca(OSP(filepl+1));
          strmlcat(filep, filepl+1, NULL, droot, drootl, "/", 1, entity, el, NULL);
       }
 
@@ -1078,7 +1078,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                      // and in case a heading has been found, replace the content of <TITLE> by it
                      if (heading && headlen)
                      {
-                        memvcpy(p = alloca(headlen+1), heading, headlen);
+                        memvcpy(p = alloca(OSP(headlen+1)), heading, headlen);
                         headlen = stripATags(heading = p, headlen);
                         p = NULL, n = 0;
 
@@ -1167,7 +1167,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                               {
                                  for (j = 1; entity[el-j] != '/' && j <= el; j++);
                                  tmpfpl = 5 + --j;
-                                 tmpfp = alloca(tmpfpl+1);
+                                 tmpfp = alloca(OSP(tmpfpl+1));
                                  strmlcat(tmpfp, tmpfpl+1, NULL, "/tmp/", 5, filep+filepl-j, j, NULL);
                                  file = fopen(tmpfp, "w");
                               }
@@ -1175,7 +1175,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                               {
                                  int pl, sl = strvlen(spec);
                                  filepl = drootl + 1 + el + 1 + 12 + 1 + sl;     // for example $DOCUMENT_ROOT/articles/1527627185.html
-                                 filep  = alloca(filepl+1);
+                                 filep  = alloca(OSP(filepl+1));
                                  pl  = strmlcat(filep, filepl+1, NULL, droot, drootl, "/", 1, entity, el, "/", 1, NULL);
                                  pl += int2str(filep+pl, creatime, 13, 0);
                                  filep[pl++] = '.';
@@ -1313,7 +1313,7 @@ boolean reindex(char *droot, char *updtname, char *contitle)
    int    drootl = strvlen(droot);
    int    adirl  = drootl + 1 + 8 + 1;  // articels directory, e.g.:  $DOCUMENT_ROOT/articles/
    int    mdirl  = adirl  + 5 + 1;      // extent for the media dir:  $DOCUMENT_ROOT/articles/media/
-   char   adir[mdirl+1]; strmlcat(adir, adirl+1, NULL, droot, drootl, "/articles/", 10, NULL);
+   char   adir[OSP(mdirl+1)]; strmlcat(adir, adirl+1, NULL, droot, drootl, "/articles/", 10, NULL);
    time_t updtstamp = (updtname && *updtname)
                     ? strtol(updtname+segmlen(updtname)+1, NULL, 10)
                     : 0;
@@ -1362,7 +1362,7 @@ boolean reindex(char *droot, char *updtname, char *contitle)
             intStr stamp;
             int    stmpl = int2str(stamp, stamps[j], intLen, 0);
             int    artpl = adirl+stmpl+5;
-            char   artp[artpl+1];
+            char   artp[OSP(artpl+1)];
             char  *contemp;
 
             strmlcat(artp, artpl+1, NULL, adir, adirl, stamp, stmpl, ".html", 5, NULL);
@@ -1435,9 +1435,9 @@ boolean reindex(char *droot, char *updtname, char *contitle)
          boolean ok1 = false, ok2 = false;
 
          int   idxfl = drootl + 1 + 11;
-         char  idxf[idxfl+1]; strmlcat(idxf, idxfl+1, NULL, droot, drootl, "/", 1, "index.html", 10, NULL);
+         char  idxf[OSP(idxfl+1)]; strmlcat(idxf, idxfl+1, NULL, droot, drootl, "/", 1, "index.html", 10, NULL);
          int   tocfl = drootl + 1 + 9;
-         char  tocf[tocfl+1]; strmlcat(tocf, tocfl+1, NULL, droot, drootl, "/", 1, "toc.html", 8, NULL);
+         char  tocf[OSP(tocfl+1)]; strmlcat(tocf, tocfl+1, NULL, droot, drootl, "/", 1, "toc.html", 8, NULL);
 
          if ((stat(idxf, &st) != no_error || S_ISREG(st.st_mode) && unlink(idxf) == no_error)   // remove an old index.html file
           || (stat(tocf, &st) != no_error || S_ISREG(st.st_mode) && unlink(tocf) == no_error))  // remove an old toc.html file
@@ -1473,7 +1473,7 @@ boolean reindex(char *droot, char *updtname, char *contitle)
                 && (updtstamp == 0 || updtstamp == strtoul(ep->d_name, NULL, 10)))
                {
                   int  mdl = mdirl + ep->d_namlen + 1;
-                  char mdir[mdl+1];
+                  char mdir[OSP(mdl+1)];
                   strmlcat(mdir, mdl+1, NULL, adir, mdirl, ep->d_name, ep->d_namlen, "/", 1, NULL);
                   DIR *mdp;
                   if (mdp = opendir(mdir))
@@ -1484,7 +1484,7 @@ boolean reindex(char *droot, char *updtname, char *contitle)
                         if (mep->d_name[0] != '.' && mep->d_type == DT_REG)
                         {
                            int  mfl = mdl + mep->d_namlen;
-                           char  mfil[mfl+5];
+                           char  mfil[OSP(mfl+5)];
                            strmlcat(mfil, mfl+1, NULL, mdir, mdl, mep->d_name, mep->d_namlen, NULL);
                            if (findImageName(imageFileNames, mfil+mdirl, ep->d_namlen + 1 + mep->d_namlen))
                               found++;

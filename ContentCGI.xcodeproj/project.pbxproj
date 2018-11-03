@@ -1964,6 +1964,7 @@
 					/opt/local/include,
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_CFLAGS = "-fstack-protector";
 				WARNING_CFLAGS = (
 					"-Wno-multichar",
 					"-Wno-deprecated-declarations",
@@ -2017,6 +2018,7 @@
 					/opt/local/include,
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_CFLAGS = "-fstack-protector";
 				WARNING_CFLAGS = (
 					"-Wno-multichar",
 					"-Wno-deprecated-declarations",

@@ -149,7 +149,7 @@ SEL makeSelector(char *message, int ml)
 {
    if (!ml)
       ml = strvlen(message);
-   char sel[ml+3+1];
+   char sel[OSP(ml+3+1)];
    strmlcpy(sel, message, 0, &ml);
    cpy4(sel+ml, ":::");
    return sel_registerName(sel);

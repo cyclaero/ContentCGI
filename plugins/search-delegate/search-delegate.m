@@ -151,7 +151,7 @@ typedef struct
          if (index.idx && res && (utfToIso = iconv_open("ISO-8859-1//TRANSLIT//IGNORE", "UTF-8")))
          {
             size_t origLen = strvlen(node->value.s), convLen = 4*origLen;
-            char  *orig = node->value.s, *conv = alloca(convLen + 1), *siso = conv;
+            char  *orig = node->value.s, *conv = alloca(OSP(convLen + 1)), *siso = conv;
             iconv(utfToIso, &orig, &origLen, &conv, &convLen); *conv = '\0';
             iconv_close(utfToIso);
 
@@ -183,7 +183,7 @@ typedef struct
                         origLen = strvlen(res[i].title);
                         convLen = 4*origLen;
                         orig = res[i].title;
-                        utf8 = conv = alloca(convLen + 1);
+                        utf8 = conv = alloca(OSP(convLen + 1));
                         iconv(isoToUtf, &orig, &origLen, &conv, &convLen); *conv = '\0';
                         dynAddString((dynhdl)&response->content, utf8, conv-utf8);
                      }
@@ -196,7 +196,7 @@ typedef struct
                         origLen = strvlen(res[i].summary);
                         convLen = 4*origLen;
                         orig = res[i].summary;
-                        utf8 = conv = alloca(convLen + 1);
+                        utf8 = conv = alloca(OSP(convLen + 1));
                         iconv(isoToUtf, &orig, &origLen, &conv, &convLen); *conv = '\0';
                         dynAddString((dynhdl)&response->content, "<P>", 3);
                         dynAddString((dynhdl)&response->content, utf8, conv-utf8);
@@ -253,7 +253,7 @@ SEL makeSelector(char *message, int ml)
 {
    if (!ml)
       ml = strvlen(message);
-   char sel[ml+3+1];
+   char sel[OSP(ml+3+1)];
    strmlcpy(sel, message, 0, &ml);
    cpy4(sel+ml, ":::");
    return sel_registerName(sel);
