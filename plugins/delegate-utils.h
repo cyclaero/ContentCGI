@@ -1161,7 +1161,7 @@ static inline char *postDecode(char *element)
 
 
 #pragma mark ••• Oversize Protection for variable length arrays and alloca() •••
-#define OSP(cnt) ((cnt <= 4096) ? cnt : exit(-1), 1)
+#define OSP(cnt) ((cnt <= 4096) ? cnt : (exit(EXIT_FAILURE), 1))
 
 
 #pragma mark ••• Fencing Memory Allocation Wrappers •••
