@@ -1,11 +1,7 @@
 /* Editor JS of the Content Responder Delegate */
 
-ContentEdit.TRIM_WHITESPACE = false;
 
-window.addEventListener('load', function()
-{
-   var editor;
-});
+ContentTools.RESTRICTED_ATTRIBUTES['*'] = [];
 
 ContentTools.StylePalette.add([
    new ContentTools.Style('Stamp',           'stamp',        ['p']),
@@ -16,13 +12,19 @@ ContentTools.StylePalette.add([
    new ContentTools.Style('Shade center',    'shade-center', ['img'])
 ]);
 
+ContentEdit.TRIM_WHITESPACE = false;
+
+window.addEventListener('load', function()
+{
+   var editor;
+});
+
 editor = ContentTools.EditorApp.get();
 editor.init('[data-editable], [data-fixture]', 'data-name');
 
 
 var IMG_MAX_WIDTH = 675.0,
     ROTATION_STEP = 15;
-
 
 editor.addEventListener('saved', function (ev)
 {
