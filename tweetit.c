@@ -60,37 +60,63 @@ int stripTags(uchar *s, ssize_t n)
    for (i = 0, j = 0; i < n; i++)
       switch (s[i])
       {
+         case '&':
+            if (cmp5(s+i+1, "nbsp;"))
+               s[j++] = ' ', i += 5;
+
+            else if (cmp3(s+i+1, "lt;"))
+               s[j++] = '<', i += 3;
+
+            else if (cmp3(s+i+1, "gt;"))
+               s[j++] = '>', i += 3;
+
+            else
+               goto noconv;
+
+            break;
+
          case '<':
-            if (s[i+1] == 'a' || s[i+1] == 'A')
-            {
+            if (cmp3(s+i+1, "br>") || cmp3(s+i+1, "BR>"))
+               s[j++] = '\n', i += 3;
+
+            else if (s[i+1] == 'a' || s[i+1] == 'A'
+             || s[i+1] == 'b' || s[i+1] == 'B'
+             || s[i+1] == 'i' || s[i+1] == 'I'
+             || s[i+1] == 'u' || s[i+1] == 'u')
                for (i += 2; s[i] != '>'; i++);
-               break;
-            }
+
+            else if (cmp2(s+i+1, "/a")    || cmp2(s+i+1, "/A")
+                  || cmp2(s+i+1, "/b")    || cmp2(s+i+1, "/B")
+                  || cmp2(s+i+1, "/i")    || cmp2(s+i+1, "/I")
+                  || cmp2(s+i+1, "/u")    || cmp2(s+i+1, "/U"))
+               for (i += 3; s[i] != '>'; i++);
+
+            else if (cmp4(s+i+1, "code")  || cmp4(s+i+1, "CODE")
+                  || cmp4(s+i+1, "span")  || cmp4(s+i+1, "SPAN")
+                  || cmp5(s+i+1, "/code") || cmp5(s+i+1, "/CODE")
+                  || cmp5(s+i+1, "/span") || cmp5(s+i+1, "/SPAN"))
+               for (i += 5; s[i] != '>'; i++);
 
             else if (s[i+1] == 'p' || s[i+1] == 'P'
                   || s[i+1] == 'h' || s[i+1] == 'H')
             {
                for (i += 2; s[i] != '>'; i++);
-               for (i += 1; s[i] <= ' '; i++);
-               --i;
-               break;
-            }
-
-            else if (cmp2(s+i+1, "/a") || cmp2(s+i+1, "/A"))
-            {
-               for (i += 3; s[i] != '>'; i++);
-               break;
+               for (i += 1; s[i] <= ' '; i++); --i;
             }
 
             else if (cmp2(s+i+1, "/h") || cmp2(s+i+1, "/H")
                   || cmp2(s+i+1, "/p") || cmp2(s+i+1, "/P"))
             {
                for (i += 3; s[i] != '>'; i++);
-               for (i += 1; s[i] <= ' '; i++);
-               --i;
-               break;
+               for (i += 1; s[i] <= ' '; i++); --i;
             }
 
+            else
+               goto noconv;
+
+            break;
+
+         noconv:
          default:
             if (i != j)
                s[j] = s[i];
