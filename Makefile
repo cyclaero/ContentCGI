@@ -54,8 +54,9 @@ LDFLAGS = -L/usr/local/lib -lm -lpthread -lcrypto -lssl
 SOURCES = firstresponder.c fastcgi.c connection.c interim.c utils.c main.c
 OBJECTS = $(SOURCES:.c=.o)
 PRODUCT = ContentCGI
+TWEETIT = tweetit
 
-all: $(SOURCES) $(PRODUCT)
+all: $(SOURCES) $(PRODUCT) tweetit.c $(TWEETIT)
 
 depend:
 	$(CC) $(CFLAGS) -E -MM *.c > .depend
@@ -63,11 +64,14 @@ depend:
 $(PRODUCT): $(OBJECTS)
 	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
 
+$(TWEETIT): $(OBJECTS) tweetit.c
+	$(CC) $(CFLAGS) tweetit.c utils.o -o $@
+
 $(OBJECTS): Makefile
 	$(CC) $(CFLAGS) $< -c -o $@
 
 clean:
-	rm -rf *.o *.core $(PRODUCT)
+	rm -rf *.o *.core $(PRODUCT) $(TWEETIT)
 
 debug: all
 
@@ -75,5 +79,6 @@ update: clean all
 
 install: $(PRODUCT)
 	install $(STRIP) $(PRODUCT) /usr/local/bin/
+	install $(STRIP) $(TWEETIT) /usr/local/bin/
 	cp $(PRODUCT).rc /usr/local/etc/rc.d/$(PRODUCT)
 	chmod 555 /usr/local/etc/rc.d/$(PRODUCT)

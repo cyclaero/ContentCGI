@@ -16,6 +16,8 @@
 		7E0E573520CF3F5800562DA9 /* search-delegate.js in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E0E571C20CF3E5900562DA9 /* search-delegate.js */; };
 		7E0E573620CF3F5800562DA9 /* search-delegate.ico in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E0E571B20CF3E5900562DA9 /* search-delegate.ico */; };
 		7E0E573720CF3F5800562DA9 /* search-delegate.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E0E571E20CF3E5900562DA9 /* search-delegate.png */; };
+		7E10B91D21E4E51800518516 /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7EC6FA6214F2FB9700B07421 /* utils.c */; };
+		7E10B92921E4E61600518516 /* tweetit.c in Sources */ = {isa = PBXBuildFile; fileRef = 7E10B91321E4E3B300518516 /* tweetit.c */; };
 		7E20155C20B23E82000FC68A /* drop-horz.svg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EB7357320A2534C00D73FC1 /* drop-horz.svg */; };
 		7E20155D20B23E86000FC68A /* drop-vert-above.svg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EB7357420A2534C00D73FC1 /* drop-vert-above.svg */; };
 		7E20155E20B23E88000FC68A /* drop-vert-below.svg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EB7357520A2534C00D73FC1 /* drop-vert-below.svg */; };
@@ -241,6 +243,8 @@
 		7E0E571D20CF3E5900562DA9 /* search-delegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "search-delegate.m"; sourceTree = "<group>"; };
 		7E0E571E20CF3E5900562DA9 /* search-delegate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "search-delegate.png"; sourceTree = "<group>"; };
 		7E0E573020CF3F1900562DA9 /* search-delegate.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "search-delegate.so"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7E10B91321E4E3B300518516 /* tweetit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tweetit.c; sourceTree = "<group>"; };
+		7E10B92821E4E51800518516 /* tweetit */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tweetit; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E20156120B24587000FC68A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = net.daringfireball.markdown; lineEnding = 0; path = README.md; sourceTree = "<group>"; tabWidth = 4; };
 		7E20156220B245D0000FC68A /* apache-vhost.conf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; lineEnding = 0; path = "apache-vhost.conf"; sourceTree = "<group>"; };
 		7E2F1B8620A5DBC500B7B848 /* ContentCGI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ContentCGI; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -675,6 +679,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7E10B92221E4E51800518516 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7E324E6F20B6292A001E29F9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -726,6 +737,7 @@
 				7EC6FA6114F2FB9700B07421 /* utils.h */,
 				7EC6FA6214F2FB9700B07421 /* utils.c */,
 				08FB7796FE84155DC02AAC07 /* main.c */,
+				7E10B91321E4E3B300518516 /* tweetit.c */,
 				7EE8829520AC9EE900CD24F3 /* Makefile */,
 				7E5725F720B1173A009D5008 /* ContentCGI.rc */,
 				7E20156220B245D0000FC68A /* apache-vhost.conf */,
@@ -766,6 +778,7 @@
 				7EBD790620AE18EC0035901F /* content-delegate.so */,
 				7E324E7920B6292A001E29F9 /* libcyobj.so */,
 				7E0E573020CF3F1900562DA9 /* search-delegate.so */,
+				7E10B92821E4E51800518516 /* tweetit */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1581,6 +1594,23 @@
 			productReference = 7E0E573020CF3F1900562DA9 /* search-delegate.so */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
+		7E10B91421E4E51800518516 /* tweetit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7E10B92521E4E51800518516 /* Build configuration list for PBXNativeTarget "tweetit" */;
+			buildPhases = (
+				7E10B91B21E4E51800518516 /* Sources */,
+				7E10B92221E4E51800518516 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = tweetit;
+			productInstallPath = "$(HOME)/bin";
+			productName = ContentCGI;
+			productReference = 7E10B92821E4E51800518516 /* tweetit */;
+			productType = "com.apple.product-type.tool";
+		};
 		7E324E6920B6292A001E29F9 /* libcyobj */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7E324E7620B6292A001E29F9 /* Build configuration list for PBXNativeTarget "libcyobj" */;
@@ -1688,6 +1718,7 @@
 				7EBD78D920AE0F660035901F /* hello-delegate */,
 				7EBD78F720AE18EC0035901F /* content-delegate */,
 				7E0E571F20CF3F1900562DA9 /* search-delegate */,
+				7E10B91421E4E51800518516 /* tweetit */,
 			);
 		};
 /* End PBXProject section */
@@ -1811,6 +1842,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7E10B91B21E4E51800518516 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7E10B91D21E4E51800518516 /* utils.c in Sources */,
+				7E10B92921E4E61600518516 /* tweetit.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7E324E6A20B6292A001E29F9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1889,12 +1929,7 @@
 		1DEB928608733DD80010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = /usr/local/bin;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1907,8 +1942,6 @@
 		1DEB928708733DD80010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				INSTALL_PATH = /usr/local/bin;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1926,7 +1959,7 @@
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
@@ -1980,7 +2013,7 @@
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
 				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
@@ -2079,6 +2112,23 @@
 					"$(PROJECT_DIR)/plugins",
 					/opt/local/lib,
 				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		7E10B92621E4E51800518516 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				INSTALL_PATH = /usr/local/bin;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		7E10B92721E4E51800518516 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INSTALL_PATH = /usr/local/bin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -2250,6 +2300,15 @@
 			buildConfigurations = (
 				7E0E572E20CF3F1900562DA9 /* Debug */,
 				7E0E572F20CF3F1900562DA9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7E10B92521E4E51800518516 /* Build configuration list for PBXNativeTarget "tweetit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7E10B92621E4E51800518516 /* Debug */,
+				7E10B92721E4E51800518516 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

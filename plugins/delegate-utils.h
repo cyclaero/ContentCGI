@@ -1202,7 +1202,7 @@ ssize_t allocsize(void *p);
 #pragma mark ••• Dynamic Buffer facility •••
 
 #define DYNAMIC_BUFFER_SIZE 8192
-#define DYNAMIC_BUFFER_MARGIN 16
+#define DYNAMIC_BUFFER_MARGIN 32
 
 typedef struct
 {
