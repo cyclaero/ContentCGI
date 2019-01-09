@@ -1,8 +1,8 @@
 //  tweetit.c
 //  tweetit
 //
-//  Created by Dr. Rolf Jansen on 2018-05-08.
-//  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
+//  Created by Dr. Rolf Jansen on 2019-01-08.
+//  Copyright © 2019 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@
 
 #define MAX_TWEET_LENGTH 280
 #define TIMESTAMP_LENGTH 19
-#define TWEET_URL_LENGTH 13
+#define TWEET_URL_LENGTH 17
 
 void usage(const char *executable)
 {
