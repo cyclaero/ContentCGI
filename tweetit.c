@@ -1,5 +1,5 @@
 //  tweetit.c
-//  ContentCGI
+//  tweetit
 //
 //  Created by Dr. Rolf Jansen on 2018-05-08.
 //  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.

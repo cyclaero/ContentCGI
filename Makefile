@@ -65,7 +65,7 @@ $(PRODUCT): $(OBJECTS)
 	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
 
 $(TWEETIT): $(OBJECTS) tweetit.c
-	$(CC) $(CFLAGS) tweetit.c utils.o -o $@
+	$(CC) $(CFLAGS) tweetit.c utils.o -lm -o $@
 
 $(OBJECTS): Makefile
 	$(CC) $(CFLAGS) $< -c -o $@
