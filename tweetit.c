@@ -61,9 +61,14 @@ int stripTags(uchar *s, ssize_t n)
       switch (s[i])
       {
          case '<':
-            if (s[i+1] == 'a' || s[i+1] == 'A'
-             || s[i+1] == 'p' || s[i+1] == 'P'
-             || s[i+1] == 'h' || s[i+1] == 'H')
+            if (s[i+1] == 'a' || s[i+1] == 'A')
+            {
+               for (i += 2; s[i] != '>'; i++);
+               break;
+            }
+
+            else if (s[i+1] == 'p' || s[i+1] == 'P'
+                  || s[i+1] == 'h' || s[i+1] == 'H')
             {
                for (i += 2; s[i] != '>'; i++);
                for (i += 1; s[i] <= ' '; i++);
@@ -71,8 +76,13 @@ int stripTags(uchar *s, ssize_t n)
                break;
             }
 
-            else if (cmp2(s+i+1, "/a") || cmp2(s+i+1, "/A")
-                  || cmp2(s+i+1, "/h") || cmp2(s+i+1, "/H")
+            else if (cmp2(s+i+1, "/a") || cmp2(s+i+1, "/A"))
+            {
+               for (i += 3; s[i] != '>'; i++);
+               break;
+            }
+
+            else if (cmp2(s+i+1, "/h") || cmp2(s+i+1, "/H")
                   || cmp2(s+i+1, "/p") || cmp2(s+i+1, "/P"))
             {
                for (i += 3; s[i] != '>'; i++);
@@ -185,9 +195,11 @@ int main(int argc, char *const argv[])
                   if (baseurl)
                   {
                      n = strvlen(artname);
-                     for (q = artname+n-1; *q != '/'; q--);
+                     for (p = artname, q = p+n-1; *q != '/' && q > p; q--);
                      dynAddString((dynhdl)&tweet, "\n", 1);
                      dynAddString((dynhdl)&tweet, baseurl, bl);
+                     if (*q != '/')
+                        dynAddString((dynhdl)&tweet, "/", 1);
                      dynAddString((dynhdl)&tweet, q, n - (int)(q - artname));
                   }
                }
