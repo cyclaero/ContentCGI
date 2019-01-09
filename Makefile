@@ -77,7 +77,7 @@ debug: all
 
 update: clean all
 
-install: $(PRODUCT)
+install: $(PRODUCT) $(TWEETIT)
 	install $(STRIP) $(PRODUCT) /usr/local/bin/
 	install $(STRIP) $(TWEETIT) /usr/local/bin/
 	cp $(PRODUCT).rc /usr/local/etc/rc.d/$(PRODUCT)
