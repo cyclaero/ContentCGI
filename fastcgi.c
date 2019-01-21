@@ -64,7 +64,11 @@ static inline ssize_t stream_arcv(ConnExec *connex, void *buffer, size_t total)
 {
    ssize_t rc, received = 0;
    while ((rc = connex->arcv(&connex->conn, buffer+received, total-received)) >= 0 && (received += rc) < total)
+   #if defined(__APPLE__) && defined(DEBUG)
+      usleep(10000);
+   #else
       usleep(2500);
+   #endif
    return received;
 }
 
@@ -393,8 +397,8 @@ boolean FCGI_SendDataStream(ConnExec *connex, uint8_t streamType, size_t totalLe
             return false;
       }
 
-      else
-         return connex->send(&connex->conn, &header, sizeof(FCGI_Header)) == sizeof(FCGI_Header);
+   else
+      return connex->send(&connex->conn, &header, sizeof(FCGI_Header)) == sizeof(FCGI_Header);
 
    return true;
 }
