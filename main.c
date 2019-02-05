@@ -586,6 +586,7 @@ void *socketLoop(void *listenSocket)
       *connex = (ConnExec){{sock, 0, {NULL}}, 0, createTable(256), NULL, NULL, &socketRecv, &socketARcv, &socketSend, &socketJSnd, &socketShut};
 
       setsockopt(connex->conn.sock, SOL_SOCKET, SO_NOSIGPIPE, &optval, sizeof(int));
+      setsockopt(connex->conn.sock, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int));
       if (rc = pthread_create(&thread, &detach, firstresponder, connex))
       {
          syslog(LOG_ERR, "Cannot create a new thread for responding to a client connection: %d.", rc);
@@ -633,6 +634,7 @@ void *ssocklLoop(void *listenSSockL)
       *connex = (ConnExec){{sock, 0, {NULL}}, 0, createTable(256), NULL, NULL, &ssocklRecv, &ssocklARcv, &ssocklSend, &ssocklJSnd, &ssocklShut};
 
       setsockopt(connex->conn.sock, SOL_SOCKET, SO_NOSIGPIPE, &optval, sizeof(int));
+      setsockopt(connex->conn.sock, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int));
       if ((connex->conn.ssl = SSL_new(gCTX)) == NULL || SSL_set_fd(connex->conn.ssl, connex->conn.sock) == 0)
       {
          syslog(LOG_ERR, "Cannot create/assign the TLS structure for a client connection.");
@@ -706,6 +708,7 @@ void *biotlsLoop(void *acceptBIO)
       BIO_get_fd(connex->conn.bio, &connex->conn.sock);
 
       setsockopt(connex->conn.sock, SOL_SOCKET, SO_NOSIGPIPE, &optval, sizeof(int));
+      setsockopt(connex->conn.sock, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int));
       if (rc = pthread_create(&thread, &detach, responder, connex))
       {
          BIO_free(connex->conn.bio);
