@@ -46,7 +46,7 @@ CFLAGS += -march=native -mssse3
 CFLAGS += -fsigned-char
 .endif
 
-CFLAGS += -std=gnu11 -fpic -fvisibility=hidden -fstrict-aliasing -fno-common -fstack-protector -fobjc-nonfragile-abi \
+CFLAGS += -std=gnu11 -fpic -fvisibility=hidden -fstrict-aliasing -fstack-protector \
           -Wno-multichar -Wno-parentheses -Wno-empty-body -Wno-switch -Wno-deprecated-declarations \
           -I/usr/local/include -I../ -Izettair-spider/include/  -Izettair-spider/include/compat/
 LDFLAGS = -shared -L/usr/local/lib -lm -lpthread -liconv -lz -lobjc -rpath $(PLUGINS) -L$(PLUGINS) -lcyobj
