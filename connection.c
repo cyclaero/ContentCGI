@@ -27,6 +27,7 @@
 
 
 #include <stdlib.h>
+#include <stddef.h>
 #include <stdarg.h>
 #include <string.h>
 #include <math.h>

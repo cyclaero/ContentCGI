@@ -34,6 +34,8 @@
 #import "content-design.h"
 
 
+static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 #pragma mark •••• Responder Delegate Class ••••
 
 @interface Content : CyObject
@@ -578,6 +580,9 @@ boolean  reindex(char *droot, char *updtname, char *contitle);
 
 - (long)delete:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
 {
+   pthread_mutex_lock(&EDIT_mutex);
+   int rc = 400;
+
    if (basepath && *basepath && cmp4(method, "GET"))
    {
       Node *node;
@@ -617,24 +622,29 @@ boolean  reindex(char *droot, char *updtname, char *contitle);
             {
                reindex(droot, NULL,
                        ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content");
-               return 303;
+               rc = 303;
             }
+
             else
-               return 404;
+               rc = 404;
          }
 
-         return 400;
+         // rc = 400
       }
-
-      return 500;
+      else
+         rc = 500;
    }
 
-   return 400;
+   pthread_mutex_unlock(&EDIT_mutex);
+   return rc;
 }
 
 
 - (long)revive:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
 {
+   pthread_mutex_lock(&EDIT_mutex);
+   int rc = 400;
+
    if (basepath && *basepath && cmp4(method, "GET"))
    {
       Node *node;
@@ -643,13 +653,14 @@ boolean  reindex(char *droot, char *updtname, char *contitle);
          char *droot = node->value.s;
          reindex(droot, NULL,
                  ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content");
-         return 303;
+         rc = 303;
       }
       else
-         return 500;
+         rc = 500;
    }
 
-   return 400;
+   pthread_mutex_unlock(&EDIT_mutex);
+   return rc;
 }
 
 @end
@@ -791,6 +802,8 @@ static inline llong contstat(char *filep, struct stat *st, Response *cache)
 
 long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache)
 {
+   pthread_mutex_lock(&EDIT_mutex);
+
    long   rc      = 0;
    int    filepl  = 0;
    char  *filep   = NULL;
@@ -933,6 +946,7 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
       }
    }
 
+   pthread_mutex_unlock(&EDIT_mutex);
    return rc;
 }
 
@@ -967,8 +981,11 @@ int stripATags(char *s, ssize_t n)
    return j;
 }
 
+
 long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache)
 {
+   pthread_mutex_lock(&EDIT_mutex);
+
    long   rc       = 500;
    int    filepl   = 0;
    char  *filep    = NULL;
@@ -1010,7 +1027,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 
                for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++); *r = '\0'; r += 3;     // leave 1 line feed at the beginning of the replacement text
                if (r >= t)
-                  return rc;
+                  goto unlock_and_return;
 
                if (strstr(s, "name=\"images\""))
                {
@@ -1032,7 +1049,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                   s = strstr(r, boundary) + boundlen;
                   for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++); *r = '\0'; r += 3;  // leave 1 line feed at the beginning of the replacement text
                   if (r >= t)
-                     return rc;
+                     goto unlock_and_return;
                }
 
                if (strstr(s, "name=\"content\""))
@@ -1223,6 +1240,8 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
       }
    }
 
+unlock_and_return:
+   pthread_mutex_unlock(&EDIT_mutex);
    return rc;
 }
 
@@ -1311,7 +1330,7 @@ void qdownsort(time_t *a, int l, int r)
 boolean reindex(char *droot, char *updtname, char *contitle)
 {
    int    drootl = strvlen(droot);
-   int    adirl  = drootl + 1 + 8 + 1;  // articels directory, e.g.:  $DOCUMENT_ROOT/articles/
+   int    adirl  = drootl + 1 + 8 + 1;  // articles directory, e.g.:  $DOCUMENT_ROOT/articles/
    int    mdirl  = adirl  + 5 + 1;      // extent for the media dir:  $DOCUMENT_ROOT/articles/media/
    char   adir[OSP(mdirl+1)]; strmlcat(adir, adirl+1, NULL, droot, drootl, "/articles/", 10, NULL);
    time_t updtstamp = (updtname && *updtname)
