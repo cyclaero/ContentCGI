@@ -30,11 +30,6 @@
 
 
 #pragma mark ••• Objective-C root class CyObject •••
-#if __PTR_WIDTH__ == 32
-   #pragma pack(4)
-#else
-   #pragma pack(8)
-#endif
 
 __attribute__((objc_root_class))
 @interface CyObject
@@ -69,5 +64,3 @@ __attribute__((objc_root_class))
 - (BOOL)respondsToSelector:(SEL)aSelector;
 
 @end
-
-#pragma pack()
