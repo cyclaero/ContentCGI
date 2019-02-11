@@ -39,14 +39,14 @@
 "      <TH class=\"title\">\n"\
 "         <H1><A href=\"./\">"
 
-#define INDEX_BODY_FYI_LEN 629
+#define INDEX_BODY_FYI_LEN 637
 #define INDEX_BODY_FYI \
 "</A></H1>\n"\
 "      </TH>\n"\
 "      <TH class=\"fyi\"><TABLE>\n"\
 "         <TR><TH><A href=\"imprint.html\">Imprint</A></TH><TD><A href=\"impressum.html\">Impressum</A></TD></TR>\n"\
-"         <TR><TH><A href=\"privacy.html\">Privacy</A></TH><TD><A href=\"datenschutz.html\">Datenschutz</TD></TR>\n"\
-"         <TR><TH><A href=\"disclaimer.html\">Disclaimer</A></TH><TD><A href=\"haftung.html\">Haftung</TD></TR>\n"\
+"         <TR><TH><A href=\"privacy.html\">Privacy</A></TH><TD><A href=\"datenschutz.html\">Datenschutz</A></TD></TR>\n"\
+"         <TR><TH><A href=\"disclaimer.html\">Disclaimer</A></TH><TD><A href=\"haftung.html\">Haftung</A></TD></TR>\n"\
 "         <TR><TH><A href=\"Downloads/\" target=\"_blank\">Downloads</A></TH><TD>&nbsp;</TD></TR>\n"\
 "      </TABLE></TH>\n"\
 "      <TH class=\"logo\">\n"\
@@ -117,15 +117,15 @@
 "      <TH class=\"title\">\n"\
 "         <H1 style=\"line-height:29px;\"><A href=\"./\">"
 
-#define SEARCH_BODY_FYI_LEN 692
+#define SEARCH_BODY_FYI_LEN 700
 #define SEARCH_BODY_FYI \
 "</A><BR>\n"\
 "         <SPAN style=\"font-size:19px;\">Search Results</SPAN></H1>\n"\
 "      </TH>\n"\
 "      <TH class=\"fyi\"><TABLE>\n"\
 "         <TR><TH><A href=\"imprint.html\">Imprint</A></TH><TD><A href=\"impressum.html\">Impressum</A></TD></TR>\n"\
-"         <TR><TH><A href=\"privacy.html\">Privacy</A></TH><TD><A href=\"datenschutz.html\">Datenschutz</TD></TR>\n"\
-"         <TR><TH><A href=\"disclaimer.html\">Disclaimer</A></TH><TD><A href=\"haftung.html\">Haftung</TD></TR>\n"\
+"         <TR><TH><A href=\"privacy.html\">Privacy</A></TH><TD><A href=\"datenschutz.html\">Datenschutz</A></TD></TR>\n"\
+"         <TR><TH><A href=\"disclaimer.html\">Disclaimer</A></TH><TD><A href=\"haftung.html\">Haftung</A></TD></TR>\n"\
 "         <TR><TH><A href=\"Downloads/\" target=\"_blank\">Downloads</A></TH><TD>&nbsp;</TD></TR>\n"\
 "      </TABLE></TH>\n"\
 "      <TH class=\"logo\">\n"\
