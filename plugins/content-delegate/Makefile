@@ -51,7 +51,7 @@ CFLAGS += -fsigned-char
 CFLAGS += -std=gnu11 -fpic -fvisibility=hidden -fstrict-aliasing -fstack-protector \
           -Wno-multichar -Wno-parentheses -Wno-empty-body -Wno-switch -Wno-deprecated-declarations -Wshorten-64-to-32 \
           -I/usr/local/include -I/opt/local/include -I/usr/local/include/GraphicsMagick -I/opt/local/include/GraphicsMagick -I../
-LDFLAGS = -shared -L/usr/local/lib -L/usr/lib -L/opt/local/lib -lm -lpthread -liconv -lutf8proc -lGraphicsMagick -lobjc -rpath $(PLUGINS) -L$(PLUGINS) -lcyobj
+LDFLAGS = -shared -L/opt/local/lib -L/usr/local/lib -L/usr/lib -lm -lpthread -liconv -lutf8proc -lGraphicsMagick -lobjc -rpath $(PLUGINS) -L$(PLUGINS) -lcyobj
 
 SOURCESm = $(PROJECT).m
 OBJECTSm = $(SOURCESm:.m=.o)
