@@ -96,8 +96,8 @@
 "<p class=\"stamp\">\r\n" \
 "    Copyright © "
 
-#define DATE_TIME_STAMP_LEN 24
-//" – YYYY-MM-DD hh:mm:ss", 24
+#define DATE_TIME_STAMP_LEN 22
+//" - YYYY-MM-DD hh:mm:ss", 22
 
 #define STAMP_SUFFIX_LEN 8
 #define STAMP_SUFFIX \

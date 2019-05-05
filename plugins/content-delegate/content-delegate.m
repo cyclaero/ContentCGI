@@ -1170,7 +1170,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                                  localtime_r(&creatime, &tm);
                                  char c = o[replen+stampl];       // backup the char where snprintf() puts the terminating '\0'
                                  n += snprintf(o+replen, stampl+1,
-                                               STAMP_PREFIX"%s – %04d-%02d-%02d %02d:%02d:%02d"STAMP_SUFFIX,
+                                               STAMP_PREFIX"%s - %04d-%02d-%02d %02d:%02d:%02d"STAMP_SUFFIX,
                                                user, tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
                                  o[replen+stampl] = c;            // restore
                               }
