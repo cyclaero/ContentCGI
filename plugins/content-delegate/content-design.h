@@ -2,7 +2,7 @@
 //  content-delegate and search-delegate
 //
 //  Created by Dr. Rolf Jansen on 2018-05-08.
-//  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -24,6 +24,13 @@
 //  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 //  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 //  OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+#define ARTICLES_DIR_LEN 8
+#define ARTICLES_DIR "articles"
+
+#define MEDIA_DIR_LEN 5
+#define MEDIA_DIR "media"
 
 
 #define INDEX_PREFIX_LEN 408
@@ -139,11 +146,5 @@
 #define SEARCH_NORESULT \
 "<H1>Nothing found.</H1>\n"
 
-#define SEARCH_SUFFIX_LEN 160
-#define SEARCH_SUFFIX \
-"      </TD>\n"\
-"      <TD class=\"toc\" colspan=\"2\">\n"\
-"         <IFRAME id=\"toc\" src=\"toc.html\" align=\"top\"></IFRAME>\n"\
-"      </TD>\n"\
-"   </TR>\n"\
-"</TABLE></DIV></BODY></HTML>\n"
+#define SEARCH_SUFFIX_LEN INDEX_SUFFIX_LEN
+#define SEARCH_SUFFIX     INDEX_SUFFIX

@@ -187,7 +187,11 @@ function imageUploader(dialog)
 
          // Construct the rotate path
          var pathcomps = location.pathname.split('/');
-         var rotpath = "/"+pathcomps[1]+"/rotate/"+original.url;
+         var rotpath = "/"+pathcomps[1]+"/rotate/";
+         var i = 2;
+         while (!original.url.startsWith(pathcomps[i], 0))
+            rotpath += pathcomps[i++]+"/";
+         rotpath += original.url;
 
          xhr = new XMLHttpRequest();
          xhr.addEventListener('readystatechange', xhrComplete);
@@ -243,11 +247,15 @@ function imageUploader(dialog)
 
       // Construct the insert path
       var pathcomps = location.pathname.split('/');
-      var inpath = "/"+pathcomps[1]+"/insert/"+original.url;
+      var inspath = "/"+pathcomps[1]+"/insert/";
+      var i = 2;
+      while (!original.url.startsWith(pathcomps[i], 0))
+         inspath += pathcomps[i++]+"/";
+      inspath += original.url;
 
       xhr = new XMLHttpRequest();
       xhr.addEventListener('readystatechange', xhrComplete);
-      xhr.open('POST', inpath, true);
+      xhr.open('POST', inspath, true);
       xhr.setRequestHeader("Content-type", "text/plain;charset=UTF-8");
       xhr.send(textData);
    });

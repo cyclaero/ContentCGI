@@ -13,7 +13,7 @@ BODY.toc P            { margin:0; padding-top:8px; }
 DIV.page              { width:940px; margin:10px; padding:10px 10px 10px 30px; background-color:#FFF; box-shadow:0 3px 7px rgba(100, 100, 100, 0.25); }
 TABLE.page            { width:100%; table-layout:fixed; margin:0; padding:0; border-width:0; border-spacing:0; border-collapse:collapse; }
 
-TH.title              { width:675px; padding:0; }
+TH.title              { width:676px; padding:0; }
 TH.title H1           { font-size:31px; padding:0; }
 TH.title H1 A         { color:#000 !important; }
 TH.title H1 A:hover   { color:#777 !important; }
@@ -29,7 +29,7 @@ IMG.logo              { width:96px; margin:0; }
 TD.content            { vertical-align:top; }
 TD.found              { vertical-align:top; }
 TD.found SPAN         { color:#F70; }
-TD.toc                { vertical-align:top; padding:9px 3px 3px 27px; }
+TD.toc                { vertical-align:top; padding:9px 2px 3px 27px; }
 TD.toc IFRAME         { width:100%; height:0px; border:0px; }
 
 H1                    { font-weight:bold; font-size:17px; line-height:normal; text-align:left; margin:0; padding-top:27px; }

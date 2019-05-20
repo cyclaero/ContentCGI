@@ -2,7 +2,7 @@
 //  ContentCGI
 //
 //  Created by Dr. Rolf Jansen on 2018-05-08.
-//  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -136,8 +136,8 @@ void *firstresponder(ConnExec *connex)
                      case 303:
                         if ((node = findName(connex->serverTable, "HTTP_HOST", 9)) && node->value.s && *node->value.s)
                         {
-                           hthl = snprintf(htheader, 256, "Status: %ld\nLocation: https://%s/edit%s\nContent-Length: 0\n\n",
-                                           rc, node->value.s, (response.content) ?: "/");
+                           hthl = snprintf(htheader, 256, "Status: %ld\nLocation: https://%s/edit/%s\nContent-Length: 0\n\n",
+                                           rc, node->value.s, (response.content) ?: "");
                            plugins->freeback(&response);
                            if (FCGI_SendDataStream(connex, FCGI_STDOUT, hthl, htheader))
                            {

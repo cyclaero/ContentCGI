@@ -2,7 +2,7 @@
 //  ContentCGI
 //
 //  Created by Dr. Rolf Jansen on 2018-05-08.
-//  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -68,14 +68,14 @@ int strmlcat(char *dst, int m, int *l, ...)
    va_start(vl, l);
    while (s = va_arg(vl, const char *))
    {
-      k = va_arg(vl, int);
-      if (n < m)
-      {
-         n += strmlcpy(&dst[n], s, m-n, &k);
-         if (l) *l += k;
-      }
-      else
-         if (l) *l += (k) ?: strvlen(s);
+      if (k = va_arg(vl, int))
+         if (n < m)
+         {
+            n += strmlcpy(&dst[n], s, m-n, &k);
+            if (l) *l += k;
+         }
+         else
+            if (l) *l += (k) ?: strvlen(s);
    }
    va_end(vl);
 
