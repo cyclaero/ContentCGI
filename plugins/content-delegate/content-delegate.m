@@ -525,7 +525,7 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 long  GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache);
 long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache);
-boolean  reindex(char *droot, int drootl, char *entity, int el, char *contitle, boolean update);
+boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTable, boolean update);
 
 - (long)create:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
 {
@@ -636,7 +636,7 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, char *contitle, 
              && fileCopy(artp, tmpp, &st) == no_error    // the spider of the search-deleagte determines changes by observing the number of hard links for a given
              && unlink(artp) == no_error)                // inode. For this reason we cannot simply rename the deleted file, because its nlink value wont't change.
             {
-               reindex(droot, drootl, basepath, bl, conTitle(request->serverTable), false);
+               reindex(droot, drootl, basepath, bl, request->serverTable, false);
                rc = 303;
 
                int bpl;
@@ -674,7 +674,7 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, char *contitle, 
       char *droot;
       if (droot = docRoot(request->serverTable))
       {
-         reindex(droot, strvlen(droot), basepath, strvlen(basepath), conTitle(request->serverTable), false);
+         reindex(droot, strvlen(droot), basepath, strvlen(basepath), request->serverTable, false);
          rc = 303;
 
          int bpl;
@@ -1264,7 +1264,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 
                                  if (ok && (cache || rename(tmpfp, filep) == no_error))
                                  {
-                                    if (reindex(droot, drootl, entity, el, conTitle(request->serverTable), true))
+                                    if (reindex(droot, drootl, entity, el, request->serverTable, true))
                                     {
                                        if (!cache)
                                           rc = 204;
@@ -1383,7 +1383,7 @@ void qdownsort(time_t *a, int l, int r)
    if (i < r) qdownsort(a, i, r);
 }
 
-boolean reindex(char *droot, int drootl, char *entity, int el, char *contitle, boolean update)
+boolean reindex(char *droot, int drootl, char *entity, int el, Node **serverTable, boolean update)
 {
    char *name;
 
@@ -1411,7 +1411,7 @@ boolean reindex(char *droot, int drootl, char *entity, int el, char *contitle, b
 
             char *idx = newDynBuffer().buf;
             dynAddString((dynhdl)&idx, INDEX_PREFIX, INDEX_PREFIX_LEN);
-            dynAddString((dynhdl)&idx, contitle, strvlen(contitle));
+            dynAddString((dynhdl)&idx, conTitle(serverTable), 0);
             dynAddString((dynhdl)&idx, INDEX_BODY_FYI, INDEX_BODY_FYI_LEN);
 
             char *toc = newDynBuffer().buf;
@@ -1550,7 +1550,11 @@ boolean reindex(char *droot, int drootl, char *entity, int el, char *contitle, b
                }
 
                // touch the re-index token in the zettair index directory
-               if (file = fopen(ZETTAIR_DB_PATH"token", "w"))
+               char *site = httpHost(serverTable);
+               int   slen = strvlen(site);
+               int   zlen = ZETTAIR_DB_PLEN + slen + 6;
+               char  zetp[OSP(zlen+1)]; strmlcat(zetp, zlen+1, NULL, ZETTAIR_DB_PATH, ZETTAIR_DB_PLEN, site, slen, "/token", 6, NULL);
+               if (file = fopen(zetp, "w"))
                   fclose(file);
             }
 
