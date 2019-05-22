@@ -69,7 +69,8 @@ typedef struct
 
 - (void)dealloc
 {
-   index_delete(index.idx);
+   if (index.idx)
+      index_delete(index.idx);
    [super dealloc];
 }
 

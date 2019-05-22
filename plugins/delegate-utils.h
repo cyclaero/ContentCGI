@@ -1239,6 +1239,12 @@ static inline void freeDynBuffer(dynptr bufptr)
    deallocate(VPR(db), false);
 }
 
+static inline int dynava(dynptr bufptr)
+{
+   dynbuf *db = ((dynbuf *)(bufptr.buf - dynbufMetaSize));
+   return db->cap - db->len;
+}
+
 static inline int dynlen(dynptr bufptr)
 {
    return ((dynbuf *)(bufptr.buf - dynbufMetaSize))->len;
