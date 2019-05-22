@@ -527,22 +527,6 @@ long  GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache);
 boolean  reindex(char *droot, int drootl, char *entity, int el, char *contitle, boolean update);
 
-static inline char *docRoot(Node **serverTable)
-{
-   Node *node;
-   return ((node = findName(serverTable, "DOCUMENT_ROOT", 13)) && node->value.s && *node->value.s)
-          ? node->value.s
-          : NULL;
-}
-
-static inline char *conTitle(Node **serverTable)
-{
-   Node *node;
-   return ((node = findName(serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s)
-          ? node->value.s
-          : "Content";
-}
-
 - (long)create:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
 {
    if (basepath && *basepath)

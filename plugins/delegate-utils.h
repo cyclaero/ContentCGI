@@ -2,7 +2,7 @@
 //  Responder Delegate plugins
 //
 //  Created by Dr. Rolf Jansen on 2018-05-15.
-//  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -1522,3 +1522,39 @@ void httpETag(char *etag, struct stat *st);
 #pragma mark ••• Path to the Zettair index directory •••
 #define ZETTAIR_DB_PATH "/var/db/zettair/"
 #define ZETTAIR_DB_PLEN 16
+
+
+#pragma mark ••• Helper functions •••
+
+static inline char *lastPathSegment(char *path, int plen)
+{
+   int i;
+   for (i = plen-1; i >= 0 && path[i] != '/'; i--);
+   return (path[i] == '/')
+          ? path + i + 1
+          : path + i;
+}
+
+static inline char *httpHost(Node **serverTable)
+{
+   Node *node;
+   return ((node = findName(serverTable, "HTTP_HOST", 9)) && node->value.s && *node->value.s)
+          ? node->value.s
+          : "";
+}
+
+static inline char *docRoot(Node **serverTable)
+{
+   Node *node;
+   return ((node = findName(serverTable, "DOCUMENT_ROOT", 13)) && node->value.s && *node->value.s)
+          ? node->value.s
+          : NULL;
+}
+
+static inline char *conTitle(Node **serverTable)
+{
+   Node *node;
+   return ((node = findName(serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s)
+          ? node->value.s
+          : "Content";
+}

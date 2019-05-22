@@ -2,7 +2,7 @@
 //  hello-delegate
 //
 //  Created by Dr. Rolf Jansen on 2018-05-08.
-//  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -161,20 +161,21 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
    if ((node = findName(request->serverTable, "REQUEST_METHOD", 14))
     && (cmp4(node->value.s, "GET") || cmp5(node->value.s, "POST")))  // only respond to GET and POST requests
    {
-      if (cmp2(entity, "/_"))
-         entity += 2, el -= 2;
-      else if (cmp7(entity, "/edit/_"))
-         entity += 7, el -= 7;
+      char *name = lastPathSegment(entity, el);
+      if (*name == '_')
+         name++;
+
+      int nl = el - (int)(name - entity);
+      int dl = domlen(name);
 
       char *extension = NULL;
-      int dl = domlen(entity);
-      if (dl != el)
+      if (dl != nl)
       {
-         entity[el = dl] = '\0';
-         extension = entity+el+1;
+         name[nl = dl] = '\0';
+         extension = name+nl+1;
       }
 
-      SEL selector = makeSelector(entity, el);
+      SEL selector = makeSelector(name, nl);
       if ([lResponder respondsToSelector:selector])
          return (long)objc_msgSend(lResponder, selector, (id)extension, (id)request, (id)response);
    }

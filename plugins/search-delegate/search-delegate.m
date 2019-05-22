@@ -2,7 +2,7 @@
 //  search-delegate
 //
 //  Created by Dr. Rolf Jansen on 2018-06-11.
-//  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -62,12 +62,7 @@ typedef struct
 - (id)initWithSources:(Sources *)sources
 {
    if (self = [super init])
-   {
       cache = sources;
-
-      if (stat(ZETTAIR_DB_PATH"index.v.0", &index.stat) == no_error)
-         index.idx  = index_load(ZETTAIR_DB_PATH"index", 50*1024*1024, INDEX_LOAD_NOOPT, &index.lopt);
-   }
 
    return self;
 }
@@ -136,18 +131,27 @@ typedef struct
           || request->QueryTable && (node = findName(request->QueryTable, "tag", 3)))
           && node->value.s && node->value.s[0] != '\0')
    {
+      char *site = httpHost(request->serverTable);
+      int   slen = strvlen(site);
+      int   zlen = ZETTAIR_DB_PLEN + slen + 1;
+      char  zetp[OSP(zlen+9+1)]; strmlcat(zetp, zlen+9+1, NULL, ZETTAIR_DB_PATH, ZETTAIR_DB_PLEN, site, slen, "/index.v.0", 10, NULL);
+
       struct stat st;
-      if (stat(ZETTAIR_DB_PATH"index.v.0", &st) == no_error)
+      if (stat(zetp, &st) == no_error)
       {
-         if (st.st_mtimespec.tv_sec != index.stat.st_mtimespec.tv_sec || st.st_mtimespec.tv_nsec != index.stat.st_mtimespec.tv_nsec)
+         if (!index.idx || st.st_mtimespec.tv_sec != index.stat.st_mtimespec.tv_sec || st.st_mtimespec.tv_nsec != index.stat.st_mtimespec.tv_nsec)
          {
-            index_delete(index.idx);
-            index.idx = index_load(ZETTAIR_DB_PATH"index", 50*1024*1024, INDEX_LOAD_NOOPT, &index.lopt);
+            if (index.idx)
+               index_delete(index.idx);
+            zetp[zlen+5] = '\0';
+            index.idx  = index_load(zetp, 50*1024*1024, INDEX_LOAD_NOOPT, &index.lopt);
+            index.stat = st;
          }
+         cpy9(zetp+zlen, "siteroot/"); zlen += 9;
 
          struct index_search_opt opt = {.u.okapi={1.2, 1e10, 0.75}, 0, 0, INDEX_SUMMARISE_TAG};
          struct index_result    *res = allocate(100*sizeof(struct index_result), default_align, false);
-         iconv_t  utfToIso, isoToUtf;
+         iconv_t utfToIso, isoToUtf;
          if (index.idx && res && (utfToIso = iconv_open("ISO-8859-1//TRANSLIT//IGNORE", "UTF-8")))
          {
             size_t origLen = strvlen(node->value.s), convLen = 4*origLen;
@@ -163,14 +167,14 @@ typedef struct
             {
                response->content = newDynBuffer().buf;
                dynAddString((dynhdl)&response->content, SEARCH_PREFIX, SEARCH_PREFIX_LEN);
-               dynAddString((dynhdl)&response->content, ((node = findName(request->serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s) ? node->value.s : "Content", 0);
+               dynAddString((dynhdl)&response->content, conTitle(request->serverTable), 0);
                dynAddString((dynhdl)&response->content, SEARCH_BODY_FYI, SEARCH_BODY_FYI_LEN);
 
                for (i = 0, k = 0; i < n; i++)
                {
                   char *href, *hend;
-                  if ((href = strstr(res[i].auxilliary, ZETTAIR_DB_PATH))
-                   && (hend = strstr(href += ZETTAIR_DB_PLEN, ".iso.html")))
+                  if ((href = strstr(res[i].auxilliary, zetp))
+                   && (hend = strstr(href += zlen, ".iso.html")))
                   {
                      dynAddString((dynhdl)&response->content, "<H1><A href=\"", 13);
                      dynAddString((dynhdl)&response->content, href, hend-href);
@@ -265,20 +269,21 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
    if ((node = findName(request->serverTable, "REQUEST_METHOD", 14))
     && (cmp4(node->value.s, "GET") || cmp5(node->value.s, "POST")))  // only respond to GET and POST requests
    {
-      if (cmp2(entity, "/_"))
-         entity += 2, el -= 2;
-      else if (cmp7(entity, "/edit/_"))
-         entity += 7, el -= 7;
+      char *name = lastPathSegment(entity, el);
+      if (*name == '_')
+         name++;
+
+      int nl = el - (int)(name - entity);
+      int dl = domlen(name);
 
       char *extension = NULL;
-      int dl = domlen(entity);
-      if (dl != el)
+      if (dl != nl)
       {
-         entity[el = dl] = '\0';
-         extension = entity+el+1;
+         name[nl = dl] = '\0';
+         extension = name+nl+1;
       }
 
-      SEL selector = makeSelector(entity, el);
+      SEL selector = makeSelector(name, nl);
       if ([lResponder respondsToSelector:selector])
          return (long)objc_msgSend(lResponder, selector, (id)extension, (id)request, (id)response);
    }
