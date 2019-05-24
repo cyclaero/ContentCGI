@@ -1590,7 +1590,7 @@ const char *extensionToType(char *fnam, int flen)
       if (!flen)
          flen = strvlen(fnam);
 
-      char *ext; ;
+      char *ext;
       for (ext = fnam+flen-1; ext >= fnam && *ext != '.'; ext--);
       if (ext < fnam)
          return NULL;
