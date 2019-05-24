@@ -1669,13 +1669,3 @@ const char *extensionToType(char *fnam, int flen)
 
    return mime;
 }
-
-
-#pragma mark ••• HTTP-ETag •••
-
-void httpETag(char *etag, struct stat *st)
-{
-   snprintf(etag, etagLen, "%llx-%llx-%llx", (ullong)st->st_ino,
-                                             (ullong)st->st_size,
-                                             (ullong)st->st_mtimespec.tv_sec*1000000LL + (ullong)st->st_mtimespec.tv_nsec/1000LL);
-}
