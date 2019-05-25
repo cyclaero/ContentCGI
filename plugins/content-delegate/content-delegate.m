@@ -732,7 +732,13 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
       if (*(entity += 6) != '\0')
          el -= 6;
       else
-         el = 10, entity = "index.html";
+         el  = 10, entity = "index.html";
+
+      if (entity[el-1] == '/')
+      {
+         el = strmlcat(name = alloca(OSP(el+10+1)), el+10+1, NULL, entity, el, "index.html", 10, NULL);
+         entity = name;
+      }
 
       int     ml = el;
       char  *msg = strcpy(alloca(OSP(ml+5)), entity);
@@ -862,15 +868,9 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
 
    if (!cache && droot)
    {
-      filepl = drootl + 1 + el + 10;
-      filep = alloca(OSP(filepl+1));
-      if (entity[el-1] != '/' || spec)
-         strmlcat(filep, filepl+1, NULL, droot, drootl, "/", 1, entity, el, NULL);
-      else
-      {
-         strmlcat(filep, filepl+1, NULL, droot, drootl, "/", 1, entity, el, "index.html", 10, NULL);
-         spec = "html";
-      }
+      filepl = drootl + 1 + el;
+      filep  = alloca(OSP(filepl+1));
+      strmlcat(filep, filepl+1, NULL, droot, drootl, "/", 1, entity, el, NULL);
    }
 
    if (filesize = contstat(filep, &st, cache))
@@ -1263,17 +1263,15 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 
                                  if (ok && (cache || rename(tmpfp, filep) == no_error))
                                  {
-                                    if (reindex(droot, drootl, entity, el, request->serverTable, true))
-                                    {
-                                       if (!cache)
-                                          rc = 204;
+                                    reindex(droot, drootl, entity, el, request->serverTable, true);
+                                    if (!cache)
+                                       rc = 204;
 
-                                       else if (response->content = allocate(filepl -= drootl+1, default_align, false))
-                                       {
-                                          response->contdyn = true;
-                                          response->contlen = strmlcpy(response->content, filep+drootl+1, 0, &filepl);
-                                          rc = 201;
-                                       }
+                                    else if (response->content = allocate(filepl -= drootl+1, default_align, false))
+                                    {
+                                       response->contdyn = true;
+                                       response->contlen = strmlcpy(response->content, filep+drootl+1, 0, &filepl);
+                                       rc = 201;
                                     }
                                  }
                               }
