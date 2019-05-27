@@ -447,12 +447,17 @@ void daemonize(DaemonKind kind)
             close(i);
 
          // re-open stdin, stdout, stderr connected to /dev/null
-         int inouterr = open("/dev/null", O_RDWR);    // stdin
-         dup(inouterr);                               // stdout
-         dup(inouterr);                               // stderr
+         int inouterr = open("/dev/null", O_RDWR);     // stdin
+         dup(inouterr);                                // stdout
+         dup(inouterr);                                // stderr
 
-         // Change the file mode mask, 027 = complement of 750
+      #ifdef __FREEBSD__
+         // Change the file mode mask, 027 = complement of 750 - on FreeBSD the web documents are in the www group, no need to give read access to others
          umask(027);
+      #else
+         // Change the file mode mask, 022 = complement of 755 - on the Mac the web documents are not in the _www group, so Apache needs read access by the way of others
+         umask(022);
+      #endif
 
          pid_t sid = setsid();
          if (sid < 0)
