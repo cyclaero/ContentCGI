@@ -561,9 +561,17 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTab
                      memvcpy(htmodel.content, content, p);
                      p += strmlcpy(htmodel.content+p, contitl, 0, &titllen);
                      memvcpy(htmodel.content+p, titlpos+13, q);
-                     htmodel.content[contlen] = '\0';
-                     htmodel.conttyp = "text/html; charset=utf-8";
                   }
+
+                  else
+                  {
+                     htmodel.contlen = contlen;
+                     htmodel.content = allocate(htmodel.contlen+1, default_align, false);
+                     memvcpy(htmodel.content, content, contlen);
+                  }
+
+                  htmodel.content[contlen] = '\0';
+                  htmodel.conttyp = "text/html; charset=utf-8";
                }
 
                if (cmp4(method, "GET"))
@@ -1277,13 +1285,11 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                               }
                            }
                         }
-
-                        else
-                        {
-                           if (file)
-                              fclose(file);
-                        }
+                        else if (file)
+                           fclose(file);
                      }
+                     else if (file)
+                        fclose(file);
                   }
 
                   deallocate(VPR(content), false);
