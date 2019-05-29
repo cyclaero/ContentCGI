@@ -55,7 +55,7 @@ fi
 
 # derive haftung.html
 /bin/cat "$2/model.html" \
-| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>Haftungsausschluß<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">CONTENT_TITLE<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;s/Place a beautiful and descriptive title here!/Haftungsausschluß/;s/The first paragraph.*/Der erste Absatz \.\.\./;s/Another paragraph.*/Nächster Absatz \.\.\./;" \
+| /usr/bin/sed "s/<TITLE>.*<\/TITLE>/<TITLE>Haftungsausschluss<\/TITLE>/;/<BASE href=\"..\/\">/,/.*<LINK/{/<BASE href=\"..\/\">/d;};s/<H1><A href=\".\/\">CONTENT_TITLE<\/A><\/H1>/<H1><A href=\".\/\">$1<\/A><\/H1>/;s/Place a beautiful and descriptive title here!/Haftungsausschluss/;s/The first paragraph.*/Der erste Absatz \.\.\./;s/Another paragraph.*/Nächster Absatz \.\.\./;" \
 > "$2/haftung.html"
 
 # the model file is no more needed
