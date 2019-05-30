@@ -584,7 +584,7 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTab
                   return  GEThandler(droot, drootl, "model", 5, "html", request, response, &htmodel);
                }
                else // POST
-                  return POSThandler(droot, drootl, basepath, strvlen(basepath), "html", request, response, &htmodel);
+                  return POSThandler(droot, drootl, basepath, bl, "html", request, response, &modelData);
             }
          }
 
@@ -642,7 +642,9 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTab
              && fileCopy(artp, tmpp, &st) == no_error    // the spider of the search-deleagte determines changes by observing the number of hard links for a given
              && unlink(artp) == no_error)                // inode. For this reason we cannot simply rename the deleted file, because its nlink value wont't change.
             {
-               reindex(droot, drootl, basepath, bl, request->serverTable, false);
+               if (!reindex(droot, drootl, basepath, bl, request->serverTable, false))
+                  *basepath = '\0';
+
                rc = 303;
 
                int bpl;
@@ -680,7 +682,9 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTab
       char *droot;
       if (droot = docRoot(request->serverTable))
       {
-         reindex(droot, strvlen(droot), basepath, strvlen(basepath), request->serverTable, false);
+         if (!reindex(droot, strvlen(droot), basepath, strvlen(basepath), request->serverTable, false))
+            *basepath = '\0';
+
          rc = 303;
 
          int bpl;
