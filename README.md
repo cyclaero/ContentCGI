@@ -103,5 +103,5 @@ Add to `/etc/crontab` the following lines:
     *       *       *       *       *       www     /usr/local/bin/spider /usr/local/www/ContentCGI/webdocs/articles > /dev/null 2>&1
    
 
-Point your browser to your domain and explore the system.
-<A href="https://obsigna.com/articles/1529528376.html"><IMG src="https://obsigna.com/articles/media/1529528376/Obsigna's%20Test.png"></A>
+Point your browser to your domain and explore the system - https://obsigna.com/articles/1529528376.html
+<IMG src="https://obsigna.com/articles/media/1529528376/Obsigna's%20Test.png">
