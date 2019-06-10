@@ -42,8 +42,10 @@
 		7EBD78F620AE188E0035901F /* hello-delegate.ico in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EBD78C020ADAC660035901F /* hello-delegate.ico */; };
 		7EBD790720AE19500035901F /* content-delegate.html in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EE8829A20AC9F2900CD24F3 /* content-delegate.html */; };
 		7EC6FA6314F2FB9700B07421 /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 7EC6FA6214F2FB9700B07421 /* utils.c */; };
-		7EC953A320D921AD00E67E97 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EC953A220D921AD00E67E97 /* libiconv.tbd */; };
 		7ECB204520CA054900AF68E2 /* model.html in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EA227F520C8855500C3BB78 /* model.html */; };
+		7ED1FC6422A9A35000376C2E /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7ED1FC6322A9A35000376C2E /* libiconv.dylib */; };
+		7ED1FC6622A9A36100376C2E /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7ED1FC6522A9A36100376C2E /* libz.dylib */; };
+		7ED1FC6822A9A5C800376C2E /* libutf8proc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7ED1FC6722A9A5C800376C2E /* libutf8proc.a */; };
 		7EE7B83A20B913B100D6DBCB /* libcyobj.so in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E324E8820B62BD9001E29F9 /* libcyobj.so */; };
 		7EE7B83B20B913B700D6DBCB /* libcyobj.so in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E324E8820B62BD9001E29F9 /* libcyobj.so */; };
 		7EF44C0E20D2CEC300EF8AD1 /* alloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCB220D00BB80082B171 /* alloc.c */; };
@@ -102,8 +104,6 @@
 		7EF44C4920D2CEC300EF8AD1 /* vocab.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DD8E20D00BB80082B171 /* vocab.c */; };
 		7EF44C4A20D2CF0800EF8AD1 /* crc.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCBF20D00BB80082B171 /* crc.c */; };
 		7EF44C4B20D2D0EB00EF8AD1 /* docmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 7ED3DCC320D00BB80082B171 /* docmap.c */; };
-		7EF44C4D20D2D12100EF8AD1 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 7EF44C4C20D2D12100EF8AD1 /* libz.tbd */; };
-		7EFA7018216950A5003BB48E /* libutf8proc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E0BC5C321691AF000FDD7A8 /* libutf8proc.dylib */; };
 		7EFCFEE520B348C300B3D759 /* content-delegate.ico in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EE8829B20AC9F2900CD24F3 /* content-delegate.ico */; };
 		7EFDF50420A4681A006BACAF /* connection.c in Sources */ = {isa = PBXBuildFile; fileRef = 7EFDF50320A4681A006BACAF /* connection.c */; };
 		7EFDF50720A46832006BACAF /* interim.c in Sources */ = {isa = PBXBuildFile; fileRef = 7EFDF50620A46832006BACAF /* interim.c */; };
@@ -233,7 +233,6 @@
 /* Begin PBXFileReference section */
 		08FB7796FE84155DC02AAC07 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = main.c; sourceTree = "<group>"; };
 		7E02668F20BC3C52004C92F9 /* webroot */ = {isa = PBXFileReference; lastKnownFileType = folder; path = webroot; sourceTree = "<group>"; };
-		7E0BC5C321691AF000FDD7A8 /* libutf8proc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libutf8proc.dylib; path = ../../../../../opt/local/lib/libutf8proc.dylib; sourceTree = "<group>"; };
 		7E0E571620CF3A9800562DA9 /* delegate-cloner.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "delegate-cloner.sh"; sourceTree = "<group>"; };
 		7E0E571820CF3E5900562DA9 /* Makefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; usesTabs = 1; };
 		7E0E571920CF3E5900562DA9 /* search-delegate.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = "search-delegate.css"; sourceTree = "<group>"; };
@@ -475,8 +474,10 @@
 		7EBD790620AE18EC0035901F /* content-delegate.so */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "content-delegate.so"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7EC6FA6114F2FB9700B07421 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = utils.h; sourceTree = "<group>"; };
 		7EC6FA6214F2FB9700B07421 /* utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = utils.c; sourceTree = "<group>"; };
-		7EC953A220D921AD00E67E97 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		7ECA977020DBD17F002EAEAB /* generate-webdocs.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "generate-webdocs.sh"; sourceTree = "<group>"; };
+		7ED1FC6322A9A35000376C2E /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
+		7ED1FC6522A9A36100376C2E /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		7ED1FC6722A9A5C800376C2E /* libutf8proc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libutf8proc.a; path = ../../../../../usr/local/lib/libutf8proc.a; sourceTree = "<group>"; };
 		7ED3DCB220D00BB80082B171 /* alloc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = alloc.c; sourceTree = "<group>"; };
 		7ED3DCB320D00BB80082B171 /* binsearch.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = binsearch.c; sourceTree = "<group>"; };
 		7ED3DCB420D00BB80082B171 /* bit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bit.c; sourceTree = "<group>"; };
@@ -657,7 +658,6 @@
 		7EE882A220AC9F2900CD24F3 /* CyObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CyObject.m; sourceTree = "<group>"; };
 		7EE882A320AC9F2900CD24F3 /* exports.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = exports.h; sourceTree = "<group>"; };
 		7EE882A420AC9F2900CD24F3 /* Makefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; lineEnding = 0; path = Makefile; sourceTree = "<group>"; usesTabs = 1; };
-		7EF44C4C20D2D12100EF8AD1 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		7EFDF50220A46813006BACAF /* connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = connection.h; sourceTree = "<group>"; };
 		7EFDF50320A4681A006BACAF /* connection.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = connection.c; sourceTree = "<group>"; };
 		7EFDF50520A4682B006BACAF /* interim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = interim.h; sourceTree = "<group>"; };
@@ -673,8 +673,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7EC953A320D921AD00E67E97 /* libiconv.tbd in Frameworks */,
-				7EF44C4D20D2D12100EF8AD1 /* libz.tbd in Frameworks */,
+				7ED1FC6422A9A35000376C2E /* libiconv.dylib in Frameworks */,
+				7ED1FC6622A9A36100376C2E /* libz.dylib in Frameworks */,
 				7E0E572620CF3F1900562DA9 /* libcyobj.so in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -705,7 +705,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7EFA7018216950A5003BB48E /* libutf8proc.dylib in Frameworks */,
+				7ED1FC6822A9A5C800376C2E /* libutf8proc.a in Frameworks */,
 				7E7F7EC320E5ACAD0027EC85 /* libGraphicsMagick.dylib in Frameworks */,
 				7EE7B83A20B913B100D6DBCB /* libcyobj.so in Frameworks */,
 			);
@@ -1498,9 +1498,9 @@
 			children = (
 				7EFDF50820A471C3006BACAF /* libcrypto.dylib */,
 				7EFDF50A20A471CC006BACAF /* libssl.dylib */,
-				7EC953A220D921AD00E67E97 /* libiconv.tbd */,
-				7EF44C4C20D2D12100EF8AD1 /* libz.tbd */,
-				7E0BC5C321691AF000FDD7A8 /* libutf8proc.dylib */,
+				7ED1FC6722A9A5C800376C2E /* libutf8proc.a */,
+				7ED1FC6322A9A35000376C2E /* libiconv.dylib */,
+				7ED1FC6522A9A36100376C2E /* libz.dylib */,
 				7E7F7EC220E5ACAD0027EC85 /* libGraphicsMagick.dylib */,
 				7E324E8820B62BD9001E29F9 /* libcyobj.so */,
 			);
@@ -1731,14 +1731,14 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/plugins/$(PRODUCT_NAME)/$(PRODUCT_NAME).js",
-				"$(SRCROOT)/ContentTools/build/content-tools.js",
+				"$(SRCROOT)/ContentTools/build/content-tools.min.js",
 			);
 			outputPaths = (
 				"$(INSTALL_DIR)/$(PRODUCT_NAME).js",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "printf '\\n\\n' | cat \"$SRCROOT/ContentTools/build/content-tools.js\" - \"$SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.js\" > \"$INSTALL_DIR/$PRODUCT_NAME.js\"\nsed -e 's/if(\"editing\"===a\\._state&&b\\.CANCEL_MESSAGE)/if(\"editing\"===a._state\\&\\&a.history\\&\\&a.history._snapshotIndex\\&\\&b.CANCEL_MESSAGE)/' -i \"\" \"$INSTALL_DIR/$PRODUCT_NAME.js\"\n";
+			shellScript = "printf '\\n\\n' | cat \"$SRCROOT/ContentTools/build/content-tools.min.js\" - \"$SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.js\" > \"$INSTALL_DIR/$PRODUCT_NAME.js\"\nsed -e 's/if(\"editing\"===a\\._state&&b\\.CANCEL_MESSAGE)/if(\"editing\"===a._state\\&\\&a.history\\&\\&a.history._snapshotIndex\\&\\&b.CANCEL_MESSAGE)/' \\\n    -e 's/a\\.target=this\\._target/a.target=this._target,a.rel=\"noopener noreferrer\"/' -i \"\" \"$INSTALL_DIR/$PRODUCT_NAME.js\"\n";
 			showEnvVarsInLog = 0;
 		};
 		7EE7B83220B90E2300D6DBCB /* ShellScript */ = {

@@ -54,11 +54,11 @@ A:hover.index .stamp  { color:#777; }
 PRE                   { font-family:monospace; font-size:12px; padding:11px; margin:11px 0; max-height:420px; overflow:auto; border:1px solid #ddd; border-radius:7px; background-color:#f7f7ff; -webkit-hyphens:none; -moz-hyphens:none; hyphens:none; }
 PRE.fullheight        { max-height:none; }
 
-IMG                   { margin:13px 0 13px 0; max-width:100%; height:auto; }
-IMG.mailto            { margin:0; vertical-align:-50%; }
-IMG.align-center      { clear:both; display: block; margin-left:auto; margin-right:auto; }
+IMG                   { clear:both; display:block; margin:13px 0 13px 0; max-width:100%; }
+IMG.align-center      { margin-left:auto; margin-right:auto; }
 IMG.shade             { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; }
-IMG.shade-center      { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; clear:both; display: block; margin-left:auto; margin-right:auto; }
+IMG.shade-center      { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; margin-left:auto; margin-right:auto; }
+IMG.mailto            { margin:0; vertical-align:-50%; }
 
 TABLE                 { width:100%; table-layout:fixed; margin:9px 0 9px 0; padding:0; }
 TR.back-gray          { background-color:#eaeaee; }

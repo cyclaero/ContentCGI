@@ -584,7 +584,7 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTab
                   return  GEThandler(droot, drootl, "model", 5, "html", request, response, &htmodel);
                }
                else // POST
-                  return POSThandler(droot, drootl, basepath, bl, "html", request, response, &modelData);
+                  return POSThandler(droot, drootl, basepath, bl, "html", request, response, &htmodel);
             }
          }
 
