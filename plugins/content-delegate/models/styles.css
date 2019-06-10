@@ -32,7 +32,7 @@ TH.fyi TD             { font-weight:normal; text-align:right; padding-right:15px
 
 TH.logo               { width:96px; padding:0; }
 IMG.logo              { width:96px; margin:0; }
-IMG.mailto            { margin:0; vertical-align:-50%; }
+IMG.mailto            { display:inline-block; margin:0; vertical-align:-50%; }
 
 TD.content            { vertical-align:top; }
 TD.found              { vertical-align:top; }
