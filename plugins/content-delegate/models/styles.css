@@ -3,6 +3,13 @@ A:visited             { color:#369; text-decoration:none; }
 A:active              { color:#999; text-decoration:none; }
 A:hover               { color:#777; text-decoration:none; }
 
+A.index               { color:#000; margin:0; padding:0; }
+A.index H1            { color:#47A; }
+A.index .stamp        { color:#555; }
+A:hover.index         { color:#777; }
+A:hover.index H1      { color:#777; }
+A:hover.index .stamp  { color:#777; }
+
 :focus                { outline:none; }
 ::-moz-focus-inner    { border-color:transparent; }
 
@@ -25,6 +32,7 @@ TH.fyi TD             { font-weight:normal; text-align:right; padding-right:15px
 
 TH.logo               { width:96px; padding:0; }
 IMG.logo              { width:96px; margin:0; }
+IMG.mailto            { margin:0; vertical-align:-50%; }
 
 TD.content            { vertical-align:top; }
 TD.found              { vertical-align:top; }
@@ -44,13 +52,6 @@ P.text-right          { text-align:right; }
 P.stamp               { text-align:right; font-size:9px; padding-top:7px; color:#555; }
 P.back-gray           { background-color:#eaeaee; }
 
-A.index               { color:#000; margin:0; padding:0; }
-A.index H1            { color:#47A; }
-A.index .stamp        { color:#555; }
-A:hover.index         { color:#777; }
-A:hover.index H1      { color:#777; }
-A:hover.index .stamp  { color:#777; }
-
 PRE                   { font-family:monospace; font-size:12px; padding:11px; margin:11px 0; max-height:420px; overflow:auto; border:1px solid #ddd; border-radius:7px; background-color:#f7f7ff; -webkit-hyphens:none; -moz-hyphens:none; hyphens:none; }
 PRE.fullheight        { max-height:none; }
 
@@ -58,7 +59,6 @@ IMG                   { clear:both; display:block; margin:13px 0 13px 0; max-wid
 IMG.align-center      { margin-left:auto; margin-right:auto; }
 IMG.shade             { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; }
 IMG.shade-center      { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; margin-left:auto; margin-right:auto; }
-IMG.mailto            { margin:0; vertical-align:-50%; }
 
 TABLE                 { width:100%; table-layout:fixed; margin:9px 0 9px 0; padding:0; }
 TR.back-gray          { background-color:#eaeaee; }
