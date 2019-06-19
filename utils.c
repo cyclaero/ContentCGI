@@ -241,7 +241,7 @@ char *base64Encode(uint head, char *data, size_t *length)
 
 
 static inline void decode4(uchar in[4], uchar out[3])
-{  
+{
    static const unsigned dec256[256] =
    {
       0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,
@@ -394,7 +394,7 @@ static const uchar trailingBytesForUTF8[256] =
 static const utf32 offsetsFromUTF8[6] = { 0x00000000, 0x00003080, 0x000E2080, 0x03C82080, 0xFA082080, 0x82082080 };
 static const uchar firstByteMark[7]   = { 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC };
 static const utf32 byteMask = 0xBF;
-static const utf32 byteMark = 0x80; 
+static const utf32 byteMark = 0x80;
 
 utf32 utf8to32(uchar **v)
 {
@@ -614,6 +614,12 @@ int int2str(char *ist, llong i, int m, int width)
 
 int int2hex(char *hex, llong i, int m, int width)
 {
+   if (m < 3)
+   {
+      *hex = '\0';
+      return 0;
+   }
+
    union
    {
       llong l;
@@ -621,20 +627,39 @@ int int2hex(char *hex, llong i, int m, int width)
    } bin = {.l = (llong)MapInt64(i)};
 
    uchar c;
-   int   j, k;
+   int   o, j, k;
 
    cpy2(hex, "0x");
-   for (j = 0, k = 2; j < sizeof(llong); j++)
+   hex += 2, m -= 2;
+   for (j = 0, k = 0; j < sizeof(llong) && k < m; j++)
    {
-      if ((c = (bin.b[j] >> 4) & 0xF) || k > 2)
+      if ((c = (bin.b[j] >> 4) & 0xF) || k)
          hex[k++] = (c <= 9) ? (c + '0') : (c + 'a' - 10);
 
-      if ((c = bin.b[j] & 0xF) || k > 2)
+      if ((c = bin.b[j] & 0xF) || k)
          hex[k++] = (c <= 9) ? (c + '0') : (c + 'a' - 10);
    }
 
-   hex[k] = '\0';
-   return k;
+   if (width > m-1)
+      width = m-1;
+
+   if ((j = width - k) > 0)
+   {
+      for (o = k; o >= 0; o--)
+         hex[o+j] = hex[o];
+
+      for (o = 0; o < j; o++)
+         hex[o] = '0';
+
+      k += j;
+   }
+
+   if (k > 0)
+      hex[k] = '\0';
+   else
+      cpy2(&hex[k++], "0");
+
+   return k+2;
 }
 
 

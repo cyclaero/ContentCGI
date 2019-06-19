@@ -242,7 +242,7 @@ static inline int sign(double x)
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 
 // ppc machines operate on data in big endian
-// byte order, therefore NO byte swapping is necessary. 
+// byte order, therefore NO byte swapping is necessary.
    #define PickInt(x)    *(int32_t *)(x)
    #define PickInt64(x)  *(int64_t *)(x)
    #define PickDouble(x) *(double *)(x)
@@ -1212,12 +1212,12 @@ static inline int32_t intlgl(long double x)
 }
 
 
-#define intLen 32             // actually it's 21 incl. '/0', however pad it to a 128 bit boundary
+#define intLen 32             // actually it's 21 incl. '\0', however pad it to a 128 bit boundary
 typedef char intStr[intLen];
 
 int int2str(char *ist, llong i, int m, int width);
 
-#define hexLen 32             // actually it's 17 incl. '/0', however pad it to a 128 bit boundary
+#define hexLen 32             // actually it's 19 incl. '0x' and the trailing '\0', however pad it to a 128 bit boundary
 typedef char hexStr[hexLen];
 
 int int2hex(char *hex, llong i, int m, int width);
