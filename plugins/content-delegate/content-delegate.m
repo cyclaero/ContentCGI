@@ -287,10 +287,7 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
                            DestroyExceptionInfo(&excepInfo);
                            DestroyMagick();
 
-                           char *cp = imgp+rl;
-                           while (p = strstr(cp+1, ARTICLES_DIR))
-                              cp = p;
-                           cl = strvlen(cp);
+                           char *cp = imgp+rl+1; cl -= rl+1;
                                                               // vv -- max. string size of ulong is 20 -- 18446744073709551616
                            response->content = allocate(cl + 1 + 20 + 1 + 20, default_align, false);
                            strmlcpy(response->content, cp, 0, &cl);
@@ -402,10 +399,7 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
                imgHeight = working->rows;
                DestroyImage(working);
 
-               char *p, *np = imgp+rl;
-               while (p = strstr(np+1, ARTICLES_DIR))
-                  np = p;
-               nl = strvlen(np);
+               char *np = imgp+rl+1; nl -= rl+1;
                                                   // vv -- max. string size of uint is 10 -- 4294967294
                response->content = allocate(nl + 1 + 10 + 1 + 10, default_align, false);
                strmlcpy(response->content, np, 0, &nl);
@@ -491,10 +485,7 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
                   imgHeight = working->rows;
                   DestroyImage(working);
 
-                  char *p, *np = imgp+rl;
-                  while (p = strstr(np+1, ARTICLES_DIR))
-                     np = p;
-                  nl = strvlen(np);
+                  char *np = imgp+rl+1; nl -= rl+1;
                                                      // vv -- max. string size of uint is 10 -- 4294967294
                   response->content = allocate(nl + 1 + 10 + 1 + 10, default_align, false);
                   strmlcpy(response->content, np, 0, &nl);
