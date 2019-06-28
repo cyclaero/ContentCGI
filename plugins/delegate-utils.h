@@ -1537,6 +1537,14 @@ static inline void httpETag(char *etag, struct stat *st)
 
 #pragma mark ••• Helper functions •••
 
+static inline char *nextPathSegment(char *path, int plen)
+{
+   int i;
+   for (i = 0; i < plen && path[i] != '/'; i++);
+   for (     ; i < plen && path[i] == '/'; i++);
+   return path + i;
+}
+
 static inline char *lastPathSegment(char *path, int plen)
 {
    int i;

@@ -51,7 +51,7 @@ CFLAGS += -fsigned-char
 CFLAGS += -std=gnu11 -fpic -fvisibility=hidden -fstrict-aliasing -fstack-protector \
           -Wno-multichar -Wno-parentheses -Wno-empty-body -Wno-switch -Wno-deprecated-declarations -Wshorten-64-to-32 \
           -I/usr/local/include -I../
-LDFLAGS = -shared -L/usr/local/lib -lm -lpthread -lutf8proc -lobjc -rpath $(PLUGINS) -L$(PLUGINS) -lcyobj
+LDFLAGS = -shared -L/usr/local/lib -lm -lpthread -lobjc -rpath $(PLUGINS) -L$(PLUGINS) -lcyobj
 
 SOURCESm = $(PROJECT).m
 OBJECTSm = $(SOURCESm:.m=.o)

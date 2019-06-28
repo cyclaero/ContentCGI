@@ -1,9 +1,23 @@
+
 /* Editor CSS of the Content Responder Delegate */
 
-.ct-widget.ct-ignition                 { top:3px; left:  3px; }
-.ct-widget.ct-toolbox                  { top:9px; left:999px; }
+.ct-widget.ct-ignition                    { top:3px; left:  3px; }
+.ct-widget.ct-toolbox                     { top:9px; left:999px; }
 
-.ce-element--type-image                { clear:both; display:block; margin:13px 0 13px 0; max-width:100%; }
-.ce-element--type-image.align-center   { margin-left:auto; margin-right:auto; }
-.ce-element--type-image.shade          { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; }
-.ce-element--type-image.shade-center   { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; margin-left:auto; margin-right:auto; }
+.ct-widget .ct-tool--underline:before     { content:"\ea63"; }
+.ct-widget .ct-tool--subscript:before     { content:"\ea6c"; }
+.ct-widget .ct-tool--superscript:before   { content:"\ea6b"; }
+.ct-widget .ct-tool--strikethrough:before { content:"\ea65"; }
+.ct-widget .ct-tool--quotation:before     { content:"„“"; font-size:18px; }
+.ct-widget .ct-tool--code:before          { content:">_"; }
+
+.ct-widget .ct-tool--heading:before       { font-size:18px; font-weight:600; vertical-align:text-bottom; }
+.ct-widget .ct-tool--subheading:before    { font-size:17px; font-weight:600; vertical-align:text-bottom; }
+.ct-widget .ct-tool--tinyheading:before   { font-size:15px; font-weight:600; vertical-align:text-bottom; content:"H"; }
+.ct-widget .ct-tool--blockquote:before    { content:"Q"; }
+.ct-widget .ct-tool--preformatted:before  { content:"</>"; }
+
+.ce-element--type-image                   { clear:both; display:block; margin:13px 0 13px 0; max-width:100%; }
+.ce-element--type-image.align-center      { margin-left:auto; margin-right:auto; }
+.ce-element--type-image.shade             { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; }
+.ce-element--type-image.shade-center      { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; margin-left:auto; margin-right:auto; }

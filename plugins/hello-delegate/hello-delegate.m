@@ -39,7 +39,7 @@
 }
 
 - (id)initWithSources:(Sources *)sources;
-- (long)hello:(char *)extension :(Request *)request :(Response *)response;
+- (long)hello:(char *)spec :(char *)method :(Request *)request :(Response *)response;
 
 @end
 
@@ -61,13 +61,13 @@
    [super dealloc];
 }
 
-- (long)hello:(char *)extension :(Request *)request :(Response *)response
+- (long)hello:(char *)spec :(char *)method :(Request *)request :(Response *)response
 {
    Node *node = findName(request->serverTable, "HTTP_IF_NONE_MATCH", 18);
    char *etag = (node) ? node->value.s : NULL;
 
-   if (extension)
-      if (cmp5(extension, "html"))
+   if (spec)
+      if (cmp5(spec, "html"))
          if (!etag || !*etag || strstr(etag, cache->html.conttag) != etag+1)
             *response = cache->html;
          else
@@ -76,7 +76,7 @@
             return 304;
          }
 
-      else if (cmp4(extension, "css"))
+      else if (cmp4(spec, "css"))
          if (!etag || strstr(etag, cache->css.conttag) != etag+1)
             *response = cache->css;
          else
@@ -85,7 +85,7 @@
             return 304;
          }
 
-      else if (cmp3(extension, "js"))
+      else if (cmp3(spec, "js"))
          if (!etag || strstr(etag, cache->js.conttag) != etag+1)
             *response = cache->js;
          else
@@ -94,7 +94,7 @@
             return 304;
          }
 
-      else if (cmp4(extension, "png"))
+      else if (cmp4(spec, "png"))
          if (!etag || strstr(etag, cache->png.conttag) != etag+1)
             *response = cache->png;
          else
@@ -103,7 +103,7 @@
             return 304;
          }
 
-      else if (cmp4(extension, "ico"))
+      else if (cmp4(spec, "ico"))
          if (!etag || strstr(etag, cache->ico.conttag) != etag+1)
             *response = cache->ico;
          else
@@ -149,35 +149,35 @@ SEL makeSelector(char *message, int ml)
 {
    if (!ml)
       ml = strvlen(message);
-   char sel[OSP(ml+3+1)];
+   char sel[OSP(ml+4+1)];
    strmlcpy(sel, message, 0, &ml);
-   cpy4(sel+ml, ":::");
+   cpy5(sel+ml, "::::");
    return sel_registerName(sel);
 }
 
 EXPORT long respond(char *entity, int el, Request *request, Response *response)
 {
+   char *name, *method;
    Node *node;
-   if ((node = findName(request->serverTable, "REQUEST_METHOD", 14))
-    && (cmp4(node->value.s, "GET") || cmp5(node->value.s, "POST")))  // only respond to GET and POST requests
+   if ((*(name = nextPathSegment(entity, el)) == '_'
+     || cmp5(name, "edit/") && *(name += 5) == '_')                     // respond to dynamic calls only
+    && (node = findName(request->serverTable, "REQUEST_METHOD", 14))
+    && (cmp4(method = node->value.s, "GET") || cmp5(method, "POST")))   // only respond to GET and POST requests
    {
-      char *name = lastPathSegment(entity, el);
-      if (*name == '_')
-         name++;
-
-      int nl = el - (int)(name - entity);
+      int nl = el - (int)(++name - entity);
+      name = strcpy(alloca(OSP(nl+1)), name);                           // make a copy for not modifying the original uri of the entity
       int dl = domlen(name);
 
-      char *extension = NULL;
+      char *spec = NULL;
       if (dl != nl)
       {
          name[nl = dl] = '\0';
-         extension = name+nl+1;
+         spec = name+nl+1;
       }
 
       SEL selector = makeSelector(name, nl);
       if ([lResponder respondsToSelector:selector])
-         return (long)objc_msgSend(lResponder, selector, (id)extension, (id)request, (id)response);
+         return (long)objc_msgSend(lResponder, selector, (id)spec, (id)method, (id)request, (id)response);
    }
 
    return 0;

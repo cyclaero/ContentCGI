@@ -31,7 +31,7 @@ TH.fyi TH             { font-weight:normal; text-align:left;  vertical-align:top
 TH.fyi TD             { font-weight:normal; text-align:right; padding-right:15px; }
 
 TH.logo               { width:96px; padding:0; }
-IMG.logo              { width:96px; margin:0; }
+IMG.logo              { width:96px; margin:0 0 2px 2px; }
 IMG.mailto            { display:inline-block; margin:0; vertical-align:-50%; }
 
 TD.content            { vertical-align:top; }
@@ -39,10 +39,12 @@ TD.found              { vertical-align:top; }
 TD.found SPAN         { color:#F70; }
 TD.toc                { vertical-align:top; padding:9px 2px 3px 27px; }
 TD.toc IFRAME         { width:100%; height:0px; border:0px; }
+TD.toc BUTTON         { width:222px; margin-top:15px; }
 
-H1                    { font-weight:bold; font-size:17px; line-height:normal; text-align:left; margin:0; padding-top:27px; }
-H2                    { font-weight:bold; font-size:15px; line-height:normal; text-align:left; margin:0; padding-top:24px; }
-H3                    { font-weight:bold; font-size:13px; line-height:normal; text-align:left; margin:0; padding-top:18px; }
+H1,H2,H3              { font-weight:bold; line-height:normal; text-align:left; margin:0; -webkit-hyphens:auto; -moz-hyphens:auto; -ms-hyphens:auto; hyphens:auto;}
+H1                    { font-size:17px; padding-top:27px; }
+H2                    { font-size:15px; padding-top:24px; }
+H3                    { font-size:13px; padding-top:18px; }
 
 UL                    { margin:0; padding:0 0 0 17px; }
 P,LI                  { margin:0; padding-top:12px; -webkit-hyphens:auto; -moz-hyphens:auto; -ms-hyphens:auto; hyphens:auto; }
@@ -51,6 +53,10 @@ P.text-center         { text-align:center; }
 P.text-right          { text-align:right; }
 P.stamp               { text-align:right; font-size:9px; padding-top:7px; color:#555; }
 P.back-gray           { background-color:#eaeaee; }
+
+BLOCKQUOTE            { margin:7px 21px; -webkit-hyphens:auto; -moz-hyphens:auto; -ms-hyphens:auto; hyphens:auto; }
+Q,BLOCKQUOTE          { font-style:italic; }
+SUB,SUP               { line-height:0; }
 
 PRE                   { font-family:monospace; font-size:12px; padding:11px; margin:11px 0; max-height:420px; overflow:auto; border:1px solid #ddd; border-radius:7px; background-color:#f7f7ff; -webkit-hyphens:none; -moz-hyphens:none; hyphens:none; }
 PRE.fullheight        { max-height:none; }
@@ -71,10 +77,10 @@ TD.text-left          { text-align:left; }
 TD.text-center        { text-align:center; }
 TD.text-right         { text-align:right; }
 
-INPUT,TEXTAREA,SELECT { font-family:verdana,sans-serif; font-size:12px; border:1px solid #bbb; background-clip:content-box; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box; }
-SELECT                { font-family:verdana,sans-serif; font-size:12px; margin:1px 2px; border:1px solid #bbb; border-radius:5px; background-clip:content-box; }
+INPUT,TEXTAREA,SELECT { font-family:verdana,sans-serif; font-size:13px; border:1px solid #bbb; background-clip:content-box; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box; }
+SELECT                { font-family:verdana,sans-serif; font-size:13px; margin:1px 2px; border:1px solid #bbb; border-radius:5px; background-clip:content-box; }
 BUTTON,
-INPUT[type="submit"]  { font-family:verdana,sans-serif; font-size:12px; padding:5px; border:1px solid #bbb; border-radius:5px; background-color:#ddd; background-repeat:repeat-x; background-image:-moz-linear-gradient(top, #eee, #ddd); background-image:-ms-linear-gradient(top, #eee, #ddd); background-image:-webkit-linear-gradient(top, #eee, #ddd); background-image:-o-linear-gradient(top, #eee, #ddd); background-image:linear-gradient(top, #eee, #ddd); background-clip:initial; box-sizing:initial; box-shadow:2px 2px 3px rgba(64, 64, 64, 0.1); cursor:pointer; }
+INPUT[type="submit"]  { font-family:verdana,sans-serif; font-size:13px; padding:5px; border:1px solid #bbb; border-radius:5px; background-color:#ddd; background-repeat:repeat-x; background-image:-moz-linear-gradient(top, #eee, #ddd); background-image:-ms-linear-gradient(top, #eee, #ddd); background-image:-webkit-linear-gradient(top, #eee, #ddd); background-image:-o-linear-gradient(top, #eee, #ddd); background-image:linear-gradient(top, #eee, #ddd); background-clip:initial; box-sizing:initial; box-shadow:2px 2px 3px rgba(64, 64, 64, 0.1); cursor:pointer; }
 INPUT:disabled        { opacity:0.67; cursor:default; }
 
 INPUT.search          { width:100%; margin-top:17px; padding:5px 5px 5px 28px; background-image:url('searchpict.svg'); background-position:3px 2px; background-repeat:no-repeat; border-radius:5px; background-clip:border-box; }

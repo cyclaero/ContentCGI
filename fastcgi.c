@@ -241,6 +241,7 @@ boolean FCGI_Receiver(ConnExec *connex)
                               valLen--;
                            value.s = (valLen) ? uriDecode(&p[namLen+1]) : &p[namLen];
                            value.offset = (int32_t)(o - value.s);
+                           value.size = strvlen(value.s);
                            storeName(connex->QueryTable, uriDecode(p), 0, &value);
 
                            if (p == o)
@@ -265,6 +266,7 @@ boolean FCGI_Receiver(ConnExec *connex)
                            if (valLen > 0)
                               valLen--;
                            value.s = (valLen) ? postDecode(&p[namLen+1]) : &p[namLen];
+                           value.size = strvlen(value.s);
                            storeName(connex->POSTtable, postDecode(p), 0, &value);
                         }
                      }

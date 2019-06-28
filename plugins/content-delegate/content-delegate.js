@@ -1,7 +1,155 @@
+
 /* Editor JS of the Content Responder Delegate */
 
+ContentTools.Tools.Underline = (function() {
+  class Underline extends ContentTools.Tools.Bold {};
 
-ContentTools.RESTRICTED_ATTRIBUTES['*'] = [];
+  ContentTools.ToolShelf.stow(Underline, 'underline');
+  Underline.label = 'Underline';
+  Underline.icon = 'underline';
+  Underline.tagName = 'u';
+
+  return Underline;
+
+}).call(this);
+
+ContentTools.Tools.Subscript = (function() {
+  class Subscript extends ContentTools.Tools.Bold {};
+
+  ContentTools.ToolShelf.stow(Subscript, 'subscript');
+  Subscript.label = 'Subscript';
+  Subscript.icon = 'subscript';
+  Subscript.tagName = 'sub';
+
+  return Subscript;
+
+}).call(this);
+
+ContentTools.Tools.Superscript = (function() {
+  class Superscript extends ContentTools.Tools.Bold {};
+
+  ContentTools.ToolShelf.stow(Superscript, 'superscript');
+  Superscript.label = 'Superscript';
+  Superscript.icon = 'superscript';
+  Superscript.tagName = 'sup';
+
+  return Superscript;
+
+}).call(this);
+
+ContentTools.Tools.Strikethrough = (function() {
+  class Strikethrough extends ContentTools.Tools.Bold {};
+
+  ContentTools.ToolShelf.stow(Strikethrough, 'strikethrough');
+  Strikethrough.label = 'Strikethrough';
+  Strikethrough.icon = 'strikethrough';
+  Strikethrough.tagName = 's';
+
+  return Strikethrough;
+
+}).call(this);
+
+ContentTools.Tools.Quotation = (function() {
+  class Quotation extends ContentTools.Tools.Bold {};
+
+  ContentTools.ToolShelf.stow(Quotation, 'quotation');
+  Quotation.label = 'Quotation';
+  Quotation.icon = 'quotation';
+  Quotation.tagName = 'q';
+
+  return Quotation;
+
+}).call(this);
+
+ContentTools.Tools.Code = (function() {
+  class Code extends ContentTools.Tools.Bold {};
+
+  ContentTools.ToolShelf.stow(Code, 'code');
+  Code.label = 'Code';
+  Code.icon = 'code';
+  Code.tagName = 'code';
+
+  return Code;
+
+}).call(this);
+
+ContentTools.Tools.Tinyheading = (function() {
+  class Tinyheading extends ContentTools.Tools.Heading {};
+
+  ContentTools.ToolShelf.stow(Tinyheading, 'tinyheading');
+  Tinyheading.label = 'Tinyheading';
+  Tinyheading.icon = 'tinyheading';
+  Tinyheading.tagName = 'h3';
+
+  return Tinyheading;
+
+}).call(this);
+
+ContentTools.Tools.Blockquote = (function() {
+   class Blockquote extends ContentTools.Tools.Heading {};
+
+   ContentTools.ToolShelf.stow(Blockquote, 'blockquote');
+   Blockquote.label = 'Blockquote';
+   Blockquote.icon = 'blockquote';
+   Blockquote.tagName = 'blockquote';
+
+   return Blockquote;
+
+}).call(this);
+
+ContentTools.DEFAULT_TOOLS =
+[
+   [
+      'bold',
+      'italic',
+      'underline',
+
+      'subscript',
+      'superscript',
+      'strikethrough',
+
+      'link',
+      'quotation',
+      'code'
+
+   ],
+
+   [
+      'align-left',
+      'align-center',
+      'align-right',
+
+      'heading',
+      'subheading',
+      'tinyheading',
+
+      'paragraph',
+      'blockquote',
+      'preformatted'
+   ],
+
+   [
+      'unordered-list',
+      'ordered-list',
+      'table',
+
+      'indent',
+      'unindent',
+      'image'
+   ],
+
+   [
+      'undo',
+      'redo',
+      'remove'
+   ]
+];
+
+
+ContentTools.INLINE_TAGS = ContentTools.INLINE_TAGS.concat(['sub', 's', 'q']);
+ContentTools.HTMLCleaner.DEFAULT_TAG_WHITELIST = ContentTools.HTMLCleaner.DEFAULT_TAG_WHITELIST.concat(['sub', 's', 'q']);
+ContentTools.RESTRICTED_ATTRIBUTES['*']   = [];
+ContentTools.RESTRICTED_ATTRIBUTES['img'] = ['src', 'data-ce-max-width', 'data-ce-min-width'];
 
 ContentTools.StylePalette.add([
    new ContentTools.Style('Stamp',           'stamp',        ['p']),
@@ -12,7 +160,10 @@ ContentTools.StylePalette.add([
    new ContentTools.Style('Shade center',    'shade-center', ['img'])
 ]);
 
+ContentTools.HIGHLIGHT_HOLD_DURATION = 4000;
+ContentEdit.DRAG_HOLD_DURATION = 750;
 ContentEdit.TRIM_WHITESPACE = false;
+ContentEdit.INDENT = '   ';
 
 window.addEventListener('load', function()
 {
@@ -39,7 +190,7 @@ editor.addEventListener('saved', function (ev)
    payload = new FormData();
    for (name in regions)
       if (regions.hasOwnProperty(name))
-         payload.append('content', regions[name]);
+         payload.append('content', regions[name].replace(/<input name="g(:[0-9]*)*"/gm, '<input'));
 
    function onStateChange(ev)
    {
@@ -69,7 +220,7 @@ editor.addEventListener('saved', function (ev)
 
    xhr = new XMLHttpRequest();
    xhr.addEventListener('readystatechange', onStateChange);
-   xhr.open('POST', location.pathname);
+   xhr.open('POST', location.pathname, true);
    xhr.send(payload);
 });
 

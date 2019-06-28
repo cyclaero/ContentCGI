@@ -41,20 +41,20 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
 @interface Content : CyObject
 {
    Sources *cache;
-   Response htmodel;
 }
 
 - (id)initWithSources:(Sources *)sources;
-- (long)content:(char *)extension :(char *)method :(Request *)request :(Response *)response;
-- (long)models:(char *)name :(char *)method :(Request *)request :(Response *)response;
-- (long)images:(char *)name :(char *)method :(Request *)request :(Response *)response;
-- (long)upload:(char *)name :(char *)method :(Request *)request :(Response *)response;
-- (long)insert:(char *)name :(char *)method :(Request *)request :(Response *)response;
-- (long)rotate:(char *)name :(char *)method :(Request *)request :(Response *)response;
+- (long)content:(char *)spec :(char *)method :(Request *)request :(Response *)response;
 
-- (long)create:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
-- (long)delete:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
-- (long)revive:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
+- (long)models: (char *)name :(char *)method :(Request *)request :(Response *)response;
+- (long)images: (char *)name :(char *)method :(Request *)request :(Response *)response;
+- (long)upload: (char *)name :(char *)method :(Request *)request :(Response *)response;
+- (long)insert: (char *)name :(char *)method :(Request *)request :(Response *)response;
+- (long)rotate: (char *)name :(char *)method :(Request *)request :(Response *)response;
+
+- (long)create: (char *)base :(char *)method :(Request *)request :(Response *)response;
+- (long)delete: (char *)base :(char *)method :(Request *)request :(Response *)response;
+- (long)revive: (char *)base :(char *)method :(Request *)request :(Response *)response;
 
 @end
 
@@ -71,18 +71,17 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 - (void)dealloc
 {
-   deallocate(VPR(htmodel.content), false);
    [super dealloc];
 }
 
 
-- (long)content:(char *)extension :(char *)method :(Request *)request :(Response *)response
+- (long)content:(char *)spec :(char *)method :(Request *)request :(Response *)response
 {
    Node *node = findName(request->serverTable, "HTTP_IF_NONE_MATCH", 18);
    char *etag = (node) ? node->value.s : NULL;
 
-   if (extension)
-      if (cmp5(extension, "html"))
+   if (spec)
+      if (cmp5(spec, "html"))
          if (!etag || !*etag || strstr(etag, cache->html.conttag) != etag+1)
             *response = cache->html;
          else
@@ -91,7 +90,7 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
             return 304;
          }
 
-      else if (cmp4(extension, "css"))
+      else if (cmp4(spec, "css"))
          if (!etag || strstr(etag, cache->css.conttag) != etag+1)
             *response = cache->css;
          else
@@ -100,7 +99,7 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
             return 304;
          }
 
-      else if (cmp3(extension, "js"))
+      else if (cmp3(spec, "js"))
          if (!etag || strstr(etag, cache->js.conttag) != etag+1)
             *response = cache->js;
          else
@@ -109,7 +108,7 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
             return 304;
          }
 
-      else if (cmp4(extension, "png"))
+      else if (cmp4(spec, "png"))
          if (!etag || strstr(etag, cache->png.conttag) != etag+1)
             *response = cache->png;
          else
@@ -118,7 +117,7 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
             return 304;
          }
 
-      else if (cmp4(extension, "ico"))
+      else if (cmp4(spec, "ico"))
          if (!etag || strstr(etag, cache->ico.conttag) != etag+1)
             *response = cache->ico;
          else
@@ -256,7 +255,7 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
                struct stat st;                        // check whether the target directory exist
                if ((stat(imgp, &st) == no_error       // in case it does not
                 || (mkdir(imgp, 0775) == no_error     // then try to create it
-                 && stat(imgp, &st) == no_error))     // by purpose we won't resolve inssues with intermediate path components
+                 && stat(imgp, &st) == no_error))     // by purpose, don't care for intermediate path failures
                 && S_ISDIR(st.st_mode))               // final check, and let's go
                {
                   FILE *file;
@@ -287,19 +286,26 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
                            DestroyExceptionInfo(&excepInfo);
                            DestroyMagick();
 
-                           char *cp = imgp+rl+1; cl -= rl+1;
-                                                              // vv -- max. string size of ulong is 20 -- 18446744073709551616
-                           response->content = allocate(cl + 1 + 20 + 1 + 20, default_align, false);
-                           strmlcpy(response->content, cp, 0, &cl);
-                           response->content[cl++] = '\n';
-                           cl += int2str(response->content+cl, imgWidth, 21, 0);
-                           response->content[cl++] = '\n';
-                           cl += int2str(response->content+cl, imgHeight, 21, 0);
-                           response->contlen = cl;
-                           response->contdyn = true;
-                           response->conttyp = "text/plain";
+                           char *cp = imgp+rl-1;
+                           while (p = strstr(cp+1, "/"MEDIA_DIR"/"))
+                              cp = p;
+                           if (cp != imgp+rl-1)
+                           {
+                              for (p = cp-1; p > imgp+rl && *p != '/'; p--);
+                              cl = strvlen(cp = p+1);
+                                                                 // vv -- max. string size of ulong is 20 -- 18446744073709551616
+                              response->content = allocate(cl + 1 + 20 + 1 + 20, default_align, false);
+                              strmlcpy(response->content, cp, 0, &cl);
+                              response->content[cl++] = '\n';
+                              cl += int2str(response->content+cl, imgWidth, 21, 0);
+                              response->content[cl++] = '\n';
+                              cl += int2str(response->content+cl, imgHeight, 21, 0);
+                              response->contlen = cl;
+                              response->contdyn = true;
+                              response->conttyp = "text/plain";
 
-                           rc = 200;
+                              rc = 200;
+                           }
                         }
                      }
                      else
@@ -399,19 +405,26 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
                imgHeight = working->rows;
                DestroyImage(working);
 
-               char *np = imgp+rl+1; nl -= rl+1;
-                                                  // vv -- max. string size of uint is 10 -- 4294967294
-               response->content = allocate(nl + 1 + 10 + 1 + 10, default_align, false);
-               strmlcpy(response->content, np, 0, &nl);
-               response->content[nl++] = '\n';
-               nl += int2str(response->content+nl, imgWidth, 11, 0);
-               response->content[nl++] = '\n';
-               nl += int2str(response->content+nl, imgHeight, 11, 0);
-               response->contlen = nl;
-               response->contdyn = true;
-               response->conttyp = "text/plain";
+               char *p, *np = imgp+rl-1;
+               while (p = strstr(np+1, "/"MEDIA_DIR"/"))
+                  np = p;
+               if (np != imgp+rl-1)
+               {
+                  for (p = np-1; p > imgp+rl && *p != '/'; p--);
+                  nl = strvlen(np = p+1);
+                                                     // vv -- max. string size of uint is 10 -- 4294967294
+                  response->content = allocate(nl + 1 + 10 + 1 + 10, default_align, false);
+                  strmlcpy(response->content, np, 0, &nl);
+                  response->content[nl++] = '\n';
+                  nl += int2str(response->content+nl, imgWidth, 11, 0);
+                  response->content[nl++] = '\n';
+                  nl += int2str(response->content+nl, imgHeight, 11, 0);
+                  response->contlen = nl;
+                  response->contdyn = true;
+                  response->conttyp = "text/plain";
 
-               rc = 200;
+                  rc = 200;
+               }
             }
 
          destroy:
@@ -485,19 +498,26 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
                   imgHeight = working->rows;
                   DestroyImage(working);
 
-                  char *np = imgp+rl+1; nl -= rl+1;
-                                                     // vv -- max. string size of uint is 10 -- 4294967294
-                  response->content = allocate(nl + 1 + 10 + 1 + 10, default_align, false);
-                  strmlcpy(response->content, np, 0, &nl);
-                  response->content[nl++] = '\n';
-                  nl += int2str(response->content+nl, imgWidth, 11, 0);
-                  response->content[nl++] = '\n';
-                  nl += int2str(response->content+nl, imgHeight, 11, 0);
-                  response->contlen = nl;
-                  response->contdyn = true;
-                  response->conttyp = "text/plain";
+                  char *p, *np = imgp+rl-1;
+                  while (p = strstr(np+1, "/"MEDIA_DIR"/"))
+                     np = p;
+                  if (np != imgp+rl-1)
+                  {
+                     for (p = np-1; p > imgp+rl && *p != '/'; p--);
+                     nl = strvlen(np = p+1);
+                                                        // vv -- max. string size of uint is 10 -- 4294967294
+                     response->content = allocate(nl + 1 + 10 + 1 + 10, default_align, false);
+                     strmlcpy(response->content, np, 0, &nl);
+                     response->content[nl++] = '\n';
+                     nl += int2str(response->content+nl, imgWidth, 11, 0);
+                     response->content[nl++] = '\n';
+                     nl += int2str(response->content+nl, imgHeight, 11, 0);
+                     response->contlen = nl;
+                     response->contdyn = true;
+                     response->conttyp = "text/plain";
 
-                  rc = 200;
+                     rc = 200;
+                  }
                }
             }
 
@@ -516,66 +536,80 @@ long  GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache);
 boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTable, boolean update);
 
-- (long)create:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
+- (long)create:(char *)base :(char *)method :(Request *)request :(Response *)response;
 {
-   if (basepath && *basepath)
+   if (base && *base)
    {
       char *droot;
       if (droot = docRoot(request->serverTable))
       {
          int  drootl = strvlen(droot);
 
-         int  bl = strvlen(basepath);
+         int  bl = strvlen(base);
          int  artdl = drootl + 1 + bl; // for example $DOCUMENT_ROOT/articles
          char artd[OSP(artdl+1)];
-         strmlcat(artd, artdl+1, NULL, droot, drootl, "/", 1, basepath, bl, NULL);
+         strmlcat(artd, artdl+1, NULL, droot, drootl, "/", 1, base, bl, NULL);
 
          struct stat st;
          if (stat(artd, &st) == no_error && S_ISDIR(st.st_mode))
          {
-            Node *node;
-            if ((node = findName(cache->models, "model.html", 10)) && ((Response *)node->value.p)->contlen)
+            char *storeName = lastPathSegment(base, bl);
+            int   storeNaml;
+            if (*storeName)
+               storeNaml = strvlen(storeName);
+            else
+               storeName = base, storeNaml = bl;
+
+            Node    *node;
+            Response modelData = {};
+            char    *modelName = strcpy(alloca(OSP(storeNaml+5+1)), storeName);
+            cpy6(modelName+storeNaml, ".html");
+            if (!(node = findName(cache->models, modelName, storeNaml+5)))
             {
-               if (!htmodel.content)
+               cpy6(modelName+storeNaml-1, ".html");
+               if (!(node = findName(cache->models, modelName, storeNaml+4)))
+                  node = findName(cache->models, "model.html", 10);
+            }
+
+            if (node && ((Response *)node->value.p)->contlen)
+            {
+               // Need to replace the generic title 'CONTENT_TITLE' by the real one, which must be informed by the respective server environment variable
+               llong contlen = ((Response *)node->value.p)->contlen;
+               char *content = ((Response *)node->value.p)->content;
+               char *titlpos = strstr(content, "CONTENT_TITLE");
+               if (titlpos)
                {
-                  // Need to replace the generic title 'CONTENT_TITLE' by the real one, which must be informed by the respective server environment variable
-                  llong contlen = ((Response *)node->value.p)->contlen;
-                  char *content = ((Response *)node->value.p)->content;
-                  char *titlpos = strstr(content, "CONTENT_TITLE");
-                  if (titlpos)
-                  {
-                     char *contitl = conTitle(request->serverTable);
-                     int   titllen = strvlen(contitl);
-                     htmodel.contlen = contlen + titllen - 13;
-                     htmodel.content = allocate(htmodel.contlen+1, default_align, false);
-                     llong p = titlpos - content, q = contlen - p - 13;
-                     memvcpy(htmodel.content, content, p);
-                     p += strmlcpy(htmodel.content+p, contitl, 0, &titllen);
-                     memvcpy(htmodel.content+p, titlpos+13, q);
-                  }
-
-                  else
-                  {
-                     htmodel.contlen = contlen;
-                     htmodel.content = allocate(htmodel.contlen+1, default_align, false);
-                     memvcpy(htmodel.content, content, contlen);
-                  }
-
-                  htmodel.content[contlen] = '\0';
-                  htmodel.conttyp = "text/html; charset=utf-8";
+                  char *contitl = conTitle(request->serverTable);
+                  int   titllen = strvlen(contitl);
+                  modelData.contlen = contlen + titllen - 13;
+                  modelData.content = allocate(modelData.contlen+1, default_align, false);
+                  llong p = titlpos - content, q = contlen - p - 13;
+                  memvcpy(modelData.content, content, p);
+                  p += strmlcpy(modelData.content+p, contitl, 0, &titllen);
+                  memvcpy(modelData.content+p, titlpos+13, q);
                }
+
+               else
+               {
+                  modelData.contlen = contlen;
+                  modelData.content = allocate(modelData.contlen+1, default_align, false);
+                  memvcpy(modelData.content, content, contlen);
+               }
+
+               modelData.content[contlen] = '\0';
+               modelData.conttyp = "text/html; charset=utf-8";
 
                if (cmp4(method, "GET"))
                {
-                  char *plang, *qlang = (request->QueryTable && (node = findName(request->QueryTable, "lang", 4)) && node->value.s && strvlen(node->value.s) == 2)
+                  char *plang, *qlang = (request->QueryTable && (node = findName(request->QueryTable, "lang", 4)) && node->value.s && node->value.size == 2)
                                       ? node->value.s : NULL;
-                  if (qlang && (plang = strcasestr(htmodel.content, "<HTML lang=\"")))
+                  if (qlang && (plang = strcasestr(modelData.content, "<HTML lang=\"")))
                      cpy2(plang+12, qlang);
 
-                  return  GEThandler(droot, drootl, "model", 5, "html", request, response, &htmodel);
+                  return  GEThandler(droot, drootl, "model", 5, "html", request, response, &modelData);
                }
                else // POST
-                  return POSThandler(droot, drootl, basepath, bl, "html", request, response, &htmodel);
+                  return POSThandler(droot, drootl, base, bl, "html", request, response, &modelData);
             }
          }
 
@@ -590,12 +624,11 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTab
 }
 
 
-- (long)delete:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
+- (long)delete:(char *)base :(char *)method :(Request *)request :(Response *)response;
 {
-   pthread_mutex_lock(&EDIT_mutex);
    int rc = 400;
 
-   if (basepath && *basepath && cmp4(method, "GET"))
+   if (base && *base && cmp4(method, "GET"))
    {
       char *droot;
       if (droot = docRoot(request->serverTable))
@@ -608,16 +641,18 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTab
            || (node = findName(request->QueryTable, "article", 7)))
           && node->value.s && *node->value.s)
          {
+            pthread_mutex_lock(&EDIT_mutex);
+
             char *article = node->value.s;
-            int  bl = strvlen(basepath),
+            int  bl = strvlen(base),
                  al = strvlen(article);
             int  artpl = drootl + 1 + bl + 1 + al;                      // for example $DOCUMENT_ROOT/articles/1527627185.html
             char artp[OSP(artpl+1)];
-            strmlcat(artp, artpl+1, NULL, droot, drootl, "/", 1, basepath, bl, "/", 1, article, al, NULL);
+            strmlcat(artp, artpl+1, NULL, droot, drootl, "/", 1, base, bl, "/", 1, article, al, NULL);
             int  dl = domlen(article);
             int  medpl = drootl + 1 + bl + 1 + MEDIA_DIR_LEN + 1 + dl;  // for example $DOCUMENT_ROOT/articles/media/1527627185
             char medp[OSP(medpl+1)];
-            strmlcat(medp, medpl+1, NULL, droot, drootl, "/", 1, basepath, bl, "/"MEDIA_DIR"/", MEDIA_DIR+2, article, dl, NULL);
+            strmlcat(medp, medpl+1, NULL, droot, drootl, "/", 1, base, bl, "/"MEDIA_DIR"/", MEDIA_DIR_LEN+2, article, dl, NULL);
 
             // 1. move the respective media directory into /tmp
             struct stat st;
@@ -633,23 +668,24 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTab
              && fileCopy(artp, tmpp, &st) == no_error    // the spider of the search-deleagte determines changes by observing the number of hard links for a given
              && unlink(artp) == no_error)                // inode. For this reason we cannot simply rename the deleted file, because its nlink value wont't change.
             {
-               if (!reindex(droot, drootl, basepath, bl, request->serverTable, false))
-                  *basepath = '\0';
+               if (!reindex(droot, drootl, base, bl, request->serverTable, false))
+               {
+                  if (bl = strvlen(base)) // reindex may have changed the base path, so check its length
+                     if (response->content = allocate(bl+1, default_align, false))
+                     {
+                        response->contdyn = true;
+                        response->contlen = strmlcpy(response->content, base, bl+1, &bl);
+                     }
+                     else
+                        rc = 500;
+               }
 
                rc = 303;
-
-               int bpl;
-               if (bpl = strvlen(basepath))
-                  if (response->content = allocate(bpl + 1, default_align, false))
-                  {
-                     response->contdyn = true;
-                     response->contlen = strmlcpy(response->content, basepath, bpl+1, &bpl);
-                  }
-                  else
-                     rc = 500;
             }
             else
                rc = 404;
+
+            pthread_mutex_unlock(&EDIT_mutex);
          }
 
          // rc = 400
@@ -658,41 +694,42 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTab
          rc = 500;
    }
 
-   pthread_mutex_unlock(&EDIT_mutex);
    return rc;
 }
 
 
-- (long)revive:(char *)basepath :(char *)method :(Request *)request :(Response *)response;
+- (long)revive:(char *)base :(char *)method :(Request *)request :(Response *)response;
 {
-   pthread_mutex_lock(&EDIT_mutex);
    int rc = 400;
 
-   if (basepath && *basepath && cmp4(method, "GET"))
+   if (base && *base && cmp4(method, "GET"))
    {
       char *droot;
       if (droot = docRoot(request->serverTable))
       {
-         if (!reindex(droot, strvlen(droot), basepath, strvlen(basepath), request->serverTable, false))
-            *basepath = '\0';
+         pthread_mutex_lock(&EDIT_mutex);
+
+         if (reindex(droot, strvlen(droot), base, strvlen(base), request->serverTable, false))
+         {
+            int bl;
+            if (bl = strvlen(base)) // reindex may have changed the base path, so check its length
+               if (response->content = allocate(bl+1, default_align, false))
+               {
+                  response->contdyn = true;
+                  response->contlen = strmlcpy(response->content, base, bl+1, &bl);
+               }
+               else
+                  rc = 500;
+         }
 
          rc = 303;
 
-         int bpl;
-         if (bpl = strvlen(basepath))
-            if (response->content = allocate(bpl + 1, default_align, false))
-            {
-               response->contdyn = true;
-               response->contlen = strmlcpy(response->content, basepath, bpl+1, &bpl);
-            }
-            else
-               rc = 500;
+         pthread_mutex_unlock(&EDIT_mutex);
       }
       else
          rc = 500;
    }
 
-   pthread_mutex_unlock(&EDIT_mutex);
    return rc;
 }
 
@@ -723,65 +760,64 @@ SEL makeSelector(char *message, int ml)
 EXPORT long respond(char *entity, int el, Request *request, Response *response)
 {
    long  rc = 0;
-   char *name   = lastPathSegment(entity, el);
-   char *method = NULL;
+   char *name, *method;
    Node *node;
-
-   if ((node = findName(request->serverTable, "REQUEST_METHOD", 14))
+   if (*nextPathSegment(entity, el) != '_'                                    // do not respond to non-editing dynamic calls
+    && (node = findName(request->serverTable, "REQUEST_METHOD", 14))
     && (cmp4(method = node->value.s, "GET") || cmp5(method, "POST"))          // only respond to GET or POST requests
-    && cmp6(entity, "/edit/") && entity[6] != '/'                             // only be responsible for everything below the /edit/ path
-    && *name != '_')                                                          // but do not respond to other dynamic calls
+    && cmp6(entity, "/edit/") && entity[6] != '/')                            // only be responsible for everything below the /edit/ path
    {
+      char *spec = NULL;
+      int   rl, nl;
+
       if (*(entity += 6) != '\0')
          el -= 6;
       else
          el  = 10, entity = "index.html";
 
       if (entity[el-1] == '/')
-      {
-         el = strmlcat(name = alloca(OSP(el+10+1)), el+10+1, NULL, entity, el, "index.html", 10, NULL);
-         entity = name;
-      }
+         nl = strmlcat(name = alloca(OSP(el+10+1)), el+10+1, NULL, entity, el, "index.html", 10, NULL), entity = name, el = nl;
+      else
+         name = strcpy(alloca(OSP((nl = el)+1)), entity);
 
-      int     ml = el;
-      char  *msg = strcpy(alloca(OSP(ml+5)), entity);
-      char *spec = NULL;
+      if (cmp8(name, "content."))
+         spec = name+8, name[nl = 7] = '\0';
 
-      if (cmp8(msg, "content."))
-         spec = msg+8, msg[ml = 7] = '\0';
+      else if (cmp7(name, "models/")
+            || cmp7(name, "images/")
+            || cmp7(name, "upload/")
+            || cmp7(name, "insert/")
+            || cmp7(name, "rotate/"))
+         spec = name+7, name[nl = 6] = '\0';
 
-      else if (cmp7(msg, "models/")
-            || cmp7(msg, "images/")
-            || cmp7(msg, "upload/")
-            || cmp7(msg, "insert/")
-            || cmp7(msg, "rotate/"))
-         spec = msg+7, msg[ml = 6] = '\0';
-
-      else if (cmp8(msg+ml-7, "/create")
-            || cmp8(msg+ml-7, "/delete")
-            || cmp8(msg+ml-7, "/revive"))
-         spec = msg, msg += ml-6, spec[ml-7] = '\0', ml = 6;
+      else if (cmp8(name+nl-7, "/create")
+            || cmp8(name+nl-7, "/delete")
+            || cmp8(name+nl-7, "/revive"))
+         spec = name, name += nl-6, spec[nl-7] = '\0', nl = 6;
 
       else
       {
-         int dl;
-         if ((dl = domlen(msg)) != ml)
+         int   dl;
+         char *dom = lastPathSegment(name, nl);
+         if (!*dom)
+            dom = name;
+         if ((dl = domlen(dom)) && dom[dl] == '.')
          {
-            msg[ml = dl] = '\0';
-            spec = entity+ml+1;
+            spec = dom+dl+1;
+            nl = (int)(dom - name) + dl;
          }
       }
 
-      SEL selector = makeSelector(msg, ml);
+      SEL selector = makeSelector(name, nl);
       if ([lResponder respondsToSelector:selector]                            // return a cached or generated resource
        && (rc = (long)objc_msgSend(lResponder, selector, (id)spec, (id)method, (id)request, (id)response)))
          return rc;
 
       else if ((node = findName(request->serverTable, "DOCUMENT_ROOT", 13))   // access a resource from DOCUMENT_RROT
-            && node->value.s && (ml = strvlen(node->value.s)))
+            && node->value.s && (rl = (int)node->value.size))
          return (cmp4(method, "GET"))
-                ?  GEThandler(node->value.s, ml, entity, el, spec, request, response, NULL)
-                : POSThandler(node->value.s, ml, entity, el, spec, request, response, NULL);
+                ?  GEThandler(node->value.s, rl, entity, el, spec, request, response, NULL)
+                : POSThandler(node->value.s, rl, entity, el, spec, request, response, NULL);
    }
 
    return rc;
@@ -861,8 +897,6 @@ static inline llong contstat(char *filep, struct stat *st, Response *cache)
 
 long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache)
 {
-   pthread_mutex_lock(&EDIT_mutex);
-
    long   rc      = 0;
    int    filepl  = 0;
    char  *filep   = NULL;
@@ -894,6 +928,8 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
             if ((l = n = contread(content, 1, 8, file, cache, &contpos)) == 8
              && !cmp8(content, "<!--S-->"))
             {
+               pthread_mutex_lock(&EDIT_mutex);
+
                char *p, *q, b[1536]; cpy8(b, "********"); b[1535] = 0;
 
                // inject the LINK tag of our content.css directly after the HEAD tag.
@@ -969,11 +1005,15 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
                            response->contlen =                                                            n += 69;
                            response->content = content;
                            rc = 200;
+
+                           pthread_mutex_unlock(&EDIT_mutex);
                            goto finish;
                         }
                      }
                   }
                }
+
+               pthread_mutex_unlock(&EDIT_mutex);
             }
 
             if (file)
@@ -1002,10 +1042,12 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
 
          if (file)
             fclose(file);
+
+         if (cache)
+            deallocate(VPR(cache->content), false);
       }
    }
 
-   pthread_mutex_unlock(&EDIT_mutex);
    return rc;
 }
 
@@ -1043,8 +1085,6 @@ int stripATags(char *s, ssize_t n)
 
 long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache)
 {
-   pthread_mutex_lock(&EDIT_mutex);
-
    long   rc       = 500;
    int    filepl   = 0;
    char  *filep    = NULL;
@@ -1086,7 +1126,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 
                for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++); *r = '\0'; r += 3;     // leave 1 line feed at the beginning of the replacement text
                if (r >= t)
-                  goto unlock_and_return;
+                  return rc;
 
                if (strstr(s, "name=\"images\""))
                {
@@ -1108,7 +1148,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                   s = strstr(r, boundary) + boundlen;
                   for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++); *r = '\0'; r += 3;  // leave 1 line feed at the beginning of the replacement text
                   if (r >= t)
-                     goto unlock_and_return;
+                     return rc;
                }
 
                if (strstr(s, "name=\"content\""))
@@ -1140,6 +1180,8 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                    && (content = allocate(filesize + extlen+1, default_align, false))
                    && (cache || (file = fopen(filep, "r"))))
                   {
+                     pthread_mutex_lock(&EDIT_mutex);
+
                      llong i, k, l, m, n;
                      char  b[1536]; cpy8(b, "********"); b[1535] = 0;
                      char *o, *p, *q = b+8;
@@ -1285,6 +1327,11 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                      }
                      else if (file)
                         fclose(file);
+
+                     if (cache)
+                        deallocate(VPR(cache->content), false);
+
+                     pthread_mutex_unlock(&EDIT_mutex);
                   }
 
                   deallocate(VPR(content), false);
@@ -1292,10 +1339,10 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
             }
          }
       }
+      else
+         return 0;
    }
 
-unlock_and_return:
-   pthread_mutex_unlock(&EDIT_mutex);
    return rc;
 }
 
@@ -1580,7 +1627,7 @@ boolean reindex(char *droot, int drootl, char *entity, int el, Node **serverTabl
                            if (mep->d_name[0] != '.' && mep->d_type == DT_REG)
                            {
                               int  mfl = mdl + mep->d_namlen;
-                              char  mfil[OSP(mfl+5)];
+                              char mfil[OSP(mfl+5)];
                               strmlcat(mfil, mfl+1, NULL, mdir, mdl, mep->d_name, mep->d_namlen, NULL);
                               if (findImageName(imageFileNames, mfil+mdirl, ep->d_namlen + 1 + mep->d_namlen))
                                  found++;

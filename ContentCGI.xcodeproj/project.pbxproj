@@ -22,7 +22,6 @@
 		7E20155D20B23E86000FC68A /* drop-vert-above.svg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EB7357420A2534C00D73FC1 /* drop-vert-above.svg */; };
 		7E20155E20B23E88000FC68A /* drop-vert-below.svg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EB7357520A2534C00D73FC1 /* drop-vert-below.svg */; };
 		7E20155F20B23E8C000FC68A /* video.svg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EB7357720A2534C00D73FC1 /* video.svg */; };
-		7E20156020B23E91000FC68A /* icons.woff in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7EB7357620A2534C00D73FC1 /* icons.woff */; };
 		7E2F1B8B20A608B800B7B848 /* fastcgi.c in Sources */ = {isa = PBXBuildFile; fileRef = 7E2F1B8920A608B800B7B848 /* fastcgi.c */; };
 		7E324E6C20B6292A001E29F9 /* CyObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EE882A220AC9F2900CD24F3 /* CyObject.m */; };
 		7E324E7B20B6296A001E29F9 /* content-delegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EE8829D20AC9F2900CD24F3 /* content-delegate.m */; };
@@ -179,7 +178,6 @@
 			dstPath = "/plugins/$(PROJECT_NAME)/$(PRODUCT_NAME)/images";
 			dstSubfolderSpec = 0;
 			files = (
-				7E20156020B23E91000FC68A /* icons.woff in CopyFiles */,
 				7E20155C20B23E82000FC68A /* drop-horz.svg in CopyFiles */,
 				7E20155D20B23E86000FC68A /* drop-vert-above.svg in CopyFiles */,
 				7E20155E20B23E88000FC68A /* drop-vert-below.svg in CopyFiles */,
@@ -263,6 +261,8 @@
 		7E6B8BF220C6BF9200A95B6A /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		7E6B8BFB20C6C6B900A95B6A /* functions.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = functions.js; sourceTree = "<group>"; };
 		7E6D8E3920DD2A6300762A19 /* content-design.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "content-design.h"; sourceTree = "<group>"; };
+		7E71359D22C6DB650056990C /* article.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = article.html; sourceTree = "<group>"; };
+		7E71359E22C6DB7B0056990C /* content-delegate.woff */ = {isa = PBXFileReference; lastKnownFileType = file; path = "content-delegate.woff"; sourceTree = "<group>"; };
 		7E7F7EC220E5ACAD0027EC85 /* libGraphicsMagick.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGraphicsMagick.dylib; path = /opt/local/lib/libGraphicsMagick.dylib; sourceTree = "<absolute>"; };
 		7EA227F520C8855500C3BB78 /* model.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = model.html; sourceTree = "<group>"; };
 		7EB7356B20A2534C00D73FC1 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
@@ -475,9 +475,9 @@
 		7EC6FA6114F2FB9700B07421 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = utils.h; sourceTree = "<group>"; };
 		7EC6FA6214F2FB9700B07421 /* utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; lineEnding = 0; path = utils.c; sourceTree = "<group>"; };
 		7ECA977020DBD17F002EAEAB /* generate-webdocs.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "generate-webdocs.sh"; sourceTree = "<group>"; };
-		7ED1FC6322A9A35000376C2E /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
-		7ED1FC6522A9A36100376C2E /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
-		7ED1FC6722A9A5C800376C2E /* libutf8proc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libutf8proc.a; path = ../../../../../usr/local/lib/libutf8proc.a; sourceTree = "<group>"; };
+		7ED1FC6322A9A35000376C2E /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = /usr/lib/libiconv.dylib; sourceTree = "<absolute>"; };
+		7ED1FC6522A9A36100376C2E /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = /usr/lib/libz.dylib; sourceTree = "<absolute>"; };
+		7ED1FC6722A9A5C800376C2E /* libutf8proc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libutf8proc.a; path = /usr/local/lib/libutf8proc.a; sourceTree = "<absolute>"; };
 		7ED3DCB220D00BB80082B171 /* alloc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = alloc.c; sourceTree = "<group>"; };
 		7ED3DCB320D00BB80082B171 /* binsearch.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = binsearch.c; sourceTree = "<group>"; };
 		7ED3DCB420D00BB80082B171 /* bit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bit.c; sourceTree = "<group>"; };
@@ -786,6 +786,7 @@
 		7E6B8BED20C6B98600A95B6A /* models */ = {
 			isa = PBXGroup;
 			children = (
+				7E71359D22C6DB650056990C /* article.html */,
 				7EA227F520C8855500C3BB78 /* model.html */,
 				7E6B8BEF20C6BBDD00A95B6A /* styles.css */,
 				7E6B8BFB20C6C6B900A95B6A /* functions.js */,
@@ -1533,6 +1534,7 @@
 				7EE8829A20AC9F2900CD24F3 /* content-delegate.html */,
 				7EE8829920AC9F2900CD24F3 /* content-delegate.css */,
 				7EE8829C20AC9F2900CD24F3 /* content-delegate.js */,
+				7E71359E22C6DB7B0056990C /* content-delegate.woff */,
 				7E6B8BEB20C6AB7200A95B6A /* content-delegate.png */,
 				7EE8829B20AC9F2900CD24F3 /* content-delegate.ico */,
 				7EE8829E20AC9F2900CD24F3 /* Makefile */,
@@ -1658,6 +1660,7 @@
 				7EBD78FE20AE18EC0035901F /* CopyFiles */,
 				7E6B8BF520C6C38600A95B6A /* CopyFiles */,
 				7E20155B20B23E52000FC68A /* CopyFiles */,
+				7E71359F22C6DD460056990C /* ShellScript */,
 				7EFCFEE420B346B900B3D759 /* ShellScript */,
 				7E20156420B25125000FC68A /* ShellScript */,
 			);
@@ -1738,7 +1741,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "printf '\\n\\n' | cat \"$SRCROOT/ContentTools/build/content-tools.min.js\" - \"$SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.js\" > \"$INSTALL_DIR/$PRODUCT_NAME.js\"\nsed -e 's/if(\"editing\"===a\\._state&&b\\.CANCEL_MESSAGE)/if(\"editing\"===a._state\\&\\&a.history\\&\\&a.history._snapshotIndex\\&\\&b.CANCEL_MESSAGE)/' \\\n    -e 's/a\\.target=this\\._target/a.target=this._target,a.rel=\"noopener noreferrer\"/' -i \"\" \"$INSTALL_DIR/$PRODUCT_NAME.js\"\n";
+			shellScript = "printf '\\n\\n' | cat \"$SRCROOT/ContentTools/build/content-tools.min.js\" - \"$SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.js\" > \"$INSTALL_DIR/$PRODUCT_NAME.js\"\nsed -e 's/if(\"editing\"===a\\._state&&b\\.CANCEL_MESSAGE)/if(\"editing\"===a._state\\&\\&a.history\\&\\&a.history._snapshotIndex\\&\\&b.CANCEL_MESSAGE)/' \\\n    -e 's/a\\.target=this\\._target/a.target=this._target,a.rel=\"noopener noreferrer\"/' \\\n    -e 's/{var d;return a\\.parent()\\.detach(a),/{var d;if(window.event.altKey){var xx=document.createElement(\"div\");xx.innerHTML=a.html(),a=a.constructor.fromDOMElement(xx.children[0])}else a.parent().detach(a);return /' \\\n    -e 's/{var e,f,g,h,i,j,k,l;if(b\\.parent()\\.detach(b),/{var e,f,g,h,i,j,k,l;if(window.event.altKey){var xx=document.createElement(\"div\");xx.innerHTML=b.html(),b=b.constructor.fromDOMElement(xx.children[0])}else b.parent().detach(b);if(/' \\\n    -i \"\" \"$INSTALL_DIR/$PRODUCT_NAME.js\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7E71359F22C6DD460056990C /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				$SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.woff,
+			);
+			outputPaths = (
+				$INSTALL_DIR/images/icons.woff,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp \"$SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.woff\" \"$INSTALL_DIR/images/icons.woff\"";
 			showEnvVarsInLog = 0;
 		};
 		7EE7B83220B90E2300D6DBCB /* ShellScript */ = {
