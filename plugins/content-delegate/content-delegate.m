@@ -1022,10 +1022,23 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
                contpos = 0;
          }
 
+         if (file)
+         {
+            Node *node;
+            char *etag;
+            httpETag(response->conttag, &st);
+
+            if ((node = findName(request->serverTable, "HTTP_IF_NONE_MATCH", 18))
+             && (etag = node->value.s) && *etag
+             && strstr(etag, response->conttag) == etag+1)
+            {
+               rc = 304;
+               goto finish;
+            }
+         }
+
          if (contread(content, filesize, 1, file, cache, &contpos) == 1)
          {
-            if (file)
-               httpETag(response->conttag, &st);
             response->contlen = filesize;
             response->content = content;
             rc = 200;
