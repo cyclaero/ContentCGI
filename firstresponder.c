@@ -150,6 +150,10 @@ void *firstresponder(ConnExec *connex)
                         else
                            goto error500;
 
+                     case 202:
+                        entity = "Status: 202\nContent-Type: text/plain\nContent-Length: 16\nConnection: close\n\n202 - Accepted.\n", el = 91;
+                        goto sendmsg;
+
                      case 204:
                         hthl = snprintf(htheader, 256, "Status: %ld\nContent-Length: 0\n\n", rc);
                         if (FCGI_SendDataStream(connex, FCGI_STDOUT, hthl, htheader))

@@ -787,6 +787,14 @@ static inline char *uppercase(char *s)
 int strmlcat(char *dst, int m, int *l, ...);
 
 
+#define CMP(a, b, len) cmp##len(a, b)
+#define cmp(a, b, len) CMP(a, b, len)
+
+static inline boolean cmp1(const void *a, const void *b)
+{
+   return *(uint8_t *)a == *(uint8_t *)b;
+}
+
 static inline boolean cmp2(const void *a, const void *b)
 {
    return *(uint16_t *)a == *(uint16_t *)b;
@@ -794,7 +802,7 @@ static inline boolean cmp2(const void *a, const void *b)
 
 static inline boolean cmp3(const void *a, const void *b)
 {
-   return *(uint8_t *)a == *(uint8_t *)b && cmp2((uint8_t *)a+1, (uint8_t *)b+1);
+   return cmp1(a, b) && cmp2((uint8_t *)a+1, (uint8_t *)b+1);
 }
 
 static inline boolean cmp4(const void *a, const void *b)
@@ -804,7 +812,7 @@ static inline boolean cmp4(const void *a, const void *b)
 
 static inline boolean cmp5(const void *a, const void *b)
 {
-   return *(uint8_t *)a == *(uint8_t *)b && cmp4((uint8_t *)a+1, (uint8_t *)b+1);
+   return cmp1(a, b) && cmp4((uint8_t *)a+1, (uint8_t *)b+1);
 }
 
 static inline boolean cmp6(const void *a, const void *b)
@@ -828,7 +836,7 @@ static inline boolean cmp8(const void *a, const void *b)
 
 static inline boolean cmp9(const void *a, const void *b)
 {
-   return *(uint8_t *)a == *(uint8_t *)b && cmp8((uint8_t *)a+1, (uint8_t *)b+1);
+   return cmp1(a, b) && cmp8((uint8_t *)a+1, (uint8_t *)b+1);
 }
 
 static inline boolean cmp10(const void *a, const void *b)
@@ -867,6 +875,14 @@ static inline boolean cmp16(const void *a, const void *b)
 }
 
 
+#define CPY(a, b, len) cpy##len(a, b)
+#define cpy(a, b, len) CPY(a, b, len)
+
+static inline void cpy1(void *a, const void *b)
+{
+  *(uint8_t *)a = *(uint8_t *)b;
+}
+
 static inline void cpy2(void *a, const void *b)
 {
   *(uint16_t *)a = *(uint16_t *)b;
@@ -874,7 +890,7 @@ static inline void cpy2(void *a, const void *b)
 
 static inline void cpy3(void *a, const void *b)
 {
-   cpy2(a, b), *(uint8_t *)((uint8_t *)a+2) = *(uint8_t *)((uint8_t *)b+2);
+   cpy2(a, b), cpy1((uint8_t *)a+2, (uint8_t *)b+2);
 }
 
 static inline void cpy4(void *a, const void *b)
@@ -884,7 +900,7 @@ static inline void cpy4(void *a, const void *b)
 
 static inline void cpy5(void *a, const void *b)
 {
-   cpy4(a, b), *(uint8_t *)((uint8_t *)a+4) = *(uint8_t *)((uint8_t *)b+4);
+   cpy4(a, b), cpy1((uint8_t *)a+4, (uint8_t *)b+4);
 }
 
 static inline void cpy6(void *a, const void *b)
@@ -908,7 +924,7 @@ static inline void cpy8(void *a, const void *b)
 
 static inline void cpy9(void *a, const void *b)
 {
-   cpy8(a, b), *(uint8_t *)((uint8_t *)a+8) = *(uint8_t *)((uint8_t *)b+8);
+   cpy8(a, b), cpy1((uint8_t *)a+8, (uint8_t *)b+8);
 }
 
 static inline void cpy10(void *a, const void *b)
@@ -1549,9 +1565,7 @@ static inline char *lastPathSegment(char *path, int plen)
 {
    int i;
    for (i = plen-1; i >= 0 && path[i] != '/'; i--);
-   return (path[i] == '/')
-          ? path + i + 1
-          : path + i;
+   return (path[i++] == '/' && path[i]) ? path+i : path;
 }
 
 static inline char *httpHost(Node **serverTable)

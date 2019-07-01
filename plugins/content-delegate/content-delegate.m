@@ -554,11 +554,7 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTab
          if (stat(artd, &st) == no_error && S_ISDIR(st.st_mode))
          {
             char *storeName = lastPathSegment(base, bl);
-            int   storeNaml;
-            if (*storeName)
-               storeNaml = strvlen(storeName);
-            else
-               storeName = base, storeNaml = bl;
+            int   storeNaml = bl - (int)(storeName - base);
 
             Node    *node;
             Response modelData = {};
@@ -649,20 +645,31 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTab
             int  artpl = drootl + 1 + bl + 1 + al;                      // for example $DOCUMENT_ROOT/articles/1527627185.html
             char artp[OSP(artpl+1)];
             strmlcat(artp, artpl+1, NULL, droot, drootl, "/", 1, base, bl, "/", 1, article, al, NULL);
+
             int  dl = domlen(article);
             int  medpl = drootl + 1 + bl + 1 + MEDIA_DIR_LEN + 1 + dl;  // for example $DOCUMENT_ROOT/articles/media/1527627185
             char medp[OSP(medpl+1)];
             strmlcat(medp, medpl+1, NULL, droot, drootl, "/", 1, base, bl, "/"MEDIA_DIR"/", MEDIA_DIR_LEN+2, article, dl, NULL);
 
-            // 1. move the respective media directory into /tmp
+            int  datpl = drootl + 1 + bl + 1 + DATA_DIR_LEN + 1 + dl;   // for example $DOCUMENT_ROOT/articles/data/1527627185
+            char datp[OSP(datpl+1)];
+            strmlcat(datp, datpl+1, NULL, droot, drootl, "/", 1, base, bl, "/"DATA_DIR"/", DATA_DIR_LEN+2, article, dl, NULL);
+
             struct stat st;
-            int  tmppl = 5+al;                                          // for example /tmp/1527627185.html
-            char tmpp[OSP(tmppl+1)];
-            strmlcat(tmpp, tmppl+1, NULL, "/tmp/", 5, article, dl, NULL);
+            int  tmppl = 11+al;                                         // for example /tmp/media_1527627185
+            char tmpp[OSP(tmppl+1)];                                    //          or /tmp/data_1527627185
+                                                                        //          or /tmp/1527627185.html
+            // 1. move the respective media directory into /tmp/
+            strmlcat(tmpp, tmppl+1, NULL, "/tmp/media_", 11, article, dl, NULL);
             if (stat(medp, &st) == no_error && S_ISDIR(st.st_mode))
                rename(medp, tmpp);
 
-            // 2. move the article file into /tmp (actually do copy/delete, s. below)
+            // 2. move the respective data directory into /tmp/
+            strmlcat(tmpp, tmppl+1, NULL, "/tmp/data_", 10, article, dl, NULL);
+            if (stat(datp, &st) == no_error && S_ISDIR(st.st_mode))
+               rename(datp, tmpp);
+
+            // 3. move the given article file into /tmp/ (actually do a copy/delete, s. below)
             strmlcat(tmpp, tmppl+1, NULL, "/tmp/", 5, article, al, NULL);
             if (stat(artp, &st) == no_error && S_ISREG(st.st_mode)
              && fileCopy(artp, tmpp, &st) == no_error    // the spider of the search-deleagte determines changes by observing the number of hard links for a given
@@ -688,7 +695,37 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTab
             pthread_mutex_unlock(&EDIT_mutex);
          }
 
-         // rc = 400
+         else if ((node = findName(request->QueryTable, "data", 4))
+               && node->value.s && *node->value.s)
+         {
+            pthread_mutex_lock(&EDIT_mutex);
+
+            char *datdir = node->value.s;
+            int  bl = strvlen(base),
+                 dl = domlen(datdir);
+
+            int  datpl = drootl + 1 + bl + 1 + DATA_DIR_LEN + 1 + dl;   // for example $DOCUMENT_ROOT/articles/data/1527627185
+            char datp[OSP(datpl+1)];
+            strmlcat(datp, datpl+1, NULL, droot, drootl, "/", 1, base, bl, "/"DATA_DIR"/", DATA_DIR_LEN+2, datdir, dl, NULL);
+
+            struct stat st;
+            int  tmppl = 10+dl;                                         // for example /tmp/data_1527627185
+            char tmpp[OSP(tmppl+1)];
+
+            // move the respective data directory into /tmp/
+            strmlcat(tmpp, tmppl+1, NULL, "/tmp/data_", 10, datdir, dl, NULL);
+            if (stat(datp, &st) == no_error && S_ISDIR(st.st_mode))
+            {
+               rename(datp, tmpp);
+               rc = 202;
+            }
+            else
+               rc = 404;
+
+            pthread_mutex_unlock(&EDIT_mutex);
+         }
+
+         // else rc = 400
       }
       else
          rc = 500;
@@ -797,10 +834,8 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
 
       else
       {
-         int   dl;
          char *dom = lastPathSegment(name, nl);
-         if (!*dom)
-            dom = name;
+         int   dl;
          if ((dl = domlen(dom)) && dom[dl] == '.')
          {
             spec = dom+dl+1;
@@ -847,21 +882,18 @@ EXPORT void release(void)
 
 static inline int articlePathAndName(char *path, int plen, char **name)
 {
-   int i;
-   for (i = plen - ARTICLES_DIR_LEN; i >= 0 && !cmp8(path+i, ARTICLES_DIR); i--);
-   if (i < 0)
+   char *p = lastPathSegment(path, plen);
+   if (p > path)
    {
-      *name = NULL;
-      return 0;
+      *name = p;
+      plen = (int)(p - path);
+      if (path[plen-1] == '/')
+         plen--;
    }
-
    else
-   {
-      plen  = i + ARTICLES_DIR_LEN;
-      path += plen;
-      *name = (*path == '/') ? path+1 : NULL;
-      return plen;
-   }
+      *name = NULL;
+
+   return plen;
 }
 
 static inline llong contread(char *buf, llong size, llong count, FILE *file, Response *cache, llong *pos)
@@ -1444,18 +1476,33 @@ void qdownsort(time_t *a, int l, int r)
 boolean reindex(char *droot, int drootl, char *entity, int el, Node **serverTable, boolean update)
 {
    char *name;
-
-   int pathl = articlePathAndName(entity, el, &name);
+   int   pathl = articlePathAndName(entity, el, &name);
    if (pathl)
    {
       int  adirl  = drootl + 1 + pathl + 1;        // articles directory, e.g.:  $DOCUMENT_ROOT/articles/
       int  mdirl  = adirl  + MEDIA_DIR_LEN + 1;    // extent for the media dir:  $DOCUMENT_ROOT/articles/media/
       char adir[OSP(mdirl+1)]; strmlcat(adir, mdirl+1, NULL, droot, drootl, "/", 1, entity, pathl, "/", 1, NULL);
 
-      if (el = pathl - ARTICLES_DIR_LEN)
-         cpy2(entity+el-1, "/");                   // prepare the entity path (without the articles dir) for redirection
+      char *index_prefix, *toc_prefix, *articles_dir;
+      int   index_prefix_len, toc_prefix_len, articles_dir_len;
+      if (cmp(entity, ARTICLES_DIR"/", ARTICLES_DIR_SIZ))
+      {
+         index_prefix = INDEX_PREFIX,                   index_prefix_len = INDEX_PREFIX_LEN;
+         toc_prefix   = TOC_PREFIX,                     toc_prefix_len   = TOC_PREFIX_LEN;
+         articles_dir = ARTICLES_DIR,                   articles_dir_len = ARTICLES_DIR_LEN;
+         if (el = pathl -= ARTICLES_DIR_LEN)
+            cpy2(entity+el-1, "/");                // prepare the entity path (without the articles dir) for redirection
+         else
+            *entity = '\0';
+      }
       else
-         *entity = '\0';
+      {
+         index_prefix = SUB_INDEX_PREFIX,               index_prefix_len = SUB_INDEX_PREFIX_LEN;
+         toc_prefix   = SUB_TOC_PREFIX,                 toc_prefix_len   = SUB_TOC_PREFIX_LEN;
+         articles_dir = lastPathSegment(entity, pathl), articles_dir_len = ((int)(articles_dir - entity)) ?: pathl;
+         el = pathl, pathl = 0;
+         cpy2(entity+el++, "/");                   // prepare the entity path (without the articles dir) for redirection
+      }
 
       time_t updtstamp = (update && name) ? strtol(name, NULL, 10) : 0;
 
@@ -1468,12 +1515,12 @@ boolean reindex(char *droot, int drootl, char *entity, int el, Node **serverTabl
             Node **imageFileNames = createTable(256);
 
             char *idx = newDynBuffer().buf;
-            dynAddString((dynhdl)&idx, INDEX_PREFIX, INDEX_PREFIX_LEN);
+            dynAddString((dynhdl)&idx, index_prefix, index_prefix_len);
             dynAddString((dynhdl)&idx, conTitle(serverTable), 0);
             dynAddString((dynhdl)&idx, INDEX_BODY_FYI, INDEX_BODY_FYI_LEN);
 
             char *toc = newDynBuffer().buf;
-            dynAddString((dynhdl)&toc, TOC_PREFIX, TOC_PREFIX_LEN);
+            dynAddString((dynhdl)&toc, toc_prefix, toc_prefix_len);
 
             struct dirent *ep, bp;
             int     fcnt = 0, fcap = 1024;
@@ -1525,7 +1572,7 @@ boolean reindex(char *droot, int drootl, char *entity, int el, Node **serverTabl
                          && (t = strcasestr(s += 8, "</P>")))
                         {
                            if (updtstamp == 0 || updtstamp == stamps[j])
-                              enumerateImageTags(imageFileNames, s, stamps[j], mdirl-drootl-el-1);
+                              enumerateImageTags(imageFileNames, s, stamps[j], mdirl-drootl-pathl-1);
 
                            boolean needEllipsis = !cmp16(t+6, "<p class=\"stamp\"");
                            boolean insertLangAttr = cmp7(o,   " lang=\"") && o[9] == '"';
@@ -1538,7 +1585,9 @@ boolean reindex(char *droot, int drootl, char *entity, int el, Node **serverTabl
                               dynAddString((dynhdl)&idx, o, 10);
                            dynAddString((dynhdl)&idx, " id=\"", 5);
                               dynAddInt((dynhdl)&idx, stamps[j]);
-                           dynAddString((dynhdl)&idx, "\" class=\"index\" href=\""ARTICLES_DIR"/", 31);
+                           dynAddString((dynhdl)&idx, "\" class=\"index\" href=\"", 22);
+                           dynAddString((dynhdl)&idx, articles_dir, articles_dir_len);
+                           dynAddString((dynhdl)&idx, "/", 1);
                               dynAddInt((dynhdl)&idx, stamps[j]);
                            dynAddString((dynhdl)&idx, ".html\">\n", 8);
                            dynAddString((dynhdl)&idx, s, stripATags(s, t-s));
@@ -1552,8 +1601,9 @@ boolean reindex(char *droot, int drootl, char *entity, int el, Node **serverTabl
                            dynAddString((dynhdl)&toc, "   <A", 5);
                            if (insertLangAttr)
                               dynAddString((dynhdl)&toc, o, 10);
-                           dynAddString((dynhdl)&toc, " href=\""ARTICLES_DIR"/", 16);
-
+                           dynAddString((dynhdl)&toc, " href=\"", 7);
+                           dynAddString((dynhdl)&toc, articles_dir, articles_dir_len);
+                           dynAddString((dynhdl)&toc, "/", 1);
                               dynAddInt((dynhdl)&toc, stamps[j]);
                            dynAddString((dynhdl)&toc, ".html\" target=\"_top\"><P>", 24);
                            dynAddString((dynhdl)&toc, p, (int)(q-p));
@@ -1570,7 +1620,14 @@ boolean reindex(char *droot, int drootl, char *entity, int el, Node **serverTabl
 
             deallocate(VPR(stamps), false);
 
-            dynAddString((dynhdl)&idx, INDEX_SUFFIX, INDEX_SUFFIX_LEN);
+            if (articles_dir == ARTICLES_DIR)
+               articles_dir = "", articles_dir_len = 0;
+            else
+               articles_dir_len++;
+
+            int index_suffix_len = INDEX_SUFFIX_LEN + articles_dir_len;
+            dyninc((dynhdl)&idx, index_suffix_len);
+            snprintf(idx+dynlen((dynptr){idx})-index_suffix_len, index_suffix_len+1, INDEX_SUFFIX, articles_dir);
             dynAddString((dynhdl)&toc, TOC_SUFFIX, TOC_SUFFIX_LEN);
 
             boolean ok1 = false, ok2 = false;

@@ -27,10 +27,16 @@
 
 
 #define ARTICLES_DIR_LEN 8
+#define ARTICLES_DIR_SIZ 9
 #define ARTICLES_DIR "articles"
 
 #define MEDIA_DIR_LEN 5
+#define MEDIA_DIR_SIZ 6
 #define MEDIA_DIR "media"
+
+#define DATA_DIR_LEN 4
+#define DATA_DIR_SIZ 5
+#define DATA_DIR "data"
 
 
 #define INDEX_PREFIX_LEN 408
@@ -38,6 +44,20 @@
 "<!--S--><!DOCTYPE html><HTML><HEAD>\n"\
 "   <TITLE>Résumés</TITLE>\n"\
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"\
+"   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"\
+"   <LINK rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\">\n"\
+"   <SCRIPT src=\"functions.js\"></SCRIPT>\n"\
+"</HEAD><BODY><DIV class=\"page\"><TABLE class=\"page\">\n"\
+"   <TR>\n"\
+"      <TH class=\"title\">\n"\
+"         <H1><A href=\"./\">"
+
+#define SUB_INDEX_PREFIX_LEN 429
+#define SUB_INDEX_PREFIX \
+"<!--S--><!DOCTYPE html><HTML><HEAD>\n"\
+"   <TITLE>Résumés</TITLE>\n"\
+"   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"\
+"   <BASE href=\"../\">\n"\
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"\
 "   <LINK rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\">\n"\
 "   <SCRIPT src=\"functions.js\"></SCRIPT>\n"\
@@ -67,7 +87,7 @@
 #define INDEX_SUFFIX \
 "      </TD>\n"\
 "      <TD class=\"toc\" colspan=\"2\">\n"\
-"         <IFRAME id=\"toc\" src=\"toc.html\" align=\"top\"></IFRAME>\n"\
+"         <IFRAME id=\"toc\" src=\"%stoc.html\" align=\"top\"></IFRAME>\n"\
 "      </TD>\n"\
 "   </TR>\n"\
 "</TABLE></DIV></BODY></HTML>\n"
@@ -77,6 +97,17 @@
 "<!--S--><!DOCTYPE html><HTML><HEAD>\n"\
 "   <TITLE>Table of Contents</TITLE>\n"\
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"\
+"   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"\
+"   <SCRIPT src=\"functions.js\"></SCRIPT>\n"\
+"</HEAD><BODY class=\"toc\" onload=\"var frameStyle=parent.document.getElementById('toc').style;frameStyle.height=0;frameStyle.height=document.body.scrollHeight+5+'px';\">\n"\
+"   <FORM action=\"_search\" method=\"POST\" target=\"_top\"><INPUT class=\"search\" name=\"search\" type=\"text\" placeholder=\"Search the Content\"></FORM>\n"
+
+#define SUB_TOC_PREFIX_LEN 575
+#define SUB_TOC_PREFIX \
+"<!--S--><!DOCTYPE html><HTML><HEAD>\n"\
+"   <TITLE>Table of Contents</TITLE>\n"\
+"   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"\
+"   <BASE href=\"../\">\n"\
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"\
 "   <SCRIPT src=\"functions.js\"></SCRIPT>\n"\
 "</HEAD><BODY class=\"toc\" onload=\"var frameStyle=parent.document.getElementById('toc').style;frameStyle.height=0;frameStyle.height=document.body.scrollHeight+5+'px';\">\n"\
