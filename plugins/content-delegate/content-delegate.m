@@ -888,7 +888,7 @@ static inline int articlePathAndName(char *path, int plen, char **name)
       *name = p;
       plen = (int)(p - path);
       if (path[plen-1] == '/')
-         plen--;
+         path[--plen] = '\0';
    }
    else
       *name = NULL;
@@ -1485,7 +1485,7 @@ boolean reindex(char *droot, int drootl, char *entity, int el, Node **serverTabl
 
       char *index_prefix, *toc_prefix, *articles_dir;
       int   index_prefix_len, toc_prefix_len, articles_dir_len;
-      if (cmp(entity, ARTICLES_DIR"/", ARTICLES_DIR_SIZ))
+      if (cmp(entity, ARTICLES_DIR, ARTICLES_DIR_SIZ))
       {
          index_prefix = INDEX_PREFIX,                   index_prefix_len = INDEX_PREFIX_LEN;
          toc_prefix   = TOC_PREFIX,                     toc_prefix_len   = TOC_PREFIX_LEN;
