@@ -1544,78 +1544,90 @@ boolean reindex(char *droot, int drootl, char *entity, int el, Node **serverTabl
             if (fcnt > 1)
                qdownsort(stamps, 0, fcnt-1);
 
-            for (int j = 0; j < fcnt; j++)
-            {
-               FILE  *file;
-               intStr stamp;
-               int    stmpl = int2str(stamp, stamps[j], intLen, 0);
-               int    artpl = adirl+stmpl+5;
-               char   artp[OSP(artpl+1)];
-               char  *contemp;
-
-               strmlcat(artp, artpl+1, NULL, adir, adirl, stamp, stmpl, ".html", 5, NULL);
-               if (stat(artp, &st) == no_error && S_ISREG(st.st_mode)
-                && st.st_size
-                && (contemp = allocate(st.st_size+1, default_align, false)))
+            if (fcnt)
+               for (int j = 0; j < fcnt; j++)
                {
-                  if (file = fopen(artp, "r"))
+                  FILE  *file;
+                  intStr stamp;
+                  int    stmpl = int2str(stamp, stamps[j], intLen, 0);
+                  int    artpl = adirl+stmpl+5;
+                  char   artp[OSP(artpl+1)];
+                  char  *contemp;
+
+                  strmlcat(artp, artpl+1, NULL, adir, adirl, stamp, stmpl, ".html", 5, NULL);
+                  if (stat(artp, &st) == no_error && S_ISREG(st.st_mode)
+                   && st.st_size
+                   && (contemp = allocate(st.st_size+1, default_align, false)))
                   {
-                     contemp[st.st_size] = '\0';
-
-                     if (fread(contemp, st.st_size, 1, file) == 1)
+                     if (file = fopen(artp, "r"))
                      {
-                        char *o, *p, *q, *s, *t;
-                        o = (strcasestr(contemp, "<HTML lang=")) ?: contemp;
-                        if ((p = strcasestr(o += 5, "<TITLE>"))
-                         && (q = strcasestr(p += 7, "</TITLE>"))
-                         && (s =     strstr(q +  8, "<!--e-->"))
-                         && (t = strcasestr(s += 8, "</P>")))
+                        contemp[st.st_size] = '\0';
+
+                        if (fread(contemp, st.st_size, 1, file) == 1)
                         {
-                           if (updtstamp == 0 || updtstamp == stamps[j])
-                              enumerateImageTags(imageFileNames, s, stamps[j], mdirl-drootl-pathl-1);
+                           char *o, *p, *q, *s, *t;
+                           o = (strcasestr(contemp, "<HTML lang=")) ?: contemp;
+                           if ((p = strcasestr(o += 5, "<TITLE>"))
+                            && (q = strcasestr(p += 7, "</TITLE>"))
+                            && (s =     strstr(q +  8, "<!--e-->"))
+                            && (t = strcasestr(s += 8, "</P>")))
+                           {
+                              if (updtstamp == 0 || updtstamp == stamps[j])
+                                 enumerateImageTags(imageFileNames, s, stamps[j], mdirl-drootl-pathl-1);
 
-                           boolean needEllipsis = !cmp16(t+6, "<p class=\"stamp\"");
-                           boolean insertLangAttr = cmp7(o,   " lang=\"") && o[9] == '"';
-                           struct tm tm; localtime_r(&stamps[j], &tm);
+                              boolean needEllipsis = !cmp16(t+6, "<p class=\"stamp\"");
+                              boolean insertLangAttr = cmp7(o,   " lang=\"") && o[9] == '"';
+                              struct tm tm; localtime_r(&stamps[j], &tm);
 
-                           s = skip(s);
-                           t = bskip(t);
-                           dynAddString((dynhdl)&idx, "<A", 2);
-                           if (insertLangAttr)
-                              dynAddString((dynhdl)&idx, o, 10);
-                           dynAddString((dynhdl)&idx, " id=\"", 5);
-                              dynAddInt((dynhdl)&idx, stamps[j]);
-                           dynAddString((dynhdl)&idx, "\" class=\"index\" href=\"", 22);
-                           dynAddString((dynhdl)&idx, articles_dir, articles_dir_len);
-                           dynAddString((dynhdl)&idx, "/", 1);
-                              dynAddInt((dynhdl)&idx, stamps[j]);
-                           dynAddString((dynhdl)&idx, ".html\">\n", 8);
-                           dynAddString((dynhdl)&idx, s, stripATags(s, t-s));
-                           if (needEllipsis)
-                              dynAddString((dynhdl)&idx, " ...", 4);
-                           dynAddString((dynhdl)&idx, "\n</p>\n<P class=\"stamp\">", 23);
-                           dyninc((dynhdl)&idx, 28);
-                           snprintf(idx+dynlen((dynptr){idx})-28, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
-                                                                      tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+                              s = skip(s);
+                              t = bskip(t);
+                              dynAddString((dynhdl)&idx, "<A", 2);
+                              if (insertLangAttr)
+                                 dynAddString((dynhdl)&idx, o, 10);
+                              dynAddString((dynhdl)&idx, " id=\"", 5);
+                                 dynAddInt((dynhdl)&idx, stamps[j]);
+                              dynAddString((dynhdl)&idx, "\" class=\"index\" href=\"", 22);
+                              dynAddString((dynhdl)&idx, articles_dir, articles_dir_len);
+                              dynAddString((dynhdl)&idx, "/", 1);
+                                 dynAddInt((dynhdl)&idx, stamps[j]);
+                              dynAddString((dynhdl)&idx, ".html\">\n", 8);
+                              dynAddString((dynhdl)&idx, s, stripATags(s, t-s));
+                              if (needEllipsis)
+                                 dynAddString((dynhdl)&idx, " ...", 4);
+                              dynAddString((dynhdl)&idx, "\n</p>\n<P class=\"stamp\">", 23);
+                              dyninc((dynhdl)&idx, 28);
+                              snprintf(idx+dynlen((dynptr){idx})-28, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
+                                                                         tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
-                           dynAddString((dynhdl)&toc, "   <A", 5);
-                           if (insertLangAttr)
-                              dynAddString((dynhdl)&toc, o, 10);
-                           dynAddString((dynhdl)&toc, " href=\"", 7);
-                           dynAddString((dynhdl)&toc, articles_dir, articles_dir_len);
-                           dynAddString((dynhdl)&toc, "/", 1);
-                              dynAddInt((dynhdl)&toc, stamps[j]);
-                           dynAddString((dynhdl)&toc, ".html\" target=\"_top\"><P>", 24);
-                           dynAddString((dynhdl)&toc, p, (int)(q-p));
-                           dynAddString((dynhdl)&toc, "</P></A>\n", 9);
+                              dynAddString((dynhdl)&toc, "   <A", 5);
+                              if (insertLangAttr)
+                                 dynAddString((dynhdl)&toc, o, 10);
+                              dynAddString((dynhdl)&toc, " href=\"", 7);
+                              dynAddString((dynhdl)&toc, articles_dir, articles_dir_len);
+                              dynAddString((dynhdl)&toc, "/", 1);
+                                 dynAddInt((dynhdl)&toc, stamps[j]);
+                              dynAddString((dynhdl)&toc, ".html\" target=\"_top\"><P>", 24);
+                              dynAddString((dynhdl)&toc, p, (int)(q-p));
+                              dynAddString((dynhdl)&toc, "</P></A>\n", 9);
+                           }
                         }
+
+                        fclose(file);
                      }
 
-                     fclose(file);
+                     deallocate(VPR(contemp), false);
                   }
-
-                  deallocate(VPR(contemp), false);
                }
+
+            else
+            {
+               dynAddString((dynhdl)&idx, "<H1>No ", 7);
+               dynAddString((dynhdl)&idx, articles_dir, articles_dir_len);
+               dynAddString((dynhdl)&idx, " yet</H1>\n", 10);
+
+               dynAddString((dynhdl)&toc, "<P>No ",  6);
+               dynAddString((dynhdl)&toc, articles_dir, articles_dir_len);
+               dynAddString((dynhdl)&toc, " yet</P>\n", 9);
             }
 
             deallocate(VPR(stamps), false);
