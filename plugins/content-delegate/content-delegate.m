@@ -1356,7 +1356,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                                     time_t updtstamp;
                                     char  *name, *check;
                                     el = articlePathAndName(entity, el, &name);
-                                    if ((updtstamp = strtoul(name, &check, 10)) > 0
+                                    if (name && (updtstamp = strtoul(name, &check, 10)) > 0
                                      && cmp6(check++, ".html"))                  // for reindex() require matching of the strict filename specification
                                        reindex(droot, drootl, entity, el, updtstamp, request->serverTable);
 
