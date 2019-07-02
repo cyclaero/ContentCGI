@@ -595,17 +595,16 @@ boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, 
                modelData.content[contlen] = '\0';
                modelData.conttyp = "text/html; charset=utf-8";
 
-               if (cmp4(method, "GET"))
-               {
-                  char *plang, *qlang = (request->QueryTable && (node = findName(request->QueryTable, "lang", 4)) && node->value.s && node->value.size == 2)
-                                      ? node->value.s : NULL;
-                  if (qlang && (plang = strcasestr(modelData.content, "<HTML lang=\"")))
-                     cpy2(plang+12, qlang);
+               char *plang,
+                    *qlang = (request->QueryTable && (node = findName(request->QueryTable, "lang", 4)) && node->value.s && node->value.size == 2)
+                           ? node->value.s
+                           : NULL;
+               if (qlang && (plang = strcasestr(modelData.content, "<HTML lang=\"")))
+                  cpy2(plang+12, qlang);
 
-                  return  GEThandler(droot, drootl, "model", 5, "html", request, response, &modelData);
-               }
-               else // POST
-                  return POSThandler(droot, drootl, base, bl, "html", request, response, &modelData);
+               return (cmp4(method, "GET"))
+                      ?  GEThandler(droot, drootl, "model", 5, "html", request, response, &modelData)
+                      : POSThandler(droot, drootl,  base,  bl, "html", request, response, &modelData);
             }
          }
 
@@ -1353,22 +1352,26 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 
                                  if (ok && (cache || rename(tmpfp, filep) == no_error))
                                  {
+                                    if (cache)
+                                    {
+                                       entity = filep+drootl+1;
+                                       el = filepl-drootl-1;
+                                       if (response->content = allocate(filepl -= drootl+1, default_align, false))
+                                       {
+                                          response->contdyn = true;
+                                          response->contlen = strmlcpy(response->content, entity, 0, &el);
+                                          rc = 201;
+                                       }
+                                    }
+                                    else
+                                       rc = 204;
+
                                     time_t updtstamp;
                                     char  *name, *check;
                                     el = articlePathAndName(entity, el, &name);
                                     if (name && (updtstamp = strtoul(name, &check, 10)) > 0
                                      && cmp6(check++, ".html"))               // for reindex() require matching of the strict filename specification
                                        reindex(droot, drootl, entity, el, updtstamp, request->serverTable, true);
-
-                                    if (!cache)
-                                       rc = 204;
-
-                                    else if (response->content = allocate(filepl -= drootl+1, default_align, false))
-                                    {
-                                       response->contdyn = true;
-                                       response->contlen = strmlcpy(response->content, filep+drootl+1, 0, &filepl);
-                                       rc = 201;
-                                    }
                                  }
                               }
                            }

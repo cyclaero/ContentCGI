@@ -220,7 +220,7 @@ editor.addEventListener('saved', function (ev)
 
    xhr = new XMLHttpRequest();
    xhr.addEventListener('readystatechange', onStateChange);
-   xhr.open('POST', location.pathname, true);
+   xhr.open('POST', location.pathname+location.search, true);
    xhr.send(payload);
 });
 
