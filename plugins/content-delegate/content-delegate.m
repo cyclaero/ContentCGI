@@ -1486,9 +1486,9 @@ void qdownsort(time_t *a, int l, int r)
 
 boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, Node **serverTable, boolean create_empty)
 {
-   int  adirl = drootl + 1 + bl + 1;  // articles directory, e.g.:  $DOCUMENT_ROOT/articles/
+   int  adirl = drootl + 1 + bl + 1;   // articles directory, e.g.:  $DOCUMENT_ROOT/articles/
    int  mdofs = MEDIA_DIR_LEN + 1;
-   int  mdirl = adirl + mdofs;        // extent for the media dir:  $DOCUMENT_ROOT/articles/media/
+   int  mdirl = adirl + mdofs;         // extent for the media dir:  $DOCUMENT_ROOT/articles/media/
    char adir[OSP(mdirl+1)]; strmlcat(adir, mdirl+1, NULL, droot, drootl, "/", 1, base, bl, "/", 1, NULL);
 
    int   index_prefix_len,
@@ -1505,7 +1505,7 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
       toc_prefix   = TOC_PREFIX,       toc_prefix_len   = TOC_PREFIX_LEN;
       articles_dir = ARTICLES_DIR,     articles_dir_len = ARTICLES_DIR_LEN;
       if (bl -= ARTICLES_DIR_LEN)
-         cpy2(base+bl-1, "/");             // prepare the entity path (without the articles dir) for redirection
+         cpy2(base+bl-1, "/");         // prepare the entity path (without the articles dir) for redirection
       else
          *base = '\0';
    }
@@ -1514,7 +1514,7 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
       index_prefix = SUB_INDEX_PREFIX, index_prefix_len = SUB_INDEX_PREFIX_LEN;
       toc_prefix   = SUB_TOC_PREFIX,   toc_prefix_len   = SUB_TOC_PREFIX_LEN;
       articles_dir_len = bl - (int)(articles_dir - base);
-      cpy2(base+bl++, "/");                // prepare the entity path (without the articles dir) for redirection
+      cpy2(base+bl++, "/");            // prepare the entity path (without the articles dir) for redirection
    }
    mdofs += articles_dir_len + 1;
 
