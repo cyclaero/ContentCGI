@@ -534,7 +534,7 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 long  GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache);
 long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache);
-boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, Node **serverTable);
+boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, Node **serverTable, boolean create_empty);
 
 - (long)create:(char *)base :(char *)method :(Request *)request :(Response *)response;
 {
@@ -672,12 +672,12 @@ boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, 
             // 3. move the given article file into /tmp/ (actually do a copy/delete, s. below)
             strmlcat(tmpp, tmppl+1, NULL, "/tmp/", 5, article, al, NULL);
             if (stat(artp, &st) == no_error && S_ISREG(st.st_mode)
-             && fileCopy(artp, tmpp, &st) == no_error    // the spider of the search-deleagte determines changes by observing the number of hard links for a given
-             && unlink(artp) == no_error)                // inode. For this reason we cannot simply rename the deleted file, because its nlink value wont't change.
+             && fileCopy(artp, tmpp, &st) == no_error // the spider of the search-deleagte determines changes by observing the number of hard links for a given
+             && unlink(artp) == no_error)             // inode. For this reason we cannot simply rename the deleted file, because its nlink value wont't change.
             {
-               if (!reindex(droot, drootl, base, bl, 0, request->serverTable))
+               if (!reindex(droot, drootl, base, bl, 0, request->serverTable, true))
                {
-                  if (bl = strvlen(base)) // reindex may have changed the base path, so check its length
+                  if (bl = strvlen(base))             // reindex may have changed the base path, so check its length
                      if (response->content = allocate(bl+1, default_align, false))
                      {
                         response->contdyn = true;
@@ -746,10 +746,10 @@ boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, 
       {
          pthread_mutex_lock(&EDIT_mutex);
 
-         if (reindex(droot, strvlen(droot), base, strvlen(base), 0, request->serverTable))
+         if (reindex(droot, strvlen(droot), base, strvlen(base), 0, request->serverTable, false))
          {
             int bl;
-            if (bl = strvlen(base)) // reindex may have changed the base path, so check its length
+            if (bl = strvlen(base))    // reindex may have changed the base path, so check its length
                if (response->content = allocate(bl+1, default_align, false))
                {
                   response->contdyn = true;
@@ -1314,11 +1314,11 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                               {
                                  struct tm tm;
                                  localtime_r(&creatime, &tm);
-                                 char c = o[replen+stampl];       // backup the char where snprintf() puts the terminating '\0'
+                                 char c = o[replen+stampl];                   // backup the char where snprintf() puts the terminating '\0'
                                  n += snprintf(o+replen, stampl+1,
                                                STAMP_PREFIX"%s - %04d-%02d-%02d %02d:%02d:%02d"STAMP_SUFFIX,
                                                user, tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-                                 o[replen+stampl] = c;            // restore
+                                 o[replen+stampl] = c;                        // restore
                               }
 
                               // write out the changes to the file in a safe manner
@@ -1337,7 +1337,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                               else
                               {
                                  int pl, sl = strvlen(spec);
-                                 filepl = drootl + 1 + el + 1 + 12 + 1 + sl;     // for example $DOCUMENT_ROOT/articles/1527627185.html
+                                 filepl = drootl + 1 + el + 1 + 12 + 1 + sl;  // for example $DOCUMENT_ROOT/articles/1527627185.html
                                  filep  = alloca(OSP(filepl+1));
                                  pl  = strmlcat(filep, filepl+1, NULL, droot, drootl, "/", 1, entity, el, "/", 1, NULL);
                                  pl += int2str(filep+pl, creatime, 13, 0);
@@ -1357,8 +1357,8 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                                     char  *name, *check;
                                     el = articlePathAndName(entity, el, &name);
                                     if (name && (updtstamp = strtoul(name, &check, 10)) > 0
-                                     && cmp6(check++, ".html"))                  // for reindex() require matching of the strict filename specification
-                                       reindex(droot, drootl, entity, el, updtstamp, request->serverTable);
+                                     && cmp6(check++, ".html"))               // for reindex() require matching of the strict filename specification
+                                       reindex(droot, drootl, entity, el, updtstamp, request->serverTable, true);
 
                                     if (!cache)
                                        rc = 204;
@@ -1479,7 +1479,7 @@ void qdownsort(time_t *a, int l, int r)
    if (i < r) qdownsort(a, i, r);
 }
 
-boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, Node **serverTable)
+boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, Node **serverTable, boolean create_empty)
 {
    int  adirl = drootl + 1 + bl + 1;  // articles directory, e.g.:  $DOCUMENT_ROOT/articles/
    int  mdofs = MEDIA_DIR_LEN + 1;
@@ -1626,14 +1626,14 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
                }
             }
 
-         else if (articles_dir == ARTICLES_DIR)
+         else if (create_empty || articles_dir == ARTICLES_DIR)
          {
             dynAddString((dynhdl)&idx, "<H1>No ", 7);
-            dynAddString((dynhdl)&idx, ARTICLES_DIR, ARTICLES_DIR_LEN);
+            dynAddString((dynhdl)&idx, articles_dir, articles_dir_len);
             dynAddString((dynhdl)&idx, " yet</H1>\n", 10);
 
             dynAddString((dynhdl)&toc, "<P>No ",  6);
-            dynAddString((dynhdl)&toc, ARTICLES_DIR, ARTICLES_DIR_LEN);
+            dynAddString((dynhdl)&toc, articles_dir, articles_dir_len);
             dynAddString((dynhdl)&toc, " yet</P>\n", 9);
          }
 
