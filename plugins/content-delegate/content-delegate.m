@@ -694,7 +694,9 @@ boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, 
             pthread_mutex_unlock(&EDIT_mutex);
          }
 
-         else if ((node = findName(request->QueryTable, "data", 4))
+         else if (((node = findName(request->QueryTable, "d",    1))
+                || (node = findName(request->QueryTable, "dat",  3))
+                || (node = findName(request->QueryTable, "data", 4)))
                && node->value.s && *node->value.s)
          {
             pthread_mutex_lock(&EDIT_mutex);
@@ -1740,7 +1742,7 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
                               else
                               {
                                  mfil[mfl] = '\0';
-                                 printf("unlink(%s);\n", mfil);
+                                 unlink(mfil);
                               }
                            }
                         }
@@ -1748,7 +1750,7 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
                      closedir(mdp);
 
                      if (found == 0)
-                        printf("deleteDirEntity(%s, %d, S_IFDIR);\n", mdir, mdirl);
+                        deleteDirEntity(mdir, mdirl, S_IFDIR);
                   }
                }
 
