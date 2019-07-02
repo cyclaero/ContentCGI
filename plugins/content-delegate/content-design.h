@@ -39,27 +39,27 @@
 #define DATA_DIR "data"
 
 
-#define INDEX_PREFIX_LEN 408
+#define INDEX_PREFIX_LEN 407
 #define INDEX_PREFIX \
 "<!--S--><!DOCTYPE html><HTML><HEAD>\n"\
 "   <TITLE>Résumés</TITLE>\n"\
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"\
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"\
-"   <LINK rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\">\n"\
+"   <LINK rel=\"icon\" href=\"favicon.ico\" type=\"image/x-icon\">\n"\
 "   <SCRIPT src=\"functions.js\"></SCRIPT>\n"\
 "</HEAD><BODY><DIV class=\"page\"><TABLE class=\"page\">\n"\
 "   <TR>\n"\
 "      <TH class=\"title\">\n"\
 "         <H1><A href=\"./\">"
 
-#define SUB_INDEX_PREFIX_LEN 429
+#define SUB_INDEX_PREFIX_LEN 428
 #define SUB_INDEX_PREFIX \
 "<!--S--><!DOCTYPE html><HTML><HEAD>\n"\
 "   <TITLE>Résumés</TITLE>\n"\
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"\
 "   <BASE href=\"../\">\n"\
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"\
-"   <LINK rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\">\n"\
+"   <LINK rel=\"icon\" href=\"favicon.ico\" type=\"image/x-icon\">\n"\
 "   <SCRIPT src=\"functions.js\"></SCRIPT>\n"\
 "</HEAD><BODY><DIV class=\"page\"><TABLE class=\"page\">\n"\
 "   <TR>\n"\
@@ -142,13 +142,13 @@
 "\r\n" \
 "</p>\r\n"
 
-#define SEARCH_PREFIX_LEN 431
+#define SEARCH_PREFIX_LEN 430
 #define SEARCH_PREFIX \
 "<!DOCTYPE html><HTML><HEAD>\n"\
 "   <TITLE>Search Results</TITLE>\n"\
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"\
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"\
-"   <LINK rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\">\n"\
+"   <LINK rel=\"icon\" href=\"favicon.ico\" type=\"image/x-icon\">\n"\
 "   <SCRIPT src=\"functions.js\"></SCRIPT>\n"\
 "</HEAD><BODY><DIV class=\"page\"><TABLE class=\"page\">\n"\
 "   <TR>\n"\
@@ -177,5 +177,11 @@
 #define SEARCH_NORESULT \
 "<H1>Nothing found.</H1>\n"
 
-#define SEARCH_SUFFIX_LEN INDEX_SUFFIX_LEN
-#define SEARCH_SUFFIX     INDEX_SUFFIX
+#define SEARCH_SUFFIX_LEN 160
+#define SEARCH_SUFFIX \
+"      </TD>\n"\
+"      <TD class=\"toc\" colspan=\"2\">\n"\
+"         <IFRAME id=\"toc\" src=\"toc.html\" align=\"top\"></IFRAME>\n"\
+"      </TD>\n"\
+"   </TR>\n"\
+"</TABLE></DIV></BODY></HTML>\n"

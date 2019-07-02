@@ -534,7 +534,7 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 long  GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache);
 long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache);
-boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTable, boolean update);
+boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, Node **serverTable);
 
 - (long)create:(char *)base :(char *)method :(Request *)request :(Response *)response;
 {
@@ -675,7 +675,7 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTab
              && fileCopy(artp, tmpp, &st) == no_error    // the spider of the search-deleagte determines changes by observing the number of hard links for a given
              && unlink(artp) == no_error)                // inode. For this reason we cannot simply rename the deleted file, because its nlink value wont't change.
             {
-               if (!reindex(droot, drootl, base, bl, request->serverTable, false))
+               if (!reindex(droot, drootl, base, bl, 0, request->serverTable))
                {
                   if (bl = strvlen(base)) // reindex may have changed the base path, so check its length
                      if (response->content = allocate(bl+1, default_align, false))
@@ -746,7 +746,7 @@ boolean  reindex(char *droot, int drootl, char *entity, int el, Node **serverTab
       {
          pthread_mutex_lock(&EDIT_mutex);
 
-         if (reindex(droot, strvlen(droot), base, strvlen(base), request->serverTable, false))
+         if (reindex(droot, strvlen(droot), base, strvlen(base), 0, request->serverTable))
          {
             int bl;
             if (bl = strvlen(base)) // reindex may have changed the base path, so check its length
@@ -1353,7 +1353,13 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 
                                  if (ok && (cache || rename(tmpfp, filep) == no_error))
                                  {
-                                    reindex(droot, drootl, entity, el, request->serverTable, true);
+                                    time_t updtstamp;
+                                    char  *name, *check;
+                                    el = articlePathAndName(entity, el, &name);
+                                    if ((updtstamp = strtoul(name, &check, 10)) > 0
+                                     && cmp6(check++, ".html"))                  // for reindex() require matching of the strict filename specification
+                                       reindex(droot, drootl, entity, el, updtstamp, request->serverTable);
+
                                     if (!cache)
                                        rc = 204;
 
@@ -1473,273 +1479,282 @@ void qdownsort(time_t *a, int l, int r)
    if (i < r) qdownsort(a, i, r);
 }
 
-boolean reindex(char *droot, int drootl, char *entity, int el, Node **serverTable, boolean update)
+boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, Node **serverTable)
 {
-   char *name;
-   int   pathl = articlePathAndName(entity, el, &name);
-   if (pathl)
+   int  adirl = drootl + 1 + bl + 1;  // articles directory, e.g.:  $DOCUMENT_ROOT/articles/
+   int  mdofs = MEDIA_DIR_LEN + 1;
+   int  mdirl = adirl + mdofs;        // extent for the media dir:  $DOCUMENT_ROOT/articles/media/
+   char adir[OSP(mdirl+1)]; strmlcat(adir, mdirl+1, NULL, droot, drootl, "/", 1, base, bl, "/", 1, NULL);
+
+   int   index_prefix_len,
+         toc_prefix_len,
+         articles_dir_len;
+
+   char *index_prefix,
+        *toc_prefix,
+        *articles_dir = lastPathSegment(base, bl);
+
+   if (cmp(articles_dir, ARTICLES_DIR, ARTICLES_DIR_SIZ))
    {
-      int  adirl  = drootl + 1 + pathl + 1;        // articles directory, e.g.:  $DOCUMENT_ROOT/articles/
-      int  mdirl  = adirl  + MEDIA_DIR_LEN + 1;    // extent for the media dir:  $DOCUMENT_ROOT/articles/media/
-      char adir[OSP(mdirl+1)]; strmlcat(adir, mdirl+1, NULL, droot, drootl, "/", 1, entity, pathl, "/", 1, NULL);
-
-      char *index_prefix, *toc_prefix, *articles_dir;
-      int   index_prefix_len, toc_prefix_len, articles_dir_len;
-      if (cmp(entity, ARTICLES_DIR, ARTICLES_DIR_SIZ))
-      {
-         index_prefix = INDEX_PREFIX,                   index_prefix_len = INDEX_PREFIX_LEN;
-         toc_prefix   = TOC_PREFIX,                     toc_prefix_len   = TOC_PREFIX_LEN;
-         articles_dir = ARTICLES_DIR,                   articles_dir_len = ARTICLES_DIR_LEN;
-         if (el = pathl -= ARTICLES_DIR_LEN)
-            cpy2(entity+el-1, "/");                // prepare the entity path (without the articles dir) for redirection
-         else
-            *entity = '\0';
-      }
+      index_prefix = INDEX_PREFIX,     index_prefix_len = INDEX_PREFIX_LEN;
+      toc_prefix   = TOC_PREFIX,       toc_prefix_len   = TOC_PREFIX_LEN;
+      articles_dir = ARTICLES_DIR,     articles_dir_len = ARTICLES_DIR_LEN;
+      if (bl -= ARTICLES_DIR_LEN)
+         cpy2(base+bl-1, "/");             // prepare the entity path (without the articles dir) for redirection
       else
-      {
-         index_prefix = SUB_INDEX_PREFIX,               index_prefix_len = SUB_INDEX_PREFIX_LEN;
-         toc_prefix   = SUB_TOC_PREFIX,                 toc_prefix_len   = SUB_TOC_PREFIX_LEN;
-         articles_dir = lastPathSegment(entity, pathl), articles_dir_len = ((int)(articles_dir - entity)) ?: pathl;
-         el = pathl, pathl = 0;
-         cpy2(entity+el++, "/");                   // prepare the entity path (without the articles dir) for redirection
-      }
+         *base = '\0';
+   }
+   else
+   {
+      index_prefix = SUB_INDEX_PREFIX, index_prefix_len = SUB_INDEX_PREFIX_LEN;
+      toc_prefix   = SUB_TOC_PREFIX,   toc_prefix_len   = SUB_TOC_PREFIX_LEN;
+      articles_dir_len = bl - (int)(articles_dir - base);
+      cpy2(base+bl++, "/");                // prepare the entity path (without the articles dir) for redirection
+   }
+   mdofs += articles_dir_len + 1;
 
-      time_t updtstamp = (update && name) ? strtol(name, NULL, 10) : 0;
-
-      struct stat st;
-      if (stat(adir, &st) == no_error && S_ISDIR(st.st_mode))
+   struct stat st;
+   if (stat(adir, &st) == no_error && S_ISDIR(st.st_mode))
+   {
+      DIR *dp;
+      if (dp = opendir(adir))
       {
-         DIR *dp;
+         Node **imageFileNames = createTable(256);
+
+         char *idx = newDynBuffer().buf;
+         dynAddString((dynhdl)&idx, index_prefix, index_prefix_len);
+         dynAddString((dynhdl)&idx, conTitle(serverTable), 0);
+         dynAddString((dynhdl)&idx, INDEX_BODY_FYI, INDEX_BODY_FYI_LEN);
+
+         char *toc = newDynBuffer().buf;
+         dynAddString((dynhdl)&toc, toc_prefix, toc_prefix_len);
+
+         struct dirent *ep, bp;
+         int     fcnt = 0, fcap = 1024;
+         time_t *stamps = allocate(fcap*sizeof(time_t), default_align, false);
+
+         while (readdir_r(dp, &bp, &ep) == no_error && ep)
+            if (ep->d_name[0] != '.' && (ep->d_type == DT_REG || ep->d_type == DT_LNK))
+            {
+               char  *check;
+               time_t stamp = strtoul(ep->d_name, &check, 10);
+               if (stamp && check && cmp6(check, ".html"))
+               {
+                  if (fcnt == fcap)
+                     stamps = reallocate(stamps, (fcap += 1024)*sizeof(time_t), false, false);
+                  stamps[fcnt++] = stamp;
+               }
+            }
+
+         closedir(dp);
+
+         if (fcnt > 1)
+            qdownsort(stamps, 0, fcnt-1);
+
+         if (fcnt)
+            for (int j = 0; j < fcnt; j++)
+            {
+               FILE  *file;
+               intStr stamp;
+               int    stmpl = int2str(stamp, stamps[j], intLen, 0);
+               int    artpl = adirl+stmpl+5;
+               char   artp[OSP(artpl+1)];
+               char  *contemp;
+
+               strmlcat(artp, artpl+1, NULL, adir, adirl, stamp, stmpl, ".html", 5, NULL);
+               if (stat(artp, &st) == no_error && S_ISREG(st.st_mode)
+                && st.st_size
+                && (contemp = allocate(st.st_size+1, default_align, false)))
+               {
+                  if (file = fopen(artp, "r"))
+                  {
+                     contemp[st.st_size] = '\0';
+
+                     if (fread(contemp, st.st_size, 1, file) == 1)
+                     {
+                        char *o, *p, *q, *s, *t;
+                        o = (strcasestr(contemp, "<HTML lang=")) ?: contemp;
+                        if ((p = strcasestr(o += 5, "<TITLE>"))
+                         && (q = strcasestr(p += 7, "</TITLE>"))
+                         && (s =     strstr(q +  8, "<!--e-->"))
+                         && (t = strcasestr(s += 8, "</P>")))
+                        {
+                           if (updtstamp == 0 || updtstamp == stamps[j])
+                              enumerateImageTags(imageFileNames, s, stamps[j], mdofs);
+
+                           boolean needEllipsis = !cmp16(t+6, "<p class=\"stamp\"");
+                           boolean insertLangAttr = cmp7(o,   " lang=\"") && o[9] == '"';
+                           struct tm tm; localtime_r(&stamps[j], &tm);
+
+                           s = skip(s);
+                           t = bskip(t);
+                           dynAddString((dynhdl)&idx, "<A", 2);
+                           if (insertLangAttr)
+                              dynAddString((dynhdl)&idx, o, 10);
+                           dynAddString((dynhdl)&idx, " id=\"", 5);
+                              dynAddInt((dynhdl)&idx, stamps[j]);
+                           dynAddString((dynhdl)&idx, "\" class=\"index\" href=\"", 22);
+                           dynAddString((dynhdl)&idx, articles_dir, articles_dir_len);
+                           dynAddString((dynhdl)&idx, "/", 1);
+                              dynAddInt((dynhdl)&idx, stamps[j]);
+                           dynAddString((dynhdl)&idx, ".html\">\n", 8);
+                           dynAddString((dynhdl)&idx, s, stripATags(s, t-s));
+                           if (needEllipsis)
+                              dynAddString((dynhdl)&idx, " ...", 4);
+                           dynAddString((dynhdl)&idx, "\n</p>\n<P class=\"stamp\">", 23);
+                           dyninc((dynhdl)&idx, 28);
+                           snprintf(idx+dynlen((dynptr){idx})-28, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
+                                                                      tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+
+                           dynAddString((dynhdl)&toc, "   <A", 5);
+                           if (insertLangAttr)
+                              dynAddString((dynhdl)&toc, o, 10);
+                           dynAddString((dynhdl)&toc, " href=\"", 7);
+                           dynAddString((dynhdl)&toc, articles_dir, articles_dir_len);
+                           dynAddString((dynhdl)&toc, "/", 1);
+                              dynAddInt((dynhdl)&toc, stamps[j]);
+                           dynAddString((dynhdl)&toc, ".html\" target=\"_top\"><P>", 24);
+                           dynAddString((dynhdl)&toc, p, (int)(q-p));
+                           dynAddString((dynhdl)&toc, "</P></A>\n", 9);
+                        }
+                     }
+
+                     fclose(file);
+                  }
+
+                  deallocate(VPR(contemp), false);
+               }
+            }
+
+         else if (articles_dir == ARTICLES_DIR)
+         {
+            dynAddString((dynhdl)&idx, "<H1>No ", 7);
+            dynAddString((dynhdl)&idx, ARTICLES_DIR, ARTICLES_DIR_LEN);
+            dynAddString((dynhdl)&idx, " yet</H1>\n", 10);
+
+            dynAddString((dynhdl)&toc, "<P>No ",  6);
+            dynAddString((dynhdl)&toc, ARTICLES_DIR, ARTICLES_DIR_LEN);
+            dynAddString((dynhdl)&toc, " yet</P>\n", 9);
+         }
+
+         else // do nothing, just clean-up and exit
+         {
+            deallocate(VPR(stamps), false);
+            freeDynBuffer((dynptr){toc});
+            freeDynBuffer((dynptr){idx});
+            releaseTable(imageFileNames);
+            return false;
+         }
+
+         deallocate(VPR(stamps), false);
+
+         if (articles_dir == ARTICLES_DIR)
+            articles_dir = "", articles_dir_len = 0;
+         else
+            articles_dir_len++;
+
+         int index_suffix_len = INDEX_SUFFIX_LEN + articles_dir_len;
+         dyninc((dynhdl)&idx, index_suffix_len);
+         snprintf(idx+dynlen((dynptr){idx})-index_suffix_len, index_suffix_len+1, INDEX_SUFFIX, articles_dir);
+         dynAddString((dynhdl)&toc, TOC_SUFFIX, TOC_SUFFIX_LEN);
+
+         boolean ok1 = false, ok2 = false;
+
+         int  idxfl = drootl + 1 + bl + 10 + 1;
+         int  tocfl = drootl + 1 + bl +  8 + 1;
+         char idxf[OSP(idxfl+1)];
+         char tocf[OSP(tocfl+1)];
+         if (bl == 0)
+         {
+            strmlcat(idxf, idxfl+1, NULL, droot, drootl, "/", 1, "index.html", 10, NULL);
+            strmlcat(tocf, tocfl+1, NULL, droot, drootl, "/", 1, "toc.html", 8, NULL);
+         }
+         else
+         {
+            strmlcat(idxf, idxfl+1, NULL, droot, drootl, "/", 1, base, bl, "index.html", 10, NULL);
+            strmlcat(tocf, tocfl+1, NULL, droot, drootl, "/", 1, base, bl, "toc.html", 8, NULL);
+         }
+
+         if ((stat(idxf, &st) != no_error || S_ISREG(st.st_mode) && unlink(idxf) == no_error)   // remove an old index.html file
+          || (stat(tocf, &st) != no_error || S_ISREG(st.st_mode) && unlink(tocf) == no_error))  // remove an old toc.html file
+         {
+            FILE *file;
+
+            if (file = fopen(idxf, "w"))
+            {
+               ok1 = fwrite(idx, dynlen((dynptr){idx}), 1, file) == 1;
+               fclose(file);
+            }
+
+            if (file = fopen(tocf, "w"))
+            {
+               ok2 = fwrite(toc, dynlen((dynptr){toc}), 1, file) == 1;
+               fclose(file);
+            }
+
+            // touch the re-index token in the zettair index directory
+            char *site = httpHost(serverTable);
+            int   slen = strvlen(site);
+            int   zlen = ZETTAIR_DB_PLEN + slen + 6;
+            char  zetp[OSP(zlen+1)]; strmlcat(zetp, zlen+1, NULL, ZETTAIR_DB_PATH, ZETTAIR_DB_PLEN, site, slen, "/token", 6, NULL);
+            if (file = fopen(zetp, "w"))
+               fclose(file);
+         }
+
+         freeDynBuffer((dynptr){toc});
+         freeDynBuffer((dynptr){idx});
+
+         // image garbage collection in articles/media
+         int l = MEDIA_DIR_LEN+1;
+         strmlcpy(adir+adirl, MEDIA_DIR"/", MEDIA_DIR_LEN+2, &l);
          if (dp = opendir(adir))
          {
-            Node **imageFileNames = createTable(256);
-
-            char *idx = newDynBuffer().buf;
-            dynAddString((dynhdl)&idx, index_prefix, index_prefix_len);
-            dynAddString((dynhdl)&idx, conTitle(serverTable), 0);
-            dynAddString((dynhdl)&idx, INDEX_BODY_FYI, INDEX_BODY_FYI_LEN);
-
-            char *toc = newDynBuffer().buf;
-            dynAddString((dynhdl)&toc, toc_prefix, toc_prefix_len);
-
-            struct dirent *ep, bp;
-            int     fcnt = 0, fcap = 1024;
-            time_t *stamps = allocate(fcap*sizeof(time_t), default_align, false);
-
             while (readdir_r(dp, &bp, &ep) == no_error && ep)
-               if (ep->d_name[0] != '.' && (ep->d_type == DT_REG || ep->d_type == DT_LNK))
+               if (ep->d_name[0] != '.' && ep->d_type == DT_DIR
+                && (updtstamp == 0 || updtstamp == strtoul(ep->d_name, NULL, 10)))
                {
-                  char  *chk = NULL;
-                  time_t stamp = strtoul(ep->d_name, &chk, 10);
-                  if (stamp && chk && cmp6(chk, ".html"))
+                  int  mdl = mdirl + ep->d_namlen + 1;
+                  char mdir[OSP(mdl+1)];
+                  strmlcat(mdir, mdl+1, NULL, adir, mdirl, ep->d_name, ep->d_namlen, "/", 1, NULL);
+                  DIR *mdp;
+                  if (mdp = opendir(mdir))
                   {
-                     if (fcnt == fcap)
-                        stamps = reallocate(stamps, (fcap += 1024)*sizeof(time_t), false, false);
-                     stamps[fcnt++] = stamp;
+                     int found = 0;
+                     struct dirent *mep, mbp;
+                     while (readdir_r(mdp, &mbp, &mep) == no_error && mep)
+                        if (mep->d_name[0] != '.' && mep->d_type == DT_REG)
+                        {
+                           int  mfl = mdl + mep->d_namlen;
+                           char mfil[OSP(mfl+5)];
+                           strmlcat(mfil, mfl+1, NULL, mdir, mdl, mep->d_name, mep->d_namlen, NULL);
+                           if (findImageName(imageFileNames, mfil+mdirl, ep->d_namlen + 1 + mep->d_namlen))
+                              found++;
+                           else
+                           {
+                              cpy5(mfil+mfl, ".png");
+                              if (findImageName(imageFileNames, mfil+mdirl, ep->d_namlen + 1 + mep->d_namlen + 4))
+                                 found++;
+                              else
+                              {
+                                 mfil[mfl] = '\0';
+                                 printf("unlink(%s);\n", mfil);
+                              }
+                           }
+                        }
+
+                     closedir(mdp);
+
+                     if (found == 0)
+                        printf("deleteDirEntity(%s, %d, S_IFDIR);\n", mdir, mdirl);
                   }
                }
 
             closedir(dp);
-
-            if (fcnt > 1)
-               qdownsort(stamps, 0, fcnt-1);
-
-            if (fcnt)
-               for (int j = 0; j < fcnt; j++)
-               {
-                  FILE  *file;
-                  intStr stamp;
-                  int    stmpl = int2str(stamp, stamps[j], intLen, 0);
-                  int    artpl = adirl+stmpl+5;
-                  char   artp[OSP(artpl+1)];
-                  char  *contemp;
-
-                  strmlcat(artp, artpl+1, NULL, adir, adirl, stamp, stmpl, ".html", 5, NULL);
-                  if (stat(artp, &st) == no_error && S_ISREG(st.st_mode)
-                   && st.st_size
-                   && (contemp = allocate(st.st_size+1, default_align, false)))
-                  {
-                     if (file = fopen(artp, "r"))
-                     {
-                        contemp[st.st_size] = '\0';
-
-                        if (fread(contemp, st.st_size, 1, file) == 1)
-                        {
-                           char *o, *p, *q, *s, *t;
-                           o = (strcasestr(contemp, "<HTML lang=")) ?: contemp;
-                           if ((p = strcasestr(o += 5, "<TITLE>"))
-                            && (q = strcasestr(p += 7, "</TITLE>"))
-                            && (s =     strstr(q +  8, "<!--e-->"))
-                            && (t = strcasestr(s += 8, "</P>")))
-                           {
-                              if (updtstamp == 0 || updtstamp == stamps[j])
-                                 enumerateImageTags(imageFileNames, s, stamps[j], mdirl-drootl-pathl-1);
-
-                              boolean needEllipsis = !cmp16(t+6, "<p class=\"stamp\"");
-                              boolean insertLangAttr = cmp7(o,   " lang=\"") && o[9] == '"';
-                              struct tm tm; localtime_r(&stamps[j], &tm);
-
-                              s = skip(s);
-                              t = bskip(t);
-                              dynAddString((dynhdl)&idx, "<A", 2);
-                              if (insertLangAttr)
-                                 dynAddString((dynhdl)&idx, o, 10);
-                              dynAddString((dynhdl)&idx, " id=\"", 5);
-                                 dynAddInt((dynhdl)&idx, stamps[j]);
-                              dynAddString((dynhdl)&idx, "\" class=\"index\" href=\"", 22);
-                              dynAddString((dynhdl)&idx, articles_dir, articles_dir_len);
-                              dynAddString((dynhdl)&idx, "/", 1);
-                                 dynAddInt((dynhdl)&idx, stamps[j]);
-                              dynAddString((dynhdl)&idx, ".html\">\n", 8);
-                              dynAddString((dynhdl)&idx, s, stripATags(s, t-s));
-                              if (needEllipsis)
-                                 dynAddString((dynhdl)&idx, " ...", 4);
-                              dynAddString((dynhdl)&idx, "\n</p>\n<P class=\"stamp\">", 23);
-                              dyninc((dynhdl)&idx, 28);
-                              snprintf(idx+dynlen((dynptr){idx})-28, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
-                                                                         tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-
-                              dynAddString((dynhdl)&toc, "   <A", 5);
-                              if (insertLangAttr)
-                                 dynAddString((dynhdl)&toc, o, 10);
-                              dynAddString((dynhdl)&toc, " href=\"", 7);
-                              dynAddString((dynhdl)&toc, articles_dir, articles_dir_len);
-                              dynAddString((dynhdl)&toc, "/", 1);
-                                 dynAddInt((dynhdl)&toc, stamps[j]);
-                              dynAddString((dynhdl)&toc, ".html\" target=\"_top\"><P>", 24);
-                              dynAddString((dynhdl)&toc, p, (int)(q-p));
-                              dynAddString((dynhdl)&toc, "</P></A>\n", 9);
-                           }
-                        }
-
-                        fclose(file);
-                     }
-
-                     deallocate(VPR(contemp), false);
-                  }
-               }
-
-            else
-            {
-               dynAddString((dynhdl)&idx, "<H1>No ", 7);
-               dynAddString((dynhdl)&idx, articles_dir, articles_dir_len);
-               dynAddString((dynhdl)&idx, " yet</H1>\n", 10);
-
-               dynAddString((dynhdl)&toc, "<P>No ",  6);
-               dynAddString((dynhdl)&toc, articles_dir, articles_dir_len);
-               dynAddString((dynhdl)&toc, " yet</P>\n", 9);
-            }
-
-            deallocate(VPR(stamps), false);
-
-            if (articles_dir == ARTICLES_DIR)
-               articles_dir = "", articles_dir_len = 0;
-            else
-               articles_dir_len++;
-
-            int index_suffix_len = INDEX_SUFFIX_LEN + articles_dir_len;
-            dyninc((dynhdl)&idx, index_suffix_len);
-            snprintf(idx+dynlen((dynptr){idx})-index_suffix_len, index_suffix_len+1, INDEX_SUFFIX, articles_dir);
-            dynAddString((dynhdl)&toc, TOC_SUFFIX, TOC_SUFFIX_LEN);
-
-            boolean ok1 = false, ok2 = false;
-
-            int  idxfl = drootl + 1 + el + 10 + 1;
-            int  tocfl = drootl + 1 + el +  8 + 1;
-            char idxf[OSP(idxfl+1)];
-            char tocf[OSP(tocfl+1)];
-            if (el == 0)
-            {
-               strmlcat(idxf, idxfl+1, NULL, droot, drootl, "/", 1, "index.html", 10, NULL);
-               strmlcat(tocf, tocfl+1, NULL, droot, drootl, "/", 1, "toc.html", 8, NULL);
-            }
-            else
-            {
-               strmlcat(idxf, idxfl+1, NULL, droot, drootl, "/", 1, entity, el, "index.html", 10, NULL);
-               strmlcat(tocf, tocfl+1, NULL, droot, drootl, "/", 1, entity, el, "toc.html", 8, NULL);
-            }
-
-            if ((stat(idxf, &st) != no_error || S_ISREG(st.st_mode) && unlink(idxf) == no_error)   // remove an old index.html file
-             || (stat(tocf, &st) != no_error || S_ISREG(st.st_mode) && unlink(tocf) == no_error))  // remove an old toc.html file
-            {
-               FILE *file;
-
-               if (file = fopen(idxf, "w"))
-               {
-                  ok1 = fwrite(idx, dynlen((dynptr){idx}), 1, file) == 1;
-                  fclose(file);
-               }
-
-               if (file = fopen(tocf, "w"))
-               {
-                  ok2 = fwrite(toc, dynlen((dynptr){toc}), 1, file) == 1;
-                  fclose(file);
-               }
-
-               // touch the re-index token in the zettair index directory
-               char *site = httpHost(serverTable);
-               int   slen = strvlen(site);
-               int   zlen = ZETTAIR_DB_PLEN + slen + 6;
-               char  zetp[OSP(zlen+1)]; strmlcat(zetp, zlen+1, NULL, ZETTAIR_DB_PATH, ZETTAIR_DB_PLEN, site, slen, "/token", 6, NULL);
-               if (file = fopen(zetp, "w"))
-                  fclose(file);
-            }
-
-            freeDynBuffer((dynptr){idx});
-            freeDynBuffer((dynptr){toc});
-
-            // image garbage collection in articles/media
-            int l = MEDIA_DIR_LEN+1;
-            strmlcpy(adir+adirl, MEDIA_DIR"/", MEDIA_DIR_LEN+2, &l);
-            if (dp = opendir(adir))
-            {
-               while (readdir_r(dp, &bp, &ep) == no_error && ep)
-                  if (ep->d_name[0] != '.' && ep->d_type == DT_DIR
-                   && (updtstamp == 0 || updtstamp == strtoul(ep->d_name, NULL, 10)))
-                  {
-                     int  mdl = mdirl + ep->d_namlen + 1;
-                     char mdir[OSP(mdl+1)];
-                     strmlcat(mdir, mdl+1, NULL, adir, mdirl, ep->d_name, ep->d_namlen, "/", 1, NULL);
-                     DIR *mdp;
-                     if (mdp = opendir(mdir))
-                     {
-                        int found = 0;
-                        struct dirent *mep, mbp;
-                        while (readdir_r(mdp, &mbp, &mep) == no_error && mep)
-                           if (mep->d_name[0] != '.' && mep->d_type == DT_REG)
-                           {
-                              int  mfl = mdl + mep->d_namlen;
-                              char mfil[OSP(mfl+5)];
-                              strmlcat(mfil, mfl+1, NULL, mdir, mdl, mep->d_name, mep->d_namlen, NULL);
-                              if (findImageName(imageFileNames, mfil+mdirl, ep->d_namlen + 1 + mep->d_namlen))
-                                 found++;
-                              else
-                              {
-                                 cpy5(mfil+mfl, ".png");
-                                 if (findImageName(imageFileNames, mfil+mdirl, ep->d_namlen + 1 + mep->d_namlen + 4))
-                                    found++;
-                                 else
-                                 {
-                                    mfil[mfl] = '\0';
-                                    unlink(mfil);
-                                 }
-                              }
-                           }
-
-                        closedir(mdp);
-
-                        if (found == 0)
-                           deleteDirEntity(mdir, mdirl, S_IFDIR);
-                     }
-                  }
-
-               closedir(dp);
-            }
-
-            releaseTable(imageFileNames);
-
-            return ok1 && ok2;
          }
+
+         releaseTable(imageFileNames);
+
+         return ok1 && ok2;
       }
    }
 
