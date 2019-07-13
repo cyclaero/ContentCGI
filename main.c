@@ -2,7 +2,7 @@
 //  ContentCGI
 //
 //  Created by Dr. Rolf Jansen on 2018-05-08.
-//  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -51,7 +51,6 @@
 
 #include <openssl/ssl.h>
 #include <openssl/err.h>
-#include <openssl/bio.h>
 
 
 // ContentCGI facilities
@@ -533,18 +532,10 @@ int gListenSocket_v6 = 0;
 int gListenSSockL_v4 = 0;
 int gListenSSockL_v6 = 0;
 
-#ifndef NOBIOSSL
-BIO *gAcceptTLSBIO_v4 = NULL;
-#endif
-
 
 #pragma mark ••• main •••
 
 SSL_CTX *gCTX  = NULL;
-
-#ifndef NOBIOSSL
-BIO     *gsBIO = NULL;
-#endif
 
 pthread_t      thread;
 pthread_attr_t detach;
@@ -589,7 +580,7 @@ void *socketLoop(void *listenSocket)
          syslog(LOG_ERR, "Insufficient memory for establishing a client connection.");
          exit(EXIT_FAILURE);
       }
-      *connex = (ConnExec){{sock, 0, {NULL}}, 0, createTable(256), NULL, NULL, &socketRecv, &socketARcv, &socketSend, &socketJSnd, &socketShut};
+      *connex = (ConnExec){{sock, 0, NULL}, 0, createTable(256), NULL, NULL, &socketRecv, &socketARcv, &socketSend, &socketJSnd, &socketShut};
 
       setsockopt(connex->conn.sock, SOL_SOCKET, SO_NOSIGPIPE, &optval, sizeof(int));
       setsockopt(connex->conn.sock, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int));
@@ -637,7 +628,7 @@ void *ssocklLoop(void *listenSSockL)
          syslog(LOG_ERR, "Insufficient memory for establishing a client connection.");
          exit(EXIT_FAILURE);
       }
-      *connex = (ConnExec){{sock, 0, {NULL}}, 0, createTable(256), NULL, NULL, &ssocklRecv, &ssocklARcv, &ssocklSend, &ssocklJSnd, &ssocklShut};
+      *connex = (ConnExec){{sock, 0, NULL}, 0, createTable(256), NULL, NULL, &ssocklRecv, &ssocklARcv, &ssocklSend, &ssocklJSnd, &ssocklShut};
 
       setsockopt(connex->conn.sock, SOL_SOCKET, SO_NOSIGPIPE, &optval, sizeof(int));
       setsockopt(connex->conn.sock, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int));
@@ -678,57 +669,6 @@ errorShutdown:
 }
 
 
-#ifndef NOBIOSSL
-void *biotlsLoop(void *acceptBIO)
-{
-   long double mt, lastfail = microtime();
-   const int optval = 1;
-   long rc;
-
-   do
-   {
-      if ((rc = BIO_do_accept((BIO *)acceptBIO)) <= 0)
-      {
-         if (gShutdownFlag)
-            exit(0);
-         syslog(LOG_ERR, "Error setting up accept BIO: %s.", ERR_error_string(rc, NULL));
-
-         mt = microtime();
-         if (errno != ECONNABORTED && mt - lastfail < 0.01) // it is fatal if subsequent calls to accept() fail rapidly (< 10 ms) in a row
-            exit(EXIT_FAILURE);
-         else                                               // try again
-         {
-            lastfail = mt;
-            continue;
-         }
-      }
-
-      ConnExec *connex = allocate(sizeof(ConnExec), false);
-      if (!connex)
-      {
-         syslog(LOG_ERR, "Insufficient memory for establishing a client connection.");
-         exit(EXIT_FAILURE);
-      }
-      *connex = (ConnExec){{0, 0, {NULL}}, 0, createTable(256), NULL, NULL, &tlsBIORecv, &tlsBIOARcv, &tlsBIOSend, &tlsBIOJSnd, &tlsBIOShut, &connexFree};
-      connex->conn.bio = BIO_pop((BIO *)acceptBIO);
-      BIO_get_fd(connex->conn.bio, &connex->conn.sock);
-
-      setsockopt(connex->conn.sock, SOL_SOCKET, SO_NOSIGPIPE, &optval, sizeof(int));
-      setsockopt(connex->conn.sock, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int));
-      if (rc = pthread_create(&thread, &detach, responder, connex))
-      {
-         BIO_free(connex->conn.bio);
-         syslog(LOG_ERR, "Cannot create thread for responding to BIO client connections: %zd.", rc);
-         exit(EXIT_FAILURE);
-      }
-
-   } while (!gShutdownFlag);
-
-   return NULL;
-}
-#endif
-
-
 #define thread_stack_size 2097152
 
 int     gURandom;
@@ -763,10 +703,6 @@ int main(int argc, char *const argv[])
    ushort          tls_port  = 5000;
    struct in_addr  tls_addr4 = {htonl(INADDR_ANY)};
    struct in6_addr tls_addr6 = IN6ADDR_ANY_INIT;
-#ifndef NOBIOSSL
-   ushort          bio_port  = tls_port + 1;
-   char           *bio_addr  = "0.0.0.0";
-#endif
 
    struct sockaddr_un unixDomainSocket = {};
    unixDomainSocket.sun_family  = AF_LOCAL;
@@ -817,9 +753,6 @@ int main(int argc, char *const argv[])
 
          case 's':
             tls_port = (ushort)strtol(optarg, NULL, 10);
-      #ifndef NOBIOSSL
-            bio_port = tls_port + 1;
-      #endif
             break;
 
          case '4':
@@ -831,9 +764,6 @@ int main(int argc, char *const argv[])
                   syslog(LOG_ERR, "Invalid TLS IPv4 address given.");
                exit(EXIT_FAILURE);
             }
-      #ifndef NOBIOSSL
-            bio_addr = optarg;
-      #endif
             break;
 
          case '6':
@@ -1120,98 +1050,62 @@ int main(int argc, char *const argv[])
                      DH_free(dhparam);
 
                #pragma mark ••• main() -- IPv4 any host TLS setup •••
-                        if ((gListenSSockL_v4 = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-                        {
-                           syslog(LOG_ERR, "Error creating the secure IPv4 listening socket.");
-                           exit(EXIT_FAILURE);
-                        }
+                     if ((gListenSSockL_v4 = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+                     {
+                        syslog(LOG_ERR, "Error creating the secure IPv4 listening socket.");
+                        exit(EXIT_FAILURE);
+                     }
 
-                        serverAddress_v4.sin_addr = tls_addr4;
-                        serverAddress_v4.sin_port = htons(tls_port);
-                        if (setsockopt(gListenSSockL_v4, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0 ||
-                            setsockopt(gListenSSockL_v4, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int)) < 0 ||
-                            bind(gListenSSockL_v4, (struct sockaddr *)&serverAddress_v4, sizeof(serverAddress_v4)) < 0)
-                        {
-                           syslog(LOG_ERR, "Error calling bind() on the TLS IPv4 socket: %d.", errno);
-                           exit(EXIT_FAILURE);
-                        }
+                     serverAddress_v4.sin_addr = tls_addr4;
+                     serverAddress_v4.sin_port = htons(tls_port);
+                     if (setsockopt(gListenSSockL_v4, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0 ||
+                         setsockopt(gListenSSockL_v4, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int)) < 0 ||
+                         bind(gListenSSockL_v4, (struct sockaddr *)&serverAddress_v4, sizeof(serverAddress_v4)) < 0)
+                     {
+                        syslog(LOG_ERR, "Error calling bind() on the TLS IPv4 socket: %d.", errno);
+                        exit(EXIT_FAILURE);
+                     }
 
-                        if (listen(gListenSSockL_v4, 5) < 0)
-                        {
-                           syslog(LOG_ERR, "Error calling listen() on the TLS IPv4 socket.");
-                           exit(EXIT_FAILURE);
-                        }
+                     if (listen(gListenSSockL_v4, 5) < 0)
+                     {
+                        syslog(LOG_ERR, "Error calling listen() on the TLS IPv4 socket.");
+                        exit(EXIT_FAILURE);
+                     }
 
-                        if (rc = pthread_create(&thread, &detach, ssocklLoop, &gListenSSockL_v4))
-                        {
-                           syslog(LOG_ERR, "Cannot create thread for responding to IPv4 TLS client connections: %d.", rc);
-                           exit(EXIT_FAILURE);
-                        }
+                     if (rc = pthread_create(&thread, &detach, ssocklLoop, &gListenSSockL_v4))
+                     {
+                        syslog(LOG_ERR, "Cannot create thread for responding to IPv4 TLS client connections: %d.", rc);
+                        exit(EXIT_FAILURE);
+                     }
 
                #pragma mark ••• main() -- IPv6 any host TLS setup •••
-                        if ((gListenSSockL_v6 = socket(AF_INET6, SOCK_STREAM, 0)) < 0)
-                        {
-                           syslog(LOG_ERR, "Error creating the secure IPv6 listening socket.");
-                           exit(EXIT_FAILURE);
-                        }
+                     if ((gListenSSockL_v6 = socket(AF_INET6, SOCK_STREAM, 0)) < 0)
+                     {
+                        syslog(LOG_ERR, "Error creating the secure IPv6 listening socket.");
+                        exit(EXIT_FAILURE);
+                     }
 
-                        serverAddress_v6.sin6_addr = tls_addr6;
-                        serverAddress_v6.sin6_port = htons(tls_port);
-                        if (setsockopt(gListenSSockL_v6, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0 ||
-                            setsockopt(gListenSSockL_v6, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int)) < 0 ||
-                            bind(gListenSSockL_v6, (struct sockaddr *)&serverAddress_v6, sizeof(serverAddress_v6)) < 0)
-                        {
-                           syslog(LOG_ERR, "Error calling bind() on the TLS IPv6 socket: %d.", errno);
-                           exit(EXIT_FAILURE);
-                        }
+                     serverAddress_v6.sin6_addr = tls_addr6;
+                     serverAddress_v6.sin6_port = htons(tls_port);
+                     if (setsockopt(gListenSSockL_v6, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0 ||
+                         setsockopt(gListenSSockL_v6, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int)) < 0 ||
+                         bind(gListenSSockL_v6, (struct sockaddr *)&serverAddress_v6, sizeof(serverAddress_v6)) < 0)
+                     {
+                        syslog(LOG_ERR, "Error calling bind() on the TLS IPv6 socket: %d.", errno);
+                        exit(EXIT_FAILURE);
+                     }
 
-                        if (listen(gListenSSockL_v6, 5) < 0)
-                        {
-                           syslog(LOG_ERR, "Error calling listen() on the TLS IPv6 socket.");
-                           exit(EXIT_FAILURE);
-                        }
+                     if (listen(gListenSSockL_v6, 5) < 0)
+                     {
+                        syslog(LOG_ERR, "Error calling listen() on the TLS IPv6 socket.");
+                        exit(EXIT_FAILURE);
+                     }
 
-                        if (rc = pthread_create(&thread, &detach, ssocklLoop, &gListenSSockL_v6))
-                        {
-                           syslog(LOG_ERR, "Cannot create thread for responding to IPv6 TLS client connections: %d.", rc);
-                           exit(EXIT_FAILURE);
-                        }
-
-
-               #pragma mark ••• main() -- OpenSSL BIO any host setup •••
-                     #ifndef NOBIOSSL
-                        char bio_listen[32]; snprintf(bio_listen, 32, "%s:%d", bio_addr, bio_port);
-
-                        if ((gsBIO = BIO_new_ssl(gCTX, 0)) == NULL)
-                        {
-                           syslog(LOG_ERR, "Cannot create the BIO-SSL structure.");
-                           exit(EXIT_FAILURE);
-                        }
-
-                        if ((gAcceptTLSBIO_v4 = BIO_new_accept(bio_listen)) == NULL)
-                        {
-                           BIO_free(gsBIO);
-                           syslog(LOG_ERR, "Cannot create the BIO on hostIP %s.", bio_listen);
-                           exit(EXIT_FAILURE);
-                        }
-
-                        BIO_set_accept_bios(gAcceptTLSBIO_v4, gsBIO);
-                        atexit(SSL_BIO_cleanup);
-
-                        if ((rc = BIO_do_accept(gAcceptTLSBIO_v4)) <= 0)
-                        {
-                           if (gShutdownFlag)
-                              exit(0);
-                           syslog(LOG_ERR, "Error setting up the accept BIO: %s.", ERR_error_string(rc, NULL));
-                           exit(EXIT_FAILURE);
-                        }
-
-                        if (rc = pthread_create(&thread, &detach, biotlsLoop, gAcceptTLSBIO_v4))
-                        {
-                           syslog(LOG_ERR, "Cannot create thread for responding to BIO IPv4 TLS client connections: %d.", rc);
-                           exit(EXIT_FAILURE);
-                        }
-                     #endif
+                     if (rc = pthread_create(&thread, &detach, ssocklLoop, &gListenSSockL_v6))
+                     {
+                        syslog(LOG_ERR, "Cannot create thread for responding to IPv6 TLS client connections: %d.", rc);
+                        exit(EXIT_FAILURE);
+                     }
                   }
 
                   else
@@ -1273,7 +1167,7 @@ int main(int argc, char *const argv[])
             syslog(LOG_ERR, "Insufficient memory for establishing a client connection.");
             exit(EXIT_FAILURE);
          }
-         *connex = (ConnExec){{sock, 0, {NULL}}, 0, createTable(256), NULL, NULL, &socketRecv, &socketARcv, &socketSend, &socketJSnd, &socketShut};
+         *connex = (ConnExec){{sock, 0, NULL}, 0, createTable(256), NULL, NULL, &socketRecv, &socketARcv, &socketSend, &socketJSnd, &socketShut};
 
          setsockopt(connex->conn.sock, SOL_SOCKET, SO_NOSIGPIPE, &optval, sizeof(int));
          if (err = pthread_create(&thread, &detach, firstresponder, connex))
@@ -1348,14 +1242,6 @@ void SSL_thread_cleanup(void)
    deallocate_batch(true, VPR(lock_cs),
                           VPR(lock_count), NULL);
 }
-
-#ifndef NOBIOSSL
-void SSL_BIO_cleanup(void)
-{
-   if (gsBIO)
-      BIO_free_all(gsBIO);
-}
-#endif
 
 void SSL_CTX_cleanup(void)
 {

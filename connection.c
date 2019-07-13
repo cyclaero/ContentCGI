@@ -2,7 +2,7 @@
 //  ContentCGI
 //
 //  Created by Dr. Rolf Jansen on 2018-05-08.
-//  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -102,16 +102,16 @@ ssize_t socketSend(ConnSpec *conn, const void *buffer, size_t length)
 }
 
 
-ssize_t socketJSnd(ConnSpec *conn, ... /* const void *buf0, size_t len0, const void *buf1, size_t len1, ..., NULL */)
+ssize_t socketJSnd(ConnSpec *conn, ... /* const void *buf0, ssize_t len0, const void *buf1, ssize_t len1, ..., NULL */)
 {
    struct iovec blocks[64] = {}; // max. 64 buf:len tupples
    int          n;
    const void  *buf;
-   size_t       len;
+   ssize_t      len;
    va_list      vl;
 
    va_start(vl, conn);
-   for (n = 0; n < 64 && (buf = va_arg(vl, const void *)) && (len = va_arg(vl, size_t)); n++)
+   for (n = 0; n < 64 && (buf = va_arg(vl, const void *)) && (len = va_arg(vl, ssize_t)) > 0; n++)
       blocks[n] = (struct iovec){(void *)buf, len};
    va_end(vl);
 
@@ -163,16 +163,16 @@ ssize_t ssocklSend(ConnSpec *conn, const void *buffer, size_t length)
 }
 
 
-ssize_t ssocklJSnd(ConnSpec *conn, ... /* const void *buf0, size_t len0, const void *buf1, size_t len1, ..., NULL */)
+ssize_t ssocklJSnd(ConnSpec *conn, ... /* const void *buf0, ssize_t len0, const void *buf1, ssize_t len1, ..., NULL */)
 {
    struct iovec blocks[64] = {}; // max. 64 buf:len tupples
    int          i, n, rc, rt;
    const void  *buf;
-   size_t       len, tlen;
+   ssize_t      len, tlen;
    va_list      vl;
 
    va_start(vl, conn);
-   for (n = 0, tlen = 0; n < 64 && (buf = va_arg(vl, const void *)) && (len = va_arg(vl, size_t)); n++)
+   for (n = 0, tlen = 0; n < 64 && (buf = va_arg(vl, const void *)) && (len = va_arg(vl, ssize_t)) > 0; n++)
    {
       blocks[n] = (struct iovec){(void *)buf, len};
       tlen += len;
@@ -212,90 +212,6 @@ boolean ssocklShut(ConnSpec *conn, boolean force)
 
    SSL_shutdown(conn->ssl);
    SSL_free(conn->ssl);
-   shutdown(conn->sock, SHUT_RDWR);
-   if (close(conn->sock) < 0)
-      syslog(LOG_ERR, "Error closing client connection: %d.", errno);
-   return true;
-}
-
-
-#pragma mark ••• TLS BIO calls •••
-
-ssize_t tlsBIORecv(ConnSpec *conn, void *buffer, size_t length)
-{
-   ssize_t rc = 0, rl = 0;
-
-   while (length && (rc = BIO_read(conn->bio, buffer+rl, (int)length)) > 0)
-      rl += rc, length -= rc;
-
-   return (rc >= 0) ? rl : rc;
-}
-
-
-ssize_t tlsBIOARcv(ConnSpec *conn, void *buffer, size_t length)
-{
-   ssize_t rc;
-   BIO_socket_nbio(conn->sock, true);
-   rc = BIO_read(conn->bio, buffer, (int)length);
-   BIO_socket_nbio(conn->sock, false);
-   return rc;
-}
-
-
-ssize_t tlsBIOSend(ConnSpec *conn, const void *buffer, size_t length)
-{
-   return BIO_write(conn->bio, buffer, (int)length);
-}
-
-
-ssize_t tlsBIOJSnd(ConnSpec *conn, ... /* const void *buf0, size_t len0, const void *buf1, size_t len1, ..., NULL */)
-{
-   struct iovec blocks[64] = {}; // max. 64 buf:len tupples
-   int          i, n, rc, rt;
-   const void  *buf;
-   size_t       len, tlen;
-   va_list      vl;
-
-   va_start(vl, conn);
-   for (n = 0, tlen = 0; n < 64 && (buf = va_arg(vl, const void *)) && (len = va_arg(vl, size_t)); n++)
-   {
-      blocks[n] = (struct iovec){(void *)buf, len};
-      tlen += len;
-   }
-   va_end(vl);
-
-   if (n > 1)
-      if (tlen <= 8388608 && (buf = allocate(tlen, default_align, false)))
-      {
-         for (i = 0, len = 0; i < n; i++)
-         {
-            bcopy(blocks[i].iov_base, (void *)buf+len, blocks[i].iov_len);
-            len += blocks[i].iov_len;
-         }
-
-         rc = BIO_write(conn->bio, buf, (int)len);
-         deallocate(VPR(buf), false);
-         return rc;
-      }
-
-      else
-      {
-         for (i = 0, rc = 0, rt = 1; rt > 0 && i < n; i++)
-            rc += rt = BIO_write(conn->bio, blocks[i].iov_base, (int)blocks[i].iov_len);
-         return (rt > 0) ? rc : rt;
-      }
-
-   else
-      return BIO_write(conn->bio, blocks[0].iov_base, (int)blocks[0].iov_len);
-}
-
-
-boolean tlsBIOShut(ConnSpec *conn, boolean force)
-{
-   if (!force && pendingReceivedBytes(conn->sock))
-      return false;
-
-   BIO_free(conn->bio);
    shutdown(conn->sock, SHUT_RDWR);
    if (close(conn->sock) < 0)
       syslog(LOG_ERR, "Error closing client connection: %d.", errno);

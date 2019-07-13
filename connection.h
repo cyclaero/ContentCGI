@@ -2,7 +2,7 @@
 //  ContentCGI
 //
 //  Created by Dr. Rolf Jansen on 2018-05-08.
-//  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -29,12 +29,8 @@
 // types
 typedef struct
 {
-   int sock, flags;
-   union
-   {
-      SSL  *ssl;
-      BIO  *bio;
-   };
+   int  sock, flags;
+   SSL *ssl;
 } ConnSpec;
 
 
@@ -59,20 +55,14 @@ typedef struct ConnExec
 ssize_t socketRecv(ConnSpec *conn, void *buffer, size_t length);
 ssize_t socketARcv(ConnSpec *conn, void *buffer, size_t length);
 ssize_t socketSend(ConnSpec *conn, const void *buffer, size_t length);
-ssize_t socketJSnd(ConnSpec *conn, ... /* const void *buf0, size_t len0, const void *buf1, size_t len1, ..., NULL */);
+ssize_t socketJSnd(ConnSpec *conn, ... /* const void *buf0, ssize_t len0, const void *buf1, ssize_t len1, ..., NULL */);
 boolean socketShut(ConnSpec *conn, boolean force);
 
 ssize_t ssocklRecv(ConnSpec *conn, void *buffer, size_t length);
 ssize_t ssocklARcv(ConnSpec *conn, void *buffer, size_t length);
 ssize_t ssocklSend(ConnSpec *conn, const void *buffer, size_t length);
-ssize_t ssocklJSnd(ConnSpec *conn, ... /* const void *buf0, size_t len0, const void *buf1, size_t len1, ..., NULL */);
+ssize_t ssocklJSnd(ConnSpec *conn, ... /* const void *buf0, ssize_t len0, const void *buf1, ssize_t len1, ..., NULL */);
 boolean ssocklShut(ConnSpec *conn, boolean force);
-
-ssize_t tlsBIORecv(ConnSpec *conn, void *buffer, size_t length);
-ssize_t tlsBIOARcv(ConnSpec *conn, void *buffer, size_t length);
-ssize_t tlsBIOSend(ConnSpec *conn, const void *buffer, size_t length);
-ssize_t tlsBIOJSnd(ConnSpec *conn, ... /* const void *buf0, size_t len0, const void *buf1, size_t len1, ..., NULL */);
-boolean tlsBIOShut(ConnSpec *conn, boolean force);
 
 void connexRefresh(ConnExec  *connex);
 void connexRelease(ConnExec **connex);

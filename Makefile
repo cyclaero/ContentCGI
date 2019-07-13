@@ -1,7 +1,7 @@
 #  BSD Makefile for building the ContentCGI daemon
 #
 #  Created by Dr. Rolf Jansen on 2018-05-19.
-#  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
+#  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
 #
 #  Redistribution and use in source and binary forms, with or without modification,
 #  are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ CFLAGS += -march=native -mssse3
 CFLAGS += -fsigned-char
 .endif
 
-CFLAGS += -DNOBIOSSL -std=gnu11 -fno-pic -fvisibility=hidden -fstrict-aliasing -fstack-protector \
+CFLAGS += -std=gnu11 -fno-pic -fvisibility=hidden -fstrict-aliasing -fstack-protector \
           -Wno-multichar -Wno-parentheses -Wno-empty-body -Wno-switch -Wno-deprecated-declarations -Wshorten-64-to-32 \
           -I/usr/local/include
 LDFLAGS = -L/usr/local/lib -lm -lpthread -lcrypto -lssl

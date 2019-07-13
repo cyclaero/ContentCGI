@@ -2,7 +2,7 @@
 //  ContentCGI
 //
 //  Created by Dr. Rolf Jansen on 2018-05-08.
-//  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -384,7 +384,7 @@ boolean FCGI_SendEndRequest(ConnExec *connex, uint32_t appStatus, uint8_t protoc
 boolean FCGI_SendValueResults(ConnExec *connex, ushort requestID, ushort resultsLength, uint8_t *results)
 {
    FCGI_Header header = {FCGI_VERSION_1, FCGI_GET_VALUES_RESULT, MapShort(requestID), MapShort(resultsLength), 0, 0};
-   return connex->jsnd(&connex->conn, &header, sizeof(FCGI_Header), results, resultsLength, NULL) == sizeof(FCGI_Header) + resultsLength;
+   return connex->jsnd(&connex->conn, &header, (ssize_t)sizeof(FCGI_Header), results, (ssize_t)resultsLength, NULL) == sizeof(FCGI_Header) + resultsLength;
 }
 
 boolean FCGI_SendDataStream(ConnExec *connex, uint8_t streamType, size_t totalLength, char *data)
@@ -392,11 +392,11 @@ boolean FCGI_SendDataStream(ConnExec *connex, uint8_t streamType, size_t totalLe
    FCGI_Header header = {FCGI_VERSION_1, streamType, MapShort(connex->requestID), 0, 0, 0};
 
    if (totalLength && data)
-      for (size_t i = 0, chunkLength = (totalLength <= FCGI_MAX_LENGTH) ? totalLength : FCGI_MAX_LENGTH;
+      for (ssize_t i = 0, chunkLength = (totalLength <= FCGI_MAX_LENGTH) ? totalLength : FCGI_MAX_LENGTH;
            totalLength > 0; i += chunkLength, totalLength -= chunkLength, chunkLength = (totalLength <= FCGI_MAX_LENGTH) ? totalLength : FCGI_MAX_LENGTH)
       {
          header.contentLength = MapShort((ushort)chunkLength);
-         if (connex->jsnd(&connex->conn, &header, sizeof(FCGI_Header), &data[i], chunkLength, NULL) != sizeof(FCGI_Header) + chunkLength)
+         if (connex->jsnd(&connex->conn, &header, (ssize_t)sizeof(FCGI_Header), &data[i], (ssize_t)chunkLength, NULL) != sizeof(FCGI_Header) + chunkLength)
             return false;
       }
 
