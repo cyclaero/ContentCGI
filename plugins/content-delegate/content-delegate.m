@@ -1138,6 +1138,14 @@ int stripATags(char *s, ssize_t n)
    return j;
 }
 
+int replaceBRTags(char *s, ssize_t n)
+{
+   for (int i = 0; i < n; i++)
+      if (cmp4(s+i, "<br>"))
+          cpy4(s+i, " -- ");
+   return (int)n;
+}
+
 
 long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache)
 {
@@ -1629,7 +1637,7 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
                            dynAddString((dynhdl)&toc, "/", 1);
                               dynAddInt((dynhdl)&toc, stamps[j]);
                            dynAddString((dynhdl)&toc, ".html\" target=\"_top\"><P>", 24);
-                           dynAddString((dynhdl)&toc, p, (int)(q-p));
+                           dynAddString((dynhdl)&toc, p, replaceBRTags(p, q-p));
                            dynAddString((dynhdl)&toc, "</P></A>\n", 9);
                         }
                      }
