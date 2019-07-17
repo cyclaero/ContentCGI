@@ -554,23 +554,23 @@ void *socketLoop(void *listenSocket)
 {
    long double mt, lastfail = microtime();
    const int optval = 1;
-   int sock, rc;
+   int rc, socket;
 
-   do
+   while (!gShutdownFlag)
    {
-      if ((sock = accept(*(int *)listenSocket, NULL, NULL)) < 0)
+      if ((socket = accept(*(int *)listenSocket, NULL, NULL)) < 0)
       {
          if (gShutdownFlag)
             exit(0);
          syslog(LOG_ERR, "Error calling accept(): %d.", rc = errno);
 
          mt = microtime();
-         if (rc != ECONNABORTED && mt - lastfail < 0.01) // it is fatal if subsequent calls to accept() fail rapidly (< 10 ms) in a row
-            exit(EXIT_FAILURE);
-         else                                            // try again
+         if (rc != ECONNABORTED && mt - lastfail < 0.01)
+            exit(EXIT_FAILURE);           // it is fatal if subsequent calls to accept() fail rapidly (< 10 ms) in a row
+         else
          {
             lastfail = mt;
-            continue;
+            continue;                     // try again
          }
       }
 
@@ -578,21 +578,32 @@ void *socketLoop(void *listenSocket)
       if (!connex)
       {
          syslog(LOG_ERR, "Insufficient memory for establishing a client connection.");
+         shutdown(socket, SHUT_RDWR);     // this is a fatal error indicating insufficient memory for any operations
+         close(socket);
          exit(EXIT_FAILURE);
       }
-      *connex = (ConnExec){{sock, 0, NULL}, 0, createTable(256), NULL, NULL, &socketRecv, &socketARcv, &socketSend, &socketJSnd, &socketShut};
+      *connex = (ConnExec){{socket, 0, NULL}, 0, createTable(256), NULL, NULL, &socketRecv, &socketARcv, &socketSend, &socketJSnd, &socketShut};
+
+      if (!connex->serverTable)
+      {
+         syslog(LOG_ERR, "Insufficient memory retrieving the connection meta data of the HTTP server.");
+         shutdown(socket, SHUT_RDWR);     // this is a fatal error indicating insufficient memory for any operations
+         close(socket);
+         deallocate(VPR(connex), false);
+         exit(EXIT_FAILURE);
+      }
 
       setsockopt(connex->conn.sock, SOL_SOCKET, SO_NOSIGPIPE, &optval, sizeof(int));
       setsockopt(connex->conn.sock, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int));
       if (rc = pthread_create(&thread, &detach, firstresponder, connex))
       {
          syslog(LOG_ERR, "Cannot create a new thread for responding to a client connection: %d.", rc);
-         shutdown(connex->conn.sock, SHUT_RDWR);
-         close(connex->conn.sock);
+         shutdown(socket, SHUT_RDWR);
+         close(socket);
+         connexRelease(&connex);
          exit(EXIT_FAILURE);
       }
-
-   } while (!gShutdownFlag);
+   }
 
    return NULL;
 }
@@ -602,23 +613,23 @@ void *ssocklLoop(void *listenSSockL)
 {
    long double mt, lastfail = microtime();
    const int optval = 1;
-   int sock, rc;
+   int rc, socket;
 
-   do
+   while (!gShutdownFlag)
    {
-      if ((sock = accept(*(int *)listenSSockL, NULL, NULL)) < 0)
+      if ((socket = accept(*(int *)listenSSockL, NULL, NULL)) < 0)
       {
          if (gShutdownFlag)
             exit(0);
          syslog(LOG_ERR, "Error calling accept(): %d.", rc = errno);
 
          mt = microtime();
-         if (rc != ECONNABORTED && mt - lastfail < 0.01) // it is fatal if subsequent calls to accept() fail rapidly (< 10 ms) in a row
-            exit(EXIT_FAILURE);
-         else                                            // try again
+         if (rc != ECONNABORTED && mt - lastfail < 0.01)
+            exit(EXIT_FAILURE);           // it is fatal if subsequent calls to accept() fail rapidly (< 10 ms) in a row
+         else
          {
             lastfail = mt;
-            continue;
+            continue;                     // try again
          }
       }
 
@@ -626,46 +637,54 @@ void *ssocklLoop(void *listenSSockL)
       if (!connex)
       {
          syslog(LOG_ERR, "Insufficient memory for establishing a client connection.");
+         shutdown(socket, SHUT_RDWR);     // this is a fatal error indicating insufficient memory for any operations
+         close(socket);
          exit(EXIT_FAILURE);
       }
-      *connex = (ConnExec){{sock, 0, NULL}, 0, createTable(256), NULL, NULL, &ssocklRecv, &ssocklARcv, &ssocklSend, &ssocklJSnd, &ssocklShut};
+      *connex = (ConnExec){{socket, 0, NULL}, 0, createTable(256), NULL, NULL, &ssocklRecv, &ssocklARcv, &ssocklSend, &ssocklJSnd, &ssocklShut};
+
+      if (!connex->serverTable)
+      {
+         syslog(LOG_ERR, "Insufficient memory retrieving the connection meta data of the HTTP server.");
+         shutdown(socket, SHUT_RDWR);     // this is a fatal error indicating insufficient memory for any operations
+         close(socket);
+         deallocate(VPR(connex), false);
+         exit(EXIT_FAILURE);
+      }
 
       setsockopt(connex->conn.sock, SOL_SOCKET, SO_NOSIGPIPE, &optval, sizeof(int));
       setsockopt(connex->conn.sock, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int));
       if ((connex->conn.ssl = SSL_new(gCTX)) == NULL || SSL_set_fd(connex->conn.ssl, connex->conn.sock) == 0)
       {
          syslog(LOG_ERR, "Cannot create/assign the TLS structure for a client connection.");
-         goto errorShutdown;
+         shutdown(socket, SHUT_RDWR);     // this is a fatal error indicating problems with the TLS setup
+         close(socket);
+         connexRelease(&connex);
+         exit(EXIT_FAILURE);
       }
 
       if ((rc = SSL_accept(connex->conn.ssl)) <= 0)
       {
-         rc = SSL_get_error(connex->conn.ssl, rc);
-
-         // This is not a fatal error for the server, so simply cleanup and continue accepting new connections.
+         syslog(LOG_ERR, "Could not establish a secure connection because the TLS handshake failed: %d.", SSL_get_error(connex->conn.ssl, rc));
+         shutdown(socket, SHUT_RDWR);     // this is not a fatal error for the server, so simply cleanup and continue accepting new connections.
+         close(socket);
          SSL_free(connex->conn.ssl);
-         shutdown(connex->conn.sock, SHUT_RDWR);
-         close(connex->conn.sock);
          connexRelease(&connex);
-         syslog(LOG_ERR, "Could not establish a secure connection because the TLS handshake failed: %d.", rc);
          continue;
       }
 
       if (rc = pthread_create(&thread, &detach, firstresponder, connex))
       {
-         SSL_free(connex->conn.ssl);
          syslog(LOG_ERR, "Cannot create thread for responding to a client connection: %d.", rc);
-         goto errorShutdown;
+         shutdown(socket, SHUT_RDWR);
+         close(socket);
+         SSL_free(connex->conn.ssl);
+         connexRelease(&connex);
+         exit(EXIT_FAILURE);
       }
-
-   } while (!gShutdownFlag);
+   }
 
    return NULL;
-
-errorShutdown:
-   shutdown(sock, SHUT_RDWR);
-   close(sock);
-   exit(EXIT_FAILURE);
 }
 
 
@@ -675,7 +694,6 @@ int     gURandom;
 
 boolean SSL_thread_setup(void);
 void    SSL_thread_cleanup(void);
-void    SSL_BIO_cleanup(void);
 void    SSL_CTX_cleanup(void);
 void    urandom_close(void);
 void    usocket_delete(void);
@@ -1141,23 +1159,23 @@ int main(int argc, char *const argv[])
          }
 
       long double mt, lastfail = microtime();
-      int sock, err;
+      int err, socket;
 
-      do
+      while (!gShutdownFlag)
       {
-         if ((sock = accept(gListenSocket_ud, NULL, NULL)) < 0)
+         if ((socket = accept(gListenSocket_ud, NULL, NULL)) < 0)
          {
             if (gShutdownFlag)
                exit(0);
             syslog(LOG_ERR, "Error calling accept(): %d.", err = errno);
 
             mt = microtime();
-            if (err != ECONNABORTED && mt - lastfail < 0.01) // it is fatal if subsequent calls to accept() fail rapidly (< 10 ms) in a row
-               exit(EXIT_FAILURE);
-            else                                             // try again
+            if (err != ECONNABORTED && mt - lastfail < 0.01)
+               exit(EXIT_FAILURE);           // it is fatal if subsequent calls to accept() fail rapidly (< 10 ms) in a row
+            else
             {
                lastfail = mt;
-               continue;
+               continue;                     // try again
             }
          }
 
@@ -1165,20 +1183,31 @@ int main(int argc, char *const argv[])
          if (!connex)
          {
             syslog(LOG_ERR, "Insufficient memory for establishing a client connection.");
+            shutdown(socket, SHUT_RDWR);     // this is a fatal error indicating insufficient memory for any operations
+            close(socket);
             exit(EXIT_FAILURE);
          }
-         *connex = (ConnExec){{sock, 0, NULL}, 0, createTable(256), NULL, NULL, &socketRecv, &socketARcv, &socketSend, &socketJSnd, &socketShut};
+         *connex = (ConnExec){{socket, 0, NULL}, 0, createTable(256), NULL, NULL, &socketRecv, &socketARcv, &socketSend, &socketJSnd, &socketShut};
+
+         if (!connex->serverTable)
+         {
+            syslog(LOG_ERR, "Insufficient memory retrieving the connection meta data of the HTTP server.");
+            shutdown(socket, SHUT_RDWR);     // this is a fatal error indicating insufficient memory for any operations
+            close(socket);
+            deallocate(VPR(connex), false);
+            exit(EXIT_FAILURE);
+         }
 
          setsockopt(connex->conn.sock, SOL_SOCKET, SO_NOSIGPIPE, &optval, sizeof(int));
          if (err = pthread_create(&thread, &detach, firstresponder, connex))
          {
             syslog(LOG_ERR, "Cannot create a new thread for responding to a client connection: %d.", err);
-            shutdown(connex->conn.sock, SHUT_RDWR);
-            close(connex->conn.sock);
+            shutdown(socket, SHUT_RDWR);
+            close(socket);
+            connexRelease(&connex);
             exit(EXIT_FAILURE);
          }
-
-      } while (!gShutdownFlag);
+      }
    }
 
    else
