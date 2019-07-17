@@ -43,8 +43,8 @@ TD.toc BUTTON         { width:222px; margin-top:15px; }
 
 H1,H2,H3              { font-weight:bold; text-align:left; margin:0; -webkit-hyphens:auto; -moz-hyphens:auto; -ms-hyphens:auto; hyphens:auto;}
 H1                    { font-size:17px; padding-top:27px; line-height:23px; }
-H2                    { font-size:15px; padding-top:24px; line-height:21px; }
-H3                    { font-size:13px; padding-top:18px; line-height:19px; }
+H2                    { font-size:15px; padding-top:24px; line-height:20px; }
+H3                    { font-size:13px; padding-top:18px; line-height:17px; }
 
 UL                    { margin:0; padding:0 0 0 17px; }
 P,LI                  { margin:0; padding-top:12px; -webkit-hyphens:auto; -moz-hyphens:auto; -ms-hyphens:auto; hyphens:auto; }
