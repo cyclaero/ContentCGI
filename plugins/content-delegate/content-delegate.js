@@ -190,7 +190,7 @@ editor.addEventListener('saved', function (ev)
    payload = new FormData();
    for (name in regions)
       if (regions.hasOwnProperty(name))
-         payload.append('content', regions[name].replace(/<input name="g(:[0-9]*)*"/gm, '<input'));
+         payload.append('content', regions[name].replace(/<input(.*)( name="g[0-9]*")/gm, '<input$1'));
 
    function onStateChange(ev)
    {

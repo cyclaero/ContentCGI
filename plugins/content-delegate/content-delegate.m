@@ -661,12 +661,20 @@ boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, 
             // 1. move the respective media directory into /tmp/
             strmlcat(tmpp, tmppl+1, NULL, "/tmp/media_", 11, article, dl, NULL);
             if (stat(medp, &st) == no_error && S_ISDIR(st.st_mode))
+            {
+               if (stat(tmpp, &st) == no_error)
+                  deleteDirEntity(tmpp, tmppl, st.st_mode);
                rename(medp, tmpp);
+            }
 
             // 2. move the respective data directory into /tmp/
             strmlcat(tmpp, tmppl+1, NULL, "/tmp/data_", 10, article, dl, NULL);
             if (stat(datp, &st) == no_error && S_ISDIR(st.st_mode))
+            {
+               if (stat(tmpp, &st) == no_error)
+                  deleteDirEntity(tmpp, tmppl, st.st_mode);
                rename(datp, tmpp);
+            }
 
             // 3. move the given article file into /tmp/ (actually do a copy/delete, s. below)
             strmlcat(tmpp, tmppl+1, NULL, "/tmp/", 5, article, al, NULL);
@@ -717,6 +725,8 @@ boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, 
             strmlcat(tmpp, tmppl+1, NULL, "/tmp/data_", 10, datdir, dl, NULL);
             if (stat(datp, &st) == no_error && S_ISDIR(st.st_mode))
             {
+               if (stat(tmpp, &st) == no_error)
+                  deleteDirEntity(tmpp, tmppl, st.st_mode);
                rename(datp, tmpp);
                rc = 202;
             }

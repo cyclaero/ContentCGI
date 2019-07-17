@@ -1526,7 +1526,7 @@ int deleteDirEntity(char *path, size_t pl, llong st_mode)
    {
       case S_IFDIR:      // A directory.
          if (path[pl-1] != '/')
-            cmp2(path+pl++, "/");
+            cpy2(path+pl++, "/");
          chflags(path, 0);
          if (err = deleteDirectory(path, pl))
             rc = err;
