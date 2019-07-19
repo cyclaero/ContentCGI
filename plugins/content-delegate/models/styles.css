@@ -83,4 +83,4 @@ BUTTON,
 INPUT[type="submit"]  { font-family:verdana,sans-serif; font-size:13px; padding:5px; border:1px solid #bbb; border-radius:5px; background-color:#ddd; background-repeat:repeat-x; background-image:-moz-linear-gradient(top, #eee, #ddd); background-image:-ms-linear-gradient(top, #eee, #ddd); background-image:-webkit-linear-gradient(top, #eee, #ddd); background-image:-o-linear-gradient(top, #eee, #ddd); background-image:linear-gradient(top, #eee, #ddd); background-clip:initial; box-sizing:initial; box-shadow:2px 2px 3px rgba(64, 64, 64, 0.1); cursor:pointer; }
 INPUT:disabled        { opacity:0.67; cursor:default; }
 
-INPUT.search          { width:100%; margin-top:17px; padding:5px 5px 5px 28px; background-image:url('searchpict.svg'); background-position:3px 2px; background-repeat:no-repeat; border-radius:5px; background-clip:border-box; }
+INPUT.search          { width:100%; margin-top:17px; padding:5px 5px 6px 28px; background-image:url('searchpict.svg'); background-position:3px 2px; background-repeat:no-repeat; border-radius:5px; background-clip:border-box; }
