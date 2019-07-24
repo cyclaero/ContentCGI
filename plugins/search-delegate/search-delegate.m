@@ -132,10 +132,11 @@ typedef struct
           || cmp4(method, "GET") && request->QueryTable && (node = findName(request->QueryTable, "tag", 3)))
           && node->value.s && *node->value.s != '\0')
    {
-      char *site = httpHost(request->serverTable);
-      int   slen = strvlen(site);
-      int   zlen = ZETTAIR_DB_PLEN + slen + 1;
-      char  zetp[OSP(zlen+9+1)]; strmlcat(zetp, zlen+9+1, NULL, ZETTAIR_DB_PATH, ZETTAIR_DB_PLEN, site, slen, "/index.v.0", 10, NULL);
+      boolean edit = cmp6(scriptName(request->serverTable), "/edit/");
+      char   *site = httpHost(request->serverTable);
+      int     slen = strvlen(site);
+      int     zlen = ZETTAIR_DB_PLEN + slen + 1;
+      char    zetp[OSP(zlen+9+1)]; strmlcat(zetp, zlen+9+1, NULL, ZETTAIR_DB_PATH, ZETTAIR_DB_PLEN, site, slen, "/index.v.0", 10, NULL);
 
       struct stat st;
       if (stat(zetp, &st) == no_error)
@@ -178,7 +179,8 @@ typedef struct
                {
                   char *href, *hend;
                   if ((href = strstr(res[i].auxilliary, zetp))
-                   && (hend = strstr(href += zlen, ".iso.html")))
+                   && (hend = strstr(href += zlen, ".iso.html"))
+                   && (*(uint16_t *)res[i].title != 0xB7B7 || edit))    // 0xB7B7 is the endian agnostic double middle point in ISO-8859-1
                   {
                      dynAddString((dynhdl)&response->content, "<H1><A href=\"", 13);
                      dynAddString((dynhdl)&response->content, href, hend-href);

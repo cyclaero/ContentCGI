@@ -1576,6 +1576,14 @@ static inline char *httpHost(Node **serverTable)
           : "";
 }
 
+static inline char *scriptName(Node **serverTable)
+{
+   Node *node;
+   return ((node = findName(serverTable, "SCRIPT_NAME", 11)) && node->value.s && *node->value.s)
+          ? node->value.s
+          : "";
+}
+
 static inline char *docRoot(Node **serverTable)
 {
    Node *node;

@@ -1605,40 +1605,43 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
                            if (updtstamp == 0 || updtstamp == stamps[j])
                               enumerateImageTags(imageFileNames, s, stamps[j], mdofs);
 
-                           boolean needEllipsis = !cmp16(t+6, "<p class=\"stamp\"");
-                           boolean insertLangAttr = cmp7(o,   " lang=\"") && o[9] == '"';
-                           struct tm tm; localtime_r(&stamps[j], &tm);
+                           if (!cmp4(p, "··"))
+                           {
+                              boolean needEllipsis = !cmp16(t+6, "<p class=\"stamp\"");
+                              boolean insertLangAttr = cmp7(o,   " lang=\"") && o[9] == '"';
+                              struct tm tm; localtime_r(&stamps[j], &tm);
 
-                           s = skip(s);
-                           t = bskip(t);
-                           dynAddString((dynhdl)&idx, "<A", 2);
-                           if (insertLangAttr)
-                              dynAddString((dynhdl)&idx, o, 10);
-                           dynAddString((dynhdl)&idx, " id=\"", 5);
-                              dynAddInt((dynhdl)&idx, stamps[j]);
-                           dynAddString((dynhdl)&idx, "\" class=\"index\" href=\"", 22);
-                           dynAddString((dynhdl)&idx, articles_dir, articles_dir_len);
-                           dynAddString((dynhdl)&idx, "/", 1);
-                              dynAddInt((dynhdl)&idx, stamps[j]);
-                           dynAddString((dynhdl)&idx, ".html\">\n", 8);
-                           dynAddString((dynhdl)&idx, s, stripATags(s, t-s));
-                           if (needEllipsis)
-                              dynAddString((dynhdl)&idx, " ...", 4);
-                           dynAddString((dynhdl)&idx, "\n</p>\n<P class=\"stamp\">", 23);
-                           dyninc((dynhdl)&idx, 28);
-                           snprintf(idx+dynlen((dynptr){idx})-28, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
-                                                                      tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+                              s = skip(s);
+                              t = bskip(t);
+                              dynAddString((dynhdl)&idx, "<A", 2);
+                              if (insertLangAttr)
+                                 dynAddString((dynhdl)&idx, o, 10);
+                              dynAddString((dynhdl)&idx, " id=\"", 5);
+                                 dynAddInt((dynhdl)&idx, stamps[j]);
+                              dynAddString((dynhdl)&idx, "\" class=\"index\" href=\"", 22);
+                              dynAddString((dynhdl)&idx, articles_dir, articles_dir_len);
+                              dynAddString((dynhdl)&idx, "/", 1);
+                                 dynAddInt((dynhdl)&idx, stamps[j]);
+                              dynAddString((dynhdl)&idx, ".html\">\n", 8);
+                              dynAddString((dynhdl)&idx, s, stripATags(s, t-s));
+                              if (needEllipsis)
+                                 dynAddString((dynhdl)&idx, " ...", 4);
+                              dynAddString((dynhdl)&idx, "\n</p>\n<P class=\"stamp\">", 23);
+                              dyninc((dynhdl)&idx, 28);
+                              snprintf(idx+dynlen((dynptr){idx})-28, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
+                                                                         tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
-                           dynAddString((dynhdl)&toc, "   <A", 5);
-                           if (insertLangAttr)
-                              dynAddString((dynhdl)&toc, o, 10);
-                           dynAddString((dynhdl)&toc, " href=\"", 7);
-                           dynAddString((dynhdl)&toc, articles_dir, articles_dir_len);
-                           dynAddString((dynhdl)&toc, "/", 1);
-                              dynAddInt((dynhdl)&toc, stamps[j]);
-                           dynAddString((dynhdl)&toc, ".html\" target=\"_top\"><P>", 24);
-                           dynAddString((dynhdl)&toc, p, replaceBRTags(p, q-p));
-                           dynAddString((dynhdl)&toc, "</P></A>\n", 9);
+                              dynAddString((dynhdl)&toc, "   <A", 5);
+                              if (insertLangAttr)
+                                 dynAddString((dynhdl)&toc, o, 10);
+                              dynAddString((dynhdl)&toc, " href=\"", 7);
+                              dynAddString((dynhdl)&toc, articles_dir, articles_dir_len);
+                              dynAddString((dynhdl)&toc, "/", 1);
+                                 dynAddInt((dynhdl)&toc, stamps[j]);
+                              dynAddString((dynhdl)&toc, ".html\" target=\"_top\"><P>", 24);
+                              dynAddString((dynhdl)&toc, p, replaceBRTags(p, q-p));
+                              dynAddString((dynhdl)&toc, "</P></A>\n", 9);
+                           }
                         }
                      }
 
