@@ -46,6 +46,7 @@ H1                    { font-size:17px; padding-top:27px; line-height:23px; }
 H2                    { font-size:15px; padding-top:24px; line-height:20px; }
 H3                    { font-size:13px; padding-top:18px; line-height:17px; }
 
+OL                    { margin:0; padding:0 0 0 29px; }
 UL                    { margin:0; padding:0 0 0 17px; }
 P,LI                  { margin:0; padding-top:12px; -webkit-hyphens:auto; -moz-hyphens:auto; -ms-hyphens:auto; hyphens:auto; }
 P.text-left           { text-align:left; }
