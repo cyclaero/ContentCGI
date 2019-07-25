@@ -180,7 +180,7 @@ typedef struct
                   char *href, *hend;
                   if ((href = strstr(res[i].auxilliary, zetp))
                    && (hend = strstr(href += zlen, ".iso.html"))
-                   && (*(uint16_t *)res[i].title != 0xB7B7 || edit))    // 0xB7B7 is the endian agnostic double middle point in ISO-8859-1
+                   && (!cmp2(res[i].title, "##") || edit))
                   {
                      dynAddString((dynhdl)&response->content, "<H1><A href=\"", 13);
                      dynAddString((dynhdl)&response->content, href, hend-href);

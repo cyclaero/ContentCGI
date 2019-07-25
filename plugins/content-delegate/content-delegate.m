@@ -1605,7 +1605,7 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
                            if (updtstamp == 0 || updtstamp == stamps[j])
                               enumerateImageTags(imageFileNames, s, stamps[j], mdofs);
 
-                           if (!cmp4(p, "··"))
+                           if (!cmp2(p, "##"))
                            {
                               boolean needEllipsis = !cmp16(t+6, "<p class=\"stamp\"");
                               boolean insertLangAttr = cmp7(o,   " lang=\"") && o[9] == '"';
