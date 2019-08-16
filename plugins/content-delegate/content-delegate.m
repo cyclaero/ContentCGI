@@ -875,7 +875,7 @@ EXPORT void freeback(Response *response)
    if (response->contdyn)
    {
       if (response->contdyn < 0)
-         freeDynBuffer((dynptr){response->content});
+         freeDynBuffer(response->content);
       else
          deallocate(VPR(response->content), false);
    }
@@ -1544,13 +1544,13 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
       {
          Node **imageFileNames = createTable(256);
 
-         char *idx = newDynBuffer().buf;
-         dynAddString((dynhdl)&idx, index_prefix, index_prefix_len);
-         dynAddString((dynhdl)&idx, conTitle(serverTable), 0);
-         dynAddString((dynhdl)&idx, INDEX_BODY_FYI, INDEX_BODY_FYI_LEN);
+         char *idx = newDynBuffer();
+         dynAddString(&idx, index_prefix, index_prefix_len);
+         dynAddString(&idx, conTitle(serverTable), 0);
+         dynAddString(&idx, INDEX_BODY_FYI, INDEX_BODY_FYI_LEN);
 
-         char *toc = newDynBuffer().buf;
-         dynAddString((dynhdl)&toc, toc_prefix, toc_prefix_len);
+         char *toc = newDynBuffer();
+         dynAddString(&toc, toc_prefix, toc_prefix_len);
 
          struct dirent *ep, bp;
          int     fcnt = 0, fcap = 1024;
@@ -1613,34 +1613,34 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
 
                            s = skip(s);
                            t = bskip(t);
-                           dynAddString((dynhdl)&idx, "<A", 2);
+                           dynAddString(&idx, "<A", 2);
                            if (insertLangAttr)
-                              dynAddString((dynhdl)&idx, o, 10);
-                           dynAddString((dynhdl)&idx, " id=\"", 5);
-                              dynAddInt((dynhdl)&idx, stamps[j]);
-                           dynAddString((dynhdl)&idx, "\" class=\"index\" href=\"", 22);
-                           dynAddString((dynhdl)&idx, articles_dir, articles_dir_len);
-                           dynAddString((dynhdl)&idx, "/", 1);
-                              dynAddInt((dynhdl)&idx, stamps[j]);
-                           dynAddString((dynhdl)&idx, ".html\">\n", 8);
-                           dynAddString((dynhdl)&idx, s, stripATags(s, t-s));
+                              dynAddString(&idx, o, 10);
+                           dynAddString(&idx, " id=\"", 5);
+                              dynAddInt(&idx, stamps[j]);
+                           dynAddString(&idx, "\" class=\"index\" href=\"", 22);
+                           dynAddString(&idx, articles_dir, articles_dir_len);
+                           dynAddString(&idx, "/", 1);
+                              dynAddInt(&idx, stamps[j]);
+                           dynAddString(&idx, ".html\">\n", 8);
+                           dynAddString(&idx, s, stripATags(s, t-s));
                            if (needEllipsis)
-                              dynAddString((dynhdl)&idx, " ...", 4);
-                           dynAddString((dynhdl)&idx, "\n</p>\n<P class=\"stamp\">", 23);
-                           dyninc((dynhdl)&idx, 28);
-                           snprintf(idx+dynlen((dynptr){idx})-28, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
+                              dynAddString(&idx, " ...", 4);
+                           dynAddString(&idx, "\n</p>\n<P class=\"stamp\">", 23);
+                           dyninc(&idx, 28);
+                           snprintf(idx+dynlen(idx)-28, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
                                                                       tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
-                           dynAddString((dynhdl)&toc, "   <A", 5);
+                           dynAddString(&toc, "   <A", 5);
                            if (insertLangAttr)
-                              dynAddString((dynhdl)&toc, o, 10);
-                           dynAddString((dynhdl)&toc, " href=\"", 7);
-                           dynAddString((dynhdl)&toc, articles_dir, articles_dir_len);
-                           dynAddString((dynhdl)&toc, "/", 1);
-                              dynAddInt((dynhdl)&toc, stamps[j]);
-                           dynAddString((dynhdl)&toc, ".html\" target=\"_top\"><P>", 24);
-                           dynAddString((dynhdl)&toc, p, replaceBRTags(p, q-p));
-                           dynAddString((dynhdl)&toc, "</P></A>\n", 9);
+                              dynAddString(&toc, o, 10);
+                           dynAddString(&toc, " href=\"", 7);
+                           dynAddString(&toc, articles_dir, articles_dir_len);
+                           dynAddString(&toc, "/", 1);
+                              dynAddInt(&toc, stamps[j]);
+                           dynAddString(&toc, ".html\" target=\"_top\"><P>", 24);
+                           dynAddString(&toc, p, replaceBRTags(p, q-p));
+                           dynAddString(&toc, "</P></A>\n", 9);
 
                            idxcnt++;
                         }
@@ -1657,20 +1657,20 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
          if (idxcnt == 0)
             if (create_empty || articles_dir == ARTICLES_DIR)
             {
-               dynAddString((dynhdl)&idx, "<H1>No ", 7);
-               dynAddString((dynhdl)&idx, articles_dir, articles_dir_len);
-               dynAddString((dynhdl)&idx, " yet</H1>\n", 10);
+               dynAddString(&idx, "<H1>No ", 7);
+               dynAddString(&idx, articles_dir, articles_dir_len);
+               dynAddString(&idx, " yet</H1>\n", 10);
 
-               dynAddString((dynhdl)&toc, "<P>No ",  6);
-               dynAddString((dynhdl)&toc, articles_dir, articles_dir_len);
-               dynAddString((dynhdl)&toc, " yet</P>\n", 9);
+               dynAddString(&toc, "<P>No ",  6);
+               dynAddString(&toc, articles_dir, articles_dir_len);
+               dynAddString(&toc, " yet</P>\n", 9);
             }
 
             else // do nothing, just clean-up and exit
             {
                deallocate(VPR(stamps), false);
-               freeDynBuffer((dynptr){toc});
-               freeDynBuffer((dynptr){idx});
+               freeDynBuffer(toc);
+               freeDynBuffer(idx);
                releaseTable(imageFileNames);
                return false;
             }
@@ -1683,9 +1683,9 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
             articles_dir_len++;
 
          int index_suffix_len = INDEX_SUFFIX_LEN + articles_dir_len;
-         dyninc((dynhdl)&idx, index_suffix_len);
-         snprintf(idx+dynlen((dynptr){idx})-index_suffix_len, index_suffix_len+1, INDEX_SUFFIX, articles_dir);
-         dynAddString((dynhdl)&toc, TOC_SUFFIX, TOC_SUFFIX_LEN);
+         dyninc(&idx, index_suffix_len);
+         snprintf(idx+dynlen(idx)-index_suffix_len, index_suffix_len+1, INDEX_SUFFIX, articles_dir);
+         dynAddString(&toc, TOC_SUFFIX, TOC_SUFFIX_LEN);
 
          boolean ok1 = false, ok2 = false;
 
@@ -1711,13 +1711,13 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
 
             if (file = fopen(idxf, "w"))
             {
-               ok1 = fwrite(idx, dynlen((dynptr){idx}), 1, file) == 1;
+               ok1 = fwrite(idx, dynlen(idx), 1, file) == 1;
                fclose(file);
             }
 
             if (file = fopen(tocf, "w"))
             {
-               ok2 = fwrite(toc, dynlen((dynptr){toc}), 1, file) == 1;
+               ok2 = fwrite(toc, dynlen(toc), 1, file) == 1;
                fclose(file);
             }
 
@@ -1730,8 +1730,8 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
                fclose(file);
          }
 
-         freeDynBuffer((dynptr){toc});
-         freeDynBuffer((dynptr){idx});
+         freeDynBuffer(toc);
+         freeDynBuffer(idx);
 
          // image garbage collection in articles/media
          int l = MEDIA_DIR_LEN+1;

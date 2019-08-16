@@ -190,7 +190,7 @@ EXPORT void freeback(Response *response)
    {
       deallocate(VPR(response->conttag), false);
       if (response->contdyn < 0)
-         freeDynBuffer((dynptr){response->content});
+         freeDynBuffer(response->content);
       else
          deallocate(VPR(response->content), false);
    }

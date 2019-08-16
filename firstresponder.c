@@ -64,26 +64,26 @@ void *firstresponder(ConnExec *connex)
          {
             if (cmp15(node->value.s, "/edit/requinfo") /* || cmp9(node->value.s, "/_search") */)
             {
-               char *output = newDynBuffer().buf;
+               char *output = newDynBuffer();
                uint  namColWidth = 0;
 
-               dynAddString((dynhdl)&output, "SERVER ENVIRONMENT\n \n", 21);
-               sprintTable(connex->serverTable, &namColWidth, (dynhdl)&output);
+               dynAddString(&output, "SERVER ENVIRONMENT\n \n", 21);
+               sprintTable(connex->serverTable, &namColWidth, &output);
 
                if (connex->QueryTable)
                {
-                  dynAddString((dynhdl)&output, " \n \nQUERY ARGUMENTS\n \n", 22);
-                  sprintTable(connex->QueryTable, &namColWidth, (dynhdl)&output);
+                  dynAddString(&output, " \n \nQUERY ARGUMENTS\n \n", 22);
+                  sprintTable(connex->QueryTable, &namColWidth, &output);
                }
 
                if (connex->POSTtable)
                {
-                  dynAddString((dynhdl)&output, " \n \nPOST PARAMETERS\n \n", 22);
-                  sprintTable(connex->POSTtable, &namColWidth, (dynhdl)&output);
+                  dynAddString(&output, " \n \nPOST PARAMETERS\n \n", 22);
+                  sprintTable(connex->POSTtable, &namColWidth, &output);
                }
 
-               boolean ok = FCGI_SendDataStream(connex, FCGI_STDOUT, dynlen((dynptr){output}), output);
-               freeDynBuffer((dynptr){output});
+               boolean ok = FCGI_SendDataStream(connex, FCGI_STDOUT, dynlen(output), output);
+               freeDynBuffer(output);
                if (ok)
                   force = false;
                else

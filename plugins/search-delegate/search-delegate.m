@@ -170,10 +170,10 @@ typedef struct
             if (index_search(index.idx, siso, 0, 100, res, &n, &total, &estim, INDEX_SEARCH_SUMMARY_TYPE, &opt)
              && (isoToUtf = iconv_open("UTF-8//TRANSLIT//IGNORE", "ISO-8859-1")))
             {
-               response->content = newDynBuffer().buf;
-               dynAddString((dynhdl)&response->content, SEARCH_PREFIX, SEARCH_PREFIX_LEN);
-               dynAddString((dynhdl)&response->content, conTitle(request->serverTable), 0);
-               dynAddString((dynhdl)&response->content, SEARCH_BODY_FYI, SEARCH_BODY_FYI_LEN);
+               response->content = newDynBuffer();
+               dynAddString(&response->content, SEARCH_PREFIX, SEARCH_PREFIX_LEN);
+               dynAddString(&response->content, conTitle(request->serverTable), 0);
+               dynAddString(&response->content, SEARCH_BODY_FYI, SEARCH_BODY_FYI_LEN);
 
                for (i = 0, k = 0; i < n; i++)
                {
@@ -182,9 +182,9 @@ typedef struct
                    && (hend = strstr(href += zlen, ".iso.html"))
                    && (!cmp2(res[i].title, "##") || edit))
                   {
-                     dynAddString((dynhdl)&response->content, "<H1><A href=\"", 13);
-                     dynAddString((dynhdl)&response->content, href, hend-href);
-                     dynAddString((dynhdl)&response->content, "\">", 2);
+                     dynAddString(&response->content, "<H1><A href=\"", 13);
+                     dynAddString(&response->content, href, hend-href);
+                     dynAddString(&response->content, "\">", 2);
 
                      size_t origLen, convLen;
                      char  *orig, *conv, *utf8;
@@ -195,11 +195,11 @@ typedef struct
                         orig = res[i].title;
                         utf8 = conv = alloca(OSP(convLen + 1));
                         iconv(isoToUtf, &orig, &origLen, &conv, &convLen); *conv = '\0';
-                        dynAddString((dynhdl)&response->content, utf8, conv-utf8);
+                        dynAddString(&response->content, utf8, conv-utf8);
                      }
                      else
-                        dynAddString((dynhdl)&response->content, href, hend-href);
-                     dynAddString((dynhdl)&response->content, "</A></H1>\n", 10);
+                        dynAddString(&response->content, href, hend-href);
+                     dynAddString(&response->content, "</A></H1>\n", 10);
 
                      if (res[i].summary[0] != '\0')
                      {
@@ -208,9 +208,9 @@ typedef struct
                         orig = res[i].summary;
                         utf8 = conv = alloca(OSP(convLen + 1));
                         iconv(isoToUtf, &orig, &origLen, &conv, &convLen); *conv = '\0';
-                        dynAddString((dynhdl)&response->content, "<P>", 3);
-                        dynAddString((dynhdl)&response->content, utf8, conv-utf8);
-                        dynAddString((dynhdl)&response->content, "</P>\n", 5);
+                        dynAddString(&response->content, "<P>", 3);
+                        dynAddString(&response->content, utf8, conv-utf8);
+                        dynAddString(&response->content, "</P>\n", 5);
                      }
 
                      k++;
@@ -218,14 +218,14 @@ typedef struct
                }
 
                if (k == 0)
-                  dynAddString((dynhdl)&response->content, SEARCH_NORESULT, SEARCH_NORESULT_LEN);
+                  dynAddString(&response->content, SEARCH_NORESULT, SEARCH_NORESULT_LEN);
 
-               dynAddString((dynhdl)&response->content, SEARCH_SUFFIX, SEARCH_SUFFIX_LEN);
+               dynAddString(&response->content, SEARCH_SUFFIX, SEARCH_SUFFIX_LEN);
 
                iconv_close(isoToUtf);
 
                response->contdyn = -true;
-               response->contlen = dynlen((dynptr){response->content});
+               response->contlen = dynlen(response->content);
                response->conttyp = "text/html; charset=utf-8";
             }
 
@@ -304,7 +304,7 @@ EXPORT void freeback(Response *response)
    {
       deallocate(VPR(response->conttag), false);
       if (response->contdyn < 0)
-         freeDynBuffer((dynptr){response->content});
+         freeDynBuffer(response->content);
       else
          deallocate(VPR(response->content), false);
    }

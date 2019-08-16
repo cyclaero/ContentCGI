@@ -397,7 +397,7 @@ int num2str(char *dst, long double x, int m, int width, int digits, int formsel,
    boolean capitals  = (formsel&cap_litr) != 0;
    boolean nostrip0  = (formsel&alt_form) || (formsel&f_form) || (formsel&e_form);
    boolean dangleds  = (formsel&alt_form) &&!(formsel&d_form) &&!(formsel&nod_dsep);
-   boolean dsspace   = (formsel&sup_dsep)?0:1;                    //space for the decimal separator -- 0 in case it shall be suppressed
+   boolean dsspace   = (formsel&sup_dsep)?0:1;                    // space for the decimal separator -- 0 in case it shall be suppressed
    formsel &= b_mask;
 
    if (digits && (formsel&(d_form|g_form)))
@@ -931,6 +931,10 @@ static inline void releaseValue(Value *value)
          else
             deallocate(VPR(value->p), false);
          break;
+
+      case Opaque:
+         if (value->custom_deallocate)
+            value->custom_deallocate(VPR(value->o), value->offset, false);
    }
 }
 
@@ -1394,11 +1398,11 @@ void printTable(Node *table[], uint *nameColWidth)
    }
 }
 
-int sprintTable(Node *table[], uint *namColWidth, dynhdl output)
+int sprintTable(Node *table[], uint *namColWidth, char **output)
 {
    if (output)
    {
-      if (!output->buf)
+      if (!*output)
          *output = newDynBuffer();
 
       uint  i, m = 0, n = 2 + *(uint *)&table[0];

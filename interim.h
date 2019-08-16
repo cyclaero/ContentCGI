@@ -2,7 +2,7 @@
 //  ContentCGI
 //
 //  Created by Dr. Rolf Jansen on 2018-05-08.
-//  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -97,4 +97,4 @@ Node  *findName(Node *table[], const char *name, ssize_t naml);
 Node *storeName(Node *table[], const char *name, ssize_t naml, Value *value);
 void removeName(Node *table[], const char *name, ssize_t naml);
 void printTable(Node *table[], uint *nameWidth);
-int sprintTable(Node *table[], uint *nameWidth, dynhdl output);
+int sprintTable(Node *table[], uint *nameWidth, char **output);

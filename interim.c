@@ -2,7 +2,7 @@
 //  ContentCGI
 //
 //  Created by Dr. Rolf Jansen on 2018-05-08.
-//  Copyright © 2018 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -531,11 +531,11 @@ void printTable(Node *table[], uint *nameColWidth)
    }
 }
 
-int sprintTable(Node *table[], uint *namColWidth, dynhdl output)
+int sprintTable(Node *table[], uint *namColWidth, char **output)
 {
    if (output)
    {
-      if (!output->buf)
+      if (!*output)
          *output = newDynBuffer();
 
       uint  i, m = 0, n = 2 + *(uint *)&table[0];

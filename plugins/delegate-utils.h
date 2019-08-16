@@ -58,16 +58,19 @@
 #endif
 
 typedef int                boolean;
-typedef unsigned int       utf8;
-typedef unsigned int       utf32;
-typedef unsigned int       uint;
-typedef unsigned char      uchar;
 
 typedef long long          llong;
+
+typedef unsigned char      uchar;
+typedef unsigned short     ushort;
+typedef unsigned int       uint;
 typedef unsigned long      ulong;
 typedef unsigned long long ullong;
 
-typedef void *opaque;   // opaque pointer to an object
+typedef unsigned int       utf8;
+typedef unsigned int       utf32;
+
+typedef void              *opaque;
 
 typedef enum
 {
@@ -279,6 +282,7 @@ static inline double SwapDouble(double x)
    return z;
 }
 
+
 static inline char LoChar(char c)
 {
    return ('A' <= c && c <= 'Z') ? c + 0x20 : c;
@@ -347,7 +351,7 @@ static inline char *uppercase(char *s)
    static const __m128i blk16 = {0x2020202020202020ULL, 0x2020202020202020ULL};  // 16 bytes with inner blank limit
    static const __m128i obl16 = {0x2121212121212121ULL, 0x2121212121212121ULL};  // 16 bytes with outer blank limit
 
-   // Drop-in replacement for strlen() and memvcpy(), utilizing some builtin SSSE3 instructions
+   // Drop-in replacement for strlen() and memcpy(), utilizing some builtin SSSE3 instructions
    static inline int strvlen(const char *str)
    {
       if (!str || !*str)
@@ -386,7 +390,7 @@ static inline char *uppercase(char *s)
                ((uint16_t *)dst)[k] = ((uint16_t *)src)[k];
          case 1:
             if ((k = n>>1<<1) < n)
-               ((uint8_t *)dst)[k]  = ((uint8_t *)src)[k];
+               (( uint8_t *)dst)[k] = (( uint8_t *)src)[k];
          case 0:
             ;
       }
@@ -579,7 +583,7 @@ static inline char *uppercase(char *s)
 
       if (l)
       {
-         if (!*l)
+         if (*l <= 0)
             *l = strvlen(src);
          k = *l;
       }
@@ -758,7 +762,7 @@ static inline char *uppercase(char *s)
 
       if (l)
       {
-         if (!*l)
+         if (*l <= 0)
             *l = (int)strlen(src);
          k = *l;
       }
@@ -1114,6 +1118,22 @@ static inline char *trim(char *s)
 }
 
 
+// jump to the stop mark  !!! s MUST NOT be NULL !!!
+static inline char *jump(char *s, char stop)
+{
+   boolean q, sq, dq;
+   char    c;
+
+   for (q = sq = dq = false; (c = *s) && (c != stop || q); s++)
+      if (c == '\'' && !dq)
+         q = sq = !sq;
+      else if (c == '"' && !sq)
+         q = dq = !dq;
+
+   return s;
+}
+
+
 static inline utf8 getu(char **s)
 {
    utf8 u = 0;
@@ -1226,21 +1246,16 @@ typedef struct
    char buf[DYNAMIC_BUFFER_SIZE];
 } dynbuf;
 
-typedef struct
-{
-   char *buf;
-} dynptr, *dynhdl;
-
 #define dynbufMetaSize (offsetof(dynbuf, buf) - offsetof(dynbuf, len))
 
-static inline dynptr newDynBuffer(void)
+static inline char *newDynBuffer(void)
 {
    dynbuf *db;
-   if (db = allocate(sizeof(dynbuf) + DYNAMIC_BUFFER_MARGIN, default_align, false))
+   if (db = (dynbuf *)allocate(sizeof(dynbuf) + DYNAMIC_BUFFER_MARGIN, default_align, false))
    {
       db->len = 0;
       db->cap = DYNAMIC_BUFFER_SIZE;
-      return (dynptr){db->buf};
+      return (char *)&db->buf;
    }
    else
    {
@@ -1249,30 +1264,30 @@ static inline dynptr newDynBuffer(void)
    }
 }
 
-static inline void freeDynBuffer(dynptr bufptr)
+static inline void freeDynBuffer(char *buf)
 {
-   dynbuf *db = (dynbuf *)(bufptr.buf - dynbufMetaSize);
+   dynbuf *db = (dynbuf *)(buf - dynbufMetaSize);
    deallocate(VPR(db), false);
 }
 
-static inline int dynava(dynptr bufptr)
+static inline int dynava(char *buf)
 {
-   dynbuf *db = ((dynbuf *)(bufptr.buf - dynbufMetaSize));
+   dynbuf *db = ((dynbuf *)(buf - dynbufMetaSize));
    return db->cap - db->len;
 }
 
-static inline int dynlen(dynptr bufptr)
+static inline int dynlen(char *buf)
 {
-   return ((dynbuf *)(bufptr.buf - dynbufMetaSize))->len;
+   return ((dynbuf *)(buf - dynbufMetaSize))->len;
 }
 
-static inline void dyninc(dynhdl bufhdl, int len)
+static inline void dyninc(char **buf, int len)
 {
-   dynbuf *db = (dynbuf *)(bufhdl->buf - dynbufMetaSize);
+   dynbuf *db = (dynbuf *)(*buf - dynbufMetaSize);
    if (db->len+len >= db->cap)
    {
-      if (db = reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
-         bufhdl->buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
+      if (db = (dynbuf *)reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
+         *buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
       else
       {
          syslog(LOG_ERR, "Reallocation of memory for a dynamic buffer failed.");
@@ -1282,9 +1297,9 @@ static inline void dyninc(dynhdl bufhdl, int len)
    db->len += len;
 }
 
-static inline int dynAddString(dynhdl bufhdl, char *s, int len)
+static inline int dynAddString(char **buf, char *s, int len)
 {
-   dynbuf *db = (dynbuf *)(bufhdl->buf - dynbufMetaSize);
+   dynbuf *db = (dynbuf *)(*buf - dynbufMetaSize);
    if (s)
    {
       if (*s)
@@ -1293,41 +1308,24 @@ static inline int dynAddString(dynhdl bufhdl, char *s, int len)
             len = strvlen(s);
          if (db->len+len >= db->cap)
          {
-            if (db = reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
-               bufhdl->buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
+            if (db = (dynbuf *)reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
+               *buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
             else
             {
                syslog(LOG_ERR, "Reallocation of memory for a dynamic buffer failed.");
                exit(EXIT_FAILURE);
             }
          }
-         db->len += strmlcpy(bufhdl->buf+db->len, s, db->cap-db->len, &len);
+         db->len += strmlcpy(*buf+db->len, s, db->cap-db->len, &len);
       }
    }
 
    return db->len;
 }
 
-static inline void dynAddInt(dynhdl bufhdl, llong i)
+static inline void dynAddStrField(char **buf, char *s, int len)
 {
-   dynbuf *db = (dynbuf *)(bufhdl->buf - dynbufMetaSize);
-   if (db->len+intLen >= db->cap)
-   {
-      if (db = reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
-         bufhdl->buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
-      else
-      {
-         syslog(LOG_ERR, "Reallocation of memory for a dynamic buffer failed.");
-         exit(EXIT_FAILURE);
-      }
-   }
-   db->len += int2str(bufhdl->buf+db->len, i, db->cap-db->len, 0);
-}
-
-
-static inline void dynAddStrField(dynhdl bufhdl, char *s, int len)
-{
-   dynbuf *db = (dynbuf *)(bufhdl->buf - dynbufMetaSize);
+   dynbuf *db = (dynbuf *)(*buf - dynbufMetaSize);
    if (s)
    {
       if (*s)
@@ -1336,57 +1334,73 @@ static inline void dynAddStrField(dynhdl bufhdl, char *s, int len)
             len = strvlen(s);
          if (db->len+len >= db->cap)
          {
-            if (db = reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
-               bufhdl->buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
+            if (db = (dynbuf *)reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
+               *buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
             else
             {
                syslog(LOG_ERR, "Reallocation of memory for a dynamic buffer failed.");
                exit(EXIT_FAILURE);
             }
          }
-         db->len += strmlcpy(bufhdl->buf+db->len, s, db->cap-db->len, &len);
+         db->len += strmlcpy(*buf+db->len, s, db->cap-db->len, &len);
       }
-      bufhdl->buf[db->len++] = '|';      // capacity checking is not necessary here, because of the added DYNAMIC_BUFFER_MARGIN
+      (*buf)[db->len++] = '|';      // capacity checking is not necessary here, because of the added DYNAMIC_BUFFER_MARGIN
    }
 }
 
-static inline void dynAddIntField(dynhdl bufhdl, long long i)
+static inline void dynAddInt(char **buf, llong i)
 {
-   dynbuf *db = (dynbuf *)(bufhdl->buf - dynbufMetaSize);
+   dynbuf *db = (dynbuf *)(*buf - dynbufMetaSize);
    if (db->len+intLen >= db->cap)
    {
-      if (db = reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
-         bufhdl->buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
+      if (db = (dynbuf *)reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
+         *buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
       else
       {
          syslog(LOG_ERR, "Reallocation of memory for a dynamic buffer failed.");
          exit(EXIT_FAILURE);
       }
    }
-   db->len += int2str(bufhdl->buf+db->len, i, db->cap-db->len, 0);
-   bufhdl->buf[db->len++] = '|';
+   db->len += int2str(*buf+db->len, i, db->cap-db->len, 0);
 }
 
-static inline void dynAddNumField(dynhdl bufhdl, double d, int sigdig, char decsep)
+static inline void dynAddIntField(char **buf, llong i)
 {
-   dynbuf *db = (dynbuf *)(bufhdl->buf - dynbufMetaSize);
+   dynbuf *db = (dynbuf *)(*buf - dynbufMetaSize);
+   if (db->len+intLen >= db->cap)
+   {
+      if (db = (dynbuf *)reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
+         *buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
+      else
+      {
+         syslog(LOG_ERR, "Reallocation of memory for a dynamic buffer failed.");
+         exit(EXIT_FAILURE);
+      }
+   }
+   db->len += int2str(*buf+db->len, i, db->cap-db->len, 0);
+   (*buf)[db->len++] = '|';
+}
+
+static inline void dynAddNumField(char **buf, double d, int sigdig, char decsep)
+{
+   dynbuf *db = (dynbuf *)(*buf - dynbufMetaSize);
    if (decLen >= db->cap)
    {
-      if (db = reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
-         bufhdl->buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
+      if (db = (dynbuf *)reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
+         *buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
       else
       {
          syslog(LOG_ERR, "Reallocation of memory for a dynamic buffer failed.");
          exit(EXIT_FAILURE);
       }
    }
-   db->len += num2str(bufhdl->buf+db->len, d, db->cap-db->len, 0, sigdig, d_form, decsep);
-   bufhdl->buf[db->len++] = '|';
+   db->len += num2str(*buf+db->len, d, db->cap-db->len, 0, sigdig, d_form, decsep);
+   (*buf)[db->len++] = '|';
 }
 
-static inline void dynAddStrLine(dynhdl bufhdl, char *s, int len)
+static inline void dynAddStrLine(char **buf, char *s, int len)
 {
-   dynbuf *db = (dynbuf *)(bufhdl->buf - dynbufMetaSize);
+   dynbuf *db = (dynbuf *)(*buf - dynbufMetaSize);
    if (s)
    {
       if (*s)
@@ -1395,36 +1409,36 @@ static inline void dynAddStrLine(dynhdl bufhdl, char *s, int len)
             len = strvlen(s);
          if (db->len+len >= db->cap)
          {
-            if (db = reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
-               bufhdl->buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
+            if (db = (dynbuf *)reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
+               *buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
             else
             {
                syslog(LOG_ERR, "Reallocation of memory for a dynamic buffer failed.");
                exit(EXIT_FAILURE);
             }
          }
-         db->len += strmlcpy(bufhdl->buf+db->len, s, db->cap-db->len, &len);
+         db->len += strmlcpy(*buf+db->len, s, db->cap-db->len, &len);
       }
-      bufhdl->buf[db->len++] = '\n';     // capacity checking is not necessary here, because of the added DYNAMIC_BUFFER_MARGIN
+      (*buf)[db->len++] = '\n';     // capacity checking is not necessary here, because of the added DYNAMIC_BUFFER_MARGIN
    }
 }
 
-static inline void dynAddSetLine(dynhdl bufhdl, char *nam, double val)
+static inline void dynAddSetLine(char **buf, char *nam, double val)
 {
-   dynbuf *db = (dynbuf *)(bufhdl->buf - dynbufMetaSize);
+   dynbuf *db = (dynbuf *)(*buf - dynbufMetaSize);
    if (4+decLen >= db->cap)
    {
-      if (db = reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
-         bufhdl->buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
+      if (db = (dynbuf *)reallocate(db, sizeof(dynbuf) + db->cap + DYNAMIC_BUFFER_MARGIN, false, true))
+         *buf = (char *)&db->buf, db->cap += DYNAMIC_BUFFER_SIZE;
       else
       {
          syslog(LOG_ERR, "Reallocation of memory for a dynamic buffer failed.");
          exit(EXIT_FAILURE);
       }
    }
-   cpy4(bufhdl->buf+db->len, nam); db->len += 4;
-   db->len += num2str(bufhdl->buf+db->len, val, db->cap-db->len, 12, 7, d_form, '.');
-   bufhdl->buf[db->len++] = '\n';
+   cpy4(*buf+db->len, nam); db->len += 4;
+   db->len += num2str(*buf+db->len, val, db->cap-db->len, 12, 7, d_form, '.');
+   (*buf)[db->len++] = '\n';
 }
 
 static inline boolean readInt(char *str, int *val, int min, int max)
@@ -1456,6 +1470,7 @@ static inline boolean readDouble(char *str, double *val, double min, double max)
 
 #pragma mark ••• AVL Tree •••
 #pragma mark ••• Value Data Types •••
+
 // Data Types in the key/name-value store -- negative values are dynamic.
 enum
 {
@@ -1525,7 +1540,7 @@ Node  *findName(Node *table[], const char *name, ssize_t naml);
 Node *storeName(Node *table[], const char *name, ssize_t naml, Value *value);
 void removeName(Node *table[], const char *name, ssize_t naml);
 void printTable(Node *table[], uint *nameWidth);
-int sprintTable(Node *table[], uint *nameWidth, dynhdl output);
+int sprintTable(Node *table[], uint *nameWidth, char **output);
 
 
 #pragma mark ••• File Copying & Recursive Directory Deletion •••
