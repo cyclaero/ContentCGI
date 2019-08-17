@@ -178,7 +178,7 @@ int main(int argc, char *const argv[])
                content[st.st_size] = '\0';
                fclose(infile);
 
-               char *tweet = newDynBuffer().buf;
+               char *tweet = newDynBuffer();
 
                char *o, *p, *q, *s, *t;
                o = content;
@@ -205,34 +205,34 @@ int main(int argc, char *const argv[])
                      m = (int)(q - s);
                   }
 
-                  dynAddString((dynhdl)&tweet, s, m);
+                  dynAddString(&tweet, s, m);
 
                   if (m < n)
-                     dynAddString((dynhdl)&tweet, "…", 3);
+                     dynAddString(&tweet, "…", 3);
 
                   if (tmstamp)
                   {
                      localtime_r(&tmstamp, &tm);
-                     n = dynlen((dynptr){tweet});
+                     n = dynlen(tweet);
                      snprintf(tweet+n, DYNAMIC_BUFFER_MARGIN, "\n%04d-%02d-%02d %02d:%02d:%02d", tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-                     dyninc((dynhdl)&tweet, 20);
+                     dyninc(&tweet, 20);
                   }
 
                   if (baseurl)
                   {
                      n = strvlen(artname);
                      for (p = artname, q = p+n-1; *q != '/' && q > p; q--);
-                     dynAddString((dynhdl)&tweet, "\n", 1);
-                     dynAddString((dynhdl)&tweet, baseurl, bl);
+                     dynAddString(&tweet, "\n", 1);
+                     dynAddString(&tweet, baseurl, bl);
                      if (*q != '/')
-                        dynAddString((dynhdl)&tweet, "/", 1);
-                     dynAddString((dynhdl)&tweet, q, n - (int)(q - artname));
+                        dynAddString(&tweet, "/", 1);
+                     dynAddString(&tweet, q, n - (int)(q - artname));
                   }
                }
 
                printf("%s\n", tweet);
 
-               freeDynBuffer((dynptr){tweet});
+               freeDynBuffer(tweet);
                deallocate(VPR(content), false);
             }
 
