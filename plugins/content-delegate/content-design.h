@@ -92,7 +92,7 @@
 "   </TR>\n"\
 "</TABLE></DIV></BODY></HTML>\n"
 
-#define TOC_PREFIX_LEN 554
+#define TOC_PREFIX_LEN 519
 #define TOC_PREFIX \
 "<!--S--><!DOCTYPE html><HTML><HEAD>\n"\
 "   <TITLE>Table of Contents</TITLE>\n"\
