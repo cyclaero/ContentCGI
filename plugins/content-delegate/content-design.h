@@ -99,7 +99,7 @@
 "   <META http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n"\
 "   <LINK rel=\"stylesheet\" href=\"styles.css\" type=\"text/css\">\n"\
 "   <SCRIPT src=\"functions.js\"></SCRIPT>\n"\
-"</HEAD><BODY class=\"toc\" onload=\"var frameStyle=parent.document.getElementById('toc').style;frameStyle.height=0;frameStyle.height=document.body.scrollHeight+5+'px';\">\n"\
+"</HEAD><BODY class=\"toc\" onload=\"parent.document.getElementById('toc').style.height=document.documentElement.scrollHeight+5+'px';\">\n"\
 "   <FORM action=\"_search\" method=\"POST\" target=\"_top\"><INPUT class=\"search\" name=\"search\" type=\"text\" placeholder=\"Search the Content\"></FORM>\n"
 
 #define SUB_TOC_PREFIX_LEN 575

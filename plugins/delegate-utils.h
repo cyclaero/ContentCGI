@@ -1009,7 +1009,7 @@ typedef char decStr[decLen];
 enum
 {
    // basic formats
-   d_form   =    1,
+   d_form   =    1,     // like f_form, but 'digits' are significant and not decimal, and a possible dangling ds would be suppressed
    e_form   =    2,
    f_form   =    4,
    g_form   =    8,

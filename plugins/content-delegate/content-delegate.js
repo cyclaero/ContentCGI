@@ -270,7 +270,7 @@ function imageUploader(dialog)
          if (parseInt(ev.target.status) == 200)
          {
             var response = ev.target.responseText.split('\n');
-            image = original = {url:encodeURI(response[0]), size:[response[1], response[2]]};
+            image = original = {url:escape(response[0]), size:[response[1], response[2]]};
             angle = 0;
             dialog.populate(image.url, image.size);
          }
@@ -325,7 +325,7 @@ function imageUploader(dialog)
             if (parseInt(ev.target.status) === 200)
             {
                var response = ev.target.responseText.split('\n');
-               image = {url:encodeURI(response[0]+'.png'), size:[response[1], response[2]]};
+               image = {url:escape(response[0]+'.png'), size:[response[1], response[2]]};
                dialog.populate(image.url+'?'+ + Date.now(), image.size);
             }
             else
@@ -380,7 +380,7 @@ function imageUploader(dialog)
          if (parseInt(ev.target.status) === 200)
          {
             var response = ev.target.responseText.split('\n');
-            image = {url:encodeURI(response[0]+'.png'), size:[response[1], response[2]]};
+            image = {url:escape(response[0]+'.png'), size:[response[1], response[2]]};
             if (image.size[0] > IMG_MAX_WIDTH)
             {
                image.size[1] = Math.round((IMG_MAX_WIDTH*image.size[1])/image.size[0]);
