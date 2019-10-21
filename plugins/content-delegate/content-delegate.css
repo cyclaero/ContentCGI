@@ -17,7 +17,7 @@
 .ct-widget .ct-tool--blockquote:before    { content:"Q"; }
 .ct-widget .ct-tool--preformatted:before  { content:"</>"; }
 
-.ce-element--type-image                   { clear:both; display:block; margin:13px 0 13px 0; max-width:100%; }
+.ce-element--type-image                   { clear:both; display:block; margin:13px 0; max-width:100%; }
 .ce-element--type-image.align-center      { margin-left:auto; margin-right:auto; }
 .ce-element--type-image.shade             { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; }
 .ce-element--type-image.shade-center      { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; margin-left:auto; margin-right:auto; }

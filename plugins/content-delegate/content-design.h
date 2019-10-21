@@ -125,22 +125,22 @@
 #define STAMP_VALUE_LEN 12
 // "xx1530060745", 12
 
-#define CLOSE_DATA_LEN 11
+#define CLOSE_DATA_LEN 10
 #define CLOSE_DATA \
-"\"></data>\r\n"
+"\"></data>\n"
 
-#define STAMP_PREFIX_LEN 36
+#define STAMP_PREFIX_LEN 34
 #define STAMP_PREFIX \
-"<p class=\"stamp\">\r\n" \
-"    Copyright © "
+"<p class=\"stamp\">\n"\
+"   Copyright © "
 
 #define DATE_TIME_STAMP_LEN 22
 //" - YYYY-MM-DD hh:mm:ss", 22
 
-#define STAMP_SUFFIX_LEN 8
+#define STAMP_SUFFIX_LEN 6
 #define STAMP_SUFFIX \
-"\r\n" \
-"</p>\r\n"
+"\n" \
+"</p>\n"
 
 #define SEARCH_PREFIX_LEN 430
 #define SEARCH_PREFIX \

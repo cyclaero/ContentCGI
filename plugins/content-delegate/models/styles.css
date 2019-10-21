@@ -62,12 +62,12 @@ SUB,SUP               { line-height:0; }
 PRE                   { font-family:monospace; font-size:12px; padding:11px; margin:11px 0; max-height:420px; overflow:auto; border:1px solid #ddd; border-radius:7px; background-color:#f7f7ff; -webkit-hyphens:none; -moz-hyphens:none; hyphens:none; }
 PRE.fullheight        { max-height:none; }
 
-IMG                   { clear:both; display:block; margin:13px 0 13px 0; max-width:100%; }
+IMG                   { clear:both; display:block; margin:13px 0; max-width:100%; }
 IMG.align-center      { margin-left:auto; margin-right:auto; }
 IMG.shade             { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; }
 IMG.shade-center      { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; margin-left:auto; margin-right:auto; }
 
-TABLE                 { width:100%; table-layout:fixed; margin:9px 0 9px 0; padding:0; }
+TABLE                 { width:100%; table-layout:fixed; margin:9px 0; padding:0; }
 TR.back-gray          { background-color:#eaeaee; }
 TH.back-gray          { background-color:#eaeaee; }
 TD.back-gray          { background-color:#eaeaee; }
@@ -80,6 +80,7 @@ TD.text-right         { text-align:right; }
 
 INPUT,TEXTAREA,SELECT { font-family:verdana,sans-serif; font-size:13px; border:1px solid #bbb; background-clip:content-box; -webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box; }
 SELECT                { font-family:verdana,sans-serif; font-size:13px; margin:1px 2px; border:1px solid #bbb; border-radius:5px; background-clip:content-box; }
+TEXTAREA              { padding:2px 4px; }
 BUTTON,
 INPUT[type="submit"]  { font-family:verdana,sans-serif; font-size:13px; padding:5px; border:1px solid #bbb; border-radius:5px; background-color:#ddd; background-repeat:repeat-x; background-image:-moz-linear-gradient(top, #eee, #ddd); background-image:-ms-linear-gradient(top, #eee, #ddd); background-image:-webkit-linear-gradient(top, #eee, #ddd); background-image:-o-linear-gradient(top, #eee, #ddd); background-image:linear-gradient(top, #eee, #ddd); background-clip:initial; box-sizing:initial; box-shadow:2px 2px 3px rgba(64, 64, 64, 0.1); cursor:pointer; }
 INPUT:disabled        { opacity:0.67; cursor:default; }

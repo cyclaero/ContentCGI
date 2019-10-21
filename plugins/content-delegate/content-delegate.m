@@ -592,7 +592,7 @@ boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, 
                   memvcpy(modelData.content, content, contlen);
                }
 
-               modelData.content[contlen] = '\0';
+               modelData.content[modelData.contlen] = '\0';
                modelData.conttyp = "text/html; charset=utf-8";
 
                char *plang,
