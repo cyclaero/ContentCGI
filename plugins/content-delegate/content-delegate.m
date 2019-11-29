@@ -1423,6 +1423,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 
 void enumerateImageTags(Node **imageFileNames, char *contemp, time_t stamp, int prefixLen)
 {
+   char cp, cq;
    char *p, *q = contemp;
 
    skip: while (p = strcasestr(q, "<img "))
@@ -1443,9 +1444,9 @@ void enumerateImageTags(Node **imageFileNames, char *contemp, time_t stamp, int 
             sglq = !sglq && !dblq;
          else if (*q == '"')
             dblq = !dblq && !sglq;
-      *q++ = '\0';
+      cq = *q, *q = '\0';
 
-      if ((p = strcasestr(p, "src")) && p < q)
+      if ((p = strcasestr(p, "src")) && p <= q)
       {
          for (; *p != '\'' && *p != '"'; p++);
 
@@ -1455,11 +1456,15 @@ void enumerateImageTags(Node **imageFileNames, char *contemp, time_t stamp, int 
             for (; *p != '\''; p++);
          else if (*(p-1) == '"')
             for (; *p != '"'; p++);
-         *p = '\0';
+         cp = *p, *p = '\0';
 
          if (strtoul(imgName+prefixLen, NULL, 10) == stamp)
             storeName(imageFileNames, uriDecode(imgName+prefixLen), 0, NULL);
+
+         *p = cp;
       }
+
+      *q++ = cq;
    }
 }
 
