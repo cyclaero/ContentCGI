@@ -92,15 +92,15 @@ Start Apache and the ContentCGI Daemon:
 
 Prepare the working directory for the Zettair search engine:
 
-    mkdir -p /var/db/zettair
-    chown -R www:www /var/db/zettair
-    chmod -R o-rwx /var/db/zettair
+    mkdir -p /var/db/zettair/your.content.dom
+    chown -R www:www /var/db/zettair/your.content.dom
+    chmod -R o-rwx /var/db/zettair/your.content.dom
 
 Add to `/etc/crontab` the following lines:
 
     #
-    # call the Zettair spider every minute - it will re-index the articles, if a respective token is present in /var/db/zettair
-    *       *       *       *       *       www     /usr/local/bin/spider /usr/local/www/ContentCGI/webdocs/articles > /dev/null 2>&1
+    # call the Zettair spider every minute - it will re-index the articles, if a respective token is present in /var/db/zettair/your.content.dom
+    *       *       *       *       *       www     /usr/local/bin/spider /usr/local/www/ContentCGI/webdocs/articles your.content.dom > /dev/null 2>&1
    
 
 Point your browser to your domain and explore the system - `https://obsigna.com/articles/1529528376.html`
