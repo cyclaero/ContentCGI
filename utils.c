@@ -328,7 +328,14 @@ char *base64Decode(char *data, uint *length)
 }
 
 
-#pragma mark ••• HTTP-ETag & UUID Generation and Case Folding •••
+#pragma mark ••• HTTP-Date, HTTP-ETag & UUID Generation and Case Folding •••
+
+char *httpDate(char *date, time_t tod)
+{
+   struct tm tm;
+   strftime(date, dateLen, "%a, %d %b %Y %H:%M:%S GMT", gmtime_r(&tod, &tm));
+   return date;
+}
 
 char *httpETag(char *etag, struct stat *st, boolean quotes)
 {

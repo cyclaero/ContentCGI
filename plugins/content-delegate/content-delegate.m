@@ -874,6 +874,12 @@ EXPORT void freeback(Response *response)
 {
    if (response->contdyn)
    {
+      for (Ranges *next = response->contrgs; next != NULL;)
+      {
+         void *tmp = next; next = next->next;
+         deallocate(VPR(tmp), false);
+      }
+
       if (response->contdyn < 0)
          freeDynBuffer(response->content);
       else
@@ -926,7 +932,6 @@ static inline llong contread(char *buf, llong size, llong count, FILE *file, Res
       return 0;
 }
 
-
 static inline llong contstat(char *filep, struct stat *st, Response *cache)
 {
    if (cache)
@@ -935,6 +940,31 @@ static inline llong contstat(char *filep, struct stat *st, Response *cache)
       return (stat(filep, st) == no_error && S_ISREG(st->st_mode)) ? st->st_size : 0;
    else
       return 0;
+}
+
+char *nextFieldValue(char **field)
+{
+   char  delim;
+   char *p, *q;
+
+   for (p = *field; isblank(*p) || *p == ','; p++);
+
+   if (*p == '"')
+      delim = *p++;
+   else if (*p == '<')
+   {
+      delim = '>';
+      p++;
+   }
+   else
+      delim = ',';
+
+   for (q = p; *q && *q != delim; q++);
+   if (*q)
+      *q++ = '\0';
+
+   *field = q;
+   return p;
 }
 
 
@@ -1046,6 +1076,7 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
                            }
                            memvcpy(content+l, "</DIV><SCRIPT type=\"text/javascript\" src=\"/edit/content.js\"></SCRIPT>", 69);
                            response->contlen =                                                            n += 69;
+                           response->contdat = st.st_mtimespec.tv_sec;
                            response->content = content;
                            rc = 200;
 
@@ -1065,9 +1096,9 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
                contpos = 0;
          }
 
+         Node *node;
          if (file)
          {
-            Node *node;
             char *etag;
             httpETag(response->conttag, &st);
 
@@ -1081,14 +1112,99 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
          }
 
          if (contread(content, filesize, 1, file, cache, &contpos) == 1)
-         {
-            response->contlen = filesize;
-            response->content = content;
-            rc = 200;
-         }
+            if ((node = findName(request->serverTable, "HTTP_RANGE", 10))
+             && cmp6(node->value.s, "bytes="))
+            {
+               char   *p, *chk, *bytes = node->value.s+6;
+               llong   first, last;
+               Ranges *ranges, **next = &ranges;
+
+               while (*bytes)
+               {
+                  *next = allocate(sizeof(Ranges), default_align, true);
+                  p = nextFieldValue(&bytes);
+                  if (*p == '-')
+                  {
+                     if ((last = strtoul(p+1, &chk, 10)) == 0)
+                        if (chk == p+1)
+                        {
+                           rc = 416;
+                           goto finish;
+                        }
+                        else
+                           goto noRanges;
+
+                     if ((first = filesize - last) <= 0)
+                        goto noRanges;
+                  }
+
+                  else
+                  {
+                     if ((first = strtoul(p, &chk, 10)) == 0 && chk == p)
+                     {
+                        rc = 400;
+                        goto finish;
+                     }
+
+                     if (*(p = chk+1) == '\0')
+                        last = filesize - 1;
+                     else if ((last = strtoul(p, &chk, 10)) == 0 && chk == p)
+                     {
+                        rc = 400;
+                        goto finish;
+                     }
+
+                     if (first == 0 && last >= filesize-1)
+                        goto noRanges;
+
+                     if (first >= filesize - 1)
+                     {
+                        rc = 400;
+                        goto finish;
+                     }
+                  }
+
+                  if (*next != ranges)
+                  {
+                     ranges->first++;
+                     ranges->last += last - first + 1;
+                  }
+
+                  else  // (*next == ranges) -- i.e. first ranges field
+                  if (*bytes)
+                  {
+                     /* if more than one ranges were requested then the first Ranges item
+                        in the linked list hold the count and the total length of all ranges */
+                     ranges->first = 1;
+                     ranges->last  = last - first + 1;
+
+                     (*next)->next = allocate(sizeof(Ranges), default_align, true);
+                     next = &(*next)->next;
+                  }
+
+                  (*next)->first = first;
+                  (*next)->last  = last;
+                  next = &(*next)->next;
+               }
+
+               response->contlen = filesize;
+               response->contdat = st.st_mtimespec.tv_sec;
+               response->contrgs = ranges;
+               response->content = content;
+               rc = 206;   // Partial Content
+            }
+
+            else
+            {
+            noRanges:
+               response->contlen = filesize;
+               response->contdat = st.st_mtimespec.tv_sec;
+               response->content = content;
+               rc = 200;   // OK
+            }
 
       finish:
-         if (rc == 200)
+         if (rc == 200 || rc == 206)
          {
             response->contdyn = true;
             response->conttyp = (char *)extensionToType(entity, el);

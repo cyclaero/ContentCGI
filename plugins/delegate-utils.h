@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdarg.h>
+#include <ctype.h>
 #include <dirent.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -1552,7 +1553,15 @@ int deleteDirectory(char *path, size_t pl);
 #pragma mark ••• MIME Types •••
 const char *extensionToType(char *fnam, int flen);
 
-#pragma mark ••• HTTP-ETag •••
+#pragma mark ••• HTTP-Date & HTTP-ETag •••
+#define dateLen 32
+static inline char *httpDate(char *date, time_t tod)
+{
+   struct tm tm;
+   strftime(date, dateLen, "%a, %d %b %Y %H:%M:%S GMT", gmtime_r(&tod, &tm));
+   return date;
+}
+
 #define etagLen 54
 static inline void httpETag(char *etag, struct stat *st)
 {

@@ -188,7 +188,12 @@ EXPORT void freeback(Response *response)
 {
    if (response->contdyn)
    {
-      deallocate(VPR(response->conttag), false);
+      for (Ranges *next = response->contrgs; next != NULL;)
+      {
+         void *tmp = next; next = next->next;
+         deallocate(VPR(tmp), false);
+      }
+
       if (response->contdyn < 0)
          freeDynBuffer(response->content);
       else

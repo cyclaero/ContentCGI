@@ -113,12 +113,15 @@ void *firstresponder(ConnExec *connex)
 
                      case 200:
                      {
+                        char modate[dateLen];
+                        httpDate(modate, (response.contdat) ?: time(NULL));
+
                         if (*response.conttag)
-                           hthl = snprintf(htheader, 256, "Status: %ld\nContent-Type: %s\nContent-Length: %lld\nETag: \"%s\"\n\n",
-                                           rc, response.conttyp, response.contlen, response.conttag);
+                           hthl = snprintf(htheader, 256, "Status: %ld\nContent-Type: %s\nAccept-Ranges: bytes\nContent-Length: %lld\nLast-Modified: %s\nETag: \"%s\"\n\n",
+                                           rc, response.conttyp, response.contlen, modate, response.conttag);
                         else
-                           hthl = snprintf(htheader, 256, "Status: %ld\nContent-Type: %s\nContent-Length: %lld\nCache-Control: no-cache\n\n",
-                                           rc, response.conttyp, response.contlen);
+                           hthl = snprintf(htheader, 256, "Status: %ld\nContent-Type: %s\nAccept-Ranges: bytes\nContent-Length: %lld\nLast-Modified: %s\nCache-Control: no-cache\n\n",
+                                           rc, response.conttyp, response.contlen, modate);
                         boolean ok = FCGI_SendDataStream(connex, FCGI_STDOUT, hthl, htheader)
                                   && FCGI_SendDataStream(connex, FCGI_STDOUT, response.contlen, response.content);
                         plugins->freeback(&response);
@@ -131,6 +134,85 @@ void *firstresponder(ConnExec *connex)
                         else
                            goto killconn;
                      }
+
+                     case 206:
+                        if (response.contrgs)
+                        {
+                           char modate[dateLen];
+                           httpDate(modate, (response.contdat) ?: time(NULL));
+
+                           if (response.contrgs->next == NULL)    // a single range
+                           {
+                              llong rngl = response.contrgs->last - response.contrgs->first + 1;
+                              if (*response.conttag)
+                                 hthl = snprintf(htheader, 256, "Status: %ld\nContent-Type: %s\nAccept-Ranges: bytes\nContent-Length: %lld\nContent-Range: bytes %lld-%lld/%lld\nLast-Modified: %s\nETag: \"%s\"\n\n",
+                                                 rc, response.conttyp, rngl, response.contrgs->first, response.contrgs->last, response.contlen, modate, response.conttag);
+                              else
+                                 hthl = snprintf(htheader, 256, "Status: %ld\nContent-Type: %s\nAccept-Ranges: bytes\nContent-Length: %lld\nContent-Range: bytes %lld-%lld/%lld\nLast-Modified: %s\nCache-Control: no-cache\n\n",
+                                                 rc, response.conttyp, rngl, response.contrgs->first, response.contrgs->last, response.contlen, modate);
+                              boolean ok = FCGI_SendDataStream(connex, FCGI_STDOUT, hthl, htheader)
+                                        && FCGI_SendDataStream(connex, FCGI_STDOUT, rngl, response.content+response.contrgs->first);
+                              plugins->freeback(&response);
+
+                              if (ok)
+                              {
+                                 force = false;
+                                 goto sendOK;
+                              }
+                              else
+                                 goto killconn;
+                           }
+
+                           else
+                           {
+                              struct timeval tv;
+                              gettimeofday(&tv, NULL);
+
+                              int n = (int)response.contrgs->first;
+                              llong l, ptsl, msgl;
+                              char *parts, boundary[41];
+                              msgl  = snprintf(boundary, 41, "%llx%08x", (ullong)tv.tv_sec*1000000LL + tv.tv_usec, (uint)connex->conn.sock);
+                              msgl  = (n+1)*(4+msgl+2)+2                                          // (n+1)*"\r\n--boundary\r\n" + "--"
+                                   +      n*strvlen(response.conttyp)                             //     n*"Content-Type: type\r\n"
+                                   +      n*(21+3*sprintf(htheader, "%lld", response.contlen)+6); //     n*"Content-Range: bytes len-len/len\r\n\r\n"
+                              msgl += response.contrgs->last;
+
+                              if (parts = allocate(msgl, default_align, false))
+                              {
+                                 ptsl = 0;
+                                 for (Ranges *next = response.contrgs->next; next; next = next->next)
+                                 {
+                                    ptsl += snprintf(parts+ptsl, msgl-ptsl, "\r\n--%s\r\n%sContent-Range: bytes %lld-%lld/%lld\r\n\r\n", boundary, response.conttyp, next->first, next->last, response.contlen);
+                                    bcopy(response.content+next->first, parts+ptsl, l = next->last - next->first + 1);
+                                    ptsl += l;
+                                 }
+                                 ptsl += snprintf(parts+ptsl, msgl-ptsl, "\r\n--%s--\r\n", boundary);
+
+                                 if (*response.conttag)
+                                    hthl = snprintf(htheader, 256, "Status: %ld\nContent-Type: multipart/byteranges; boundary=%s\nAccept-Ranges: bytes\nContent-Length: %lld\nLast-Modified: %s\nETag: \"%s\"\n\n",
+                                                    rc, boundary, ptsl, modate, response.conttag);
+                                 else
+                                    hthl = snprintf(htheader, 256, "Status: %ld\nContent-Type: multipart/byteranges; boundary=%s\nAccept-Ranges: bytes\nContent-Length: %lld\nLast-Modified: %s\nCache-Control: no-cache\n\n",
+                                                 rc, boundary, ptsl, modate);
+                                 boolean ok = FCGI_SendDataStream(connex, FCGI_STDOUT, hthl, htheader)
+                                           && FCGI_SendDataStream(connex, FCGI_STDOUT, ptsl, parts);
+                                 deallocate(VPR(parts), false);
+                                 plugins->freeback(&response);
+
+                                 if (ok)
+                                 {
+                                    force = false;
+                                    goto sendOK;
+                                 }
+                                 else
+                                    goto killconn;
+                              }
+                              else
+                                 goto error500;
+                           }
+                        }
+                        else
+                           goto error500;
 
                      case 201:
                      case 303:

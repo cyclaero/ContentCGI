@@ -1653,15 +1653,25 @@ const char *extensionToType(char *fnam, int flen)
          case 'ico\0':
             mime = "image/x-icon";
             break;
+         case 'pdf\0':
+            mime = "application/pdf";
+            break;
          case 'svg\0':
             mime = "image/svg+xml; charset=utf-8";
+            break;
+         case 'mp4\0':
+            mime = "video/mp4";
+            break;
+         case 'ogg\0':
+            mime = "video/ogg";
+            break;
+         case 'webm':
+            if (ext[4] == '\0')
+               mime = "video/webm";
             break;
          case 'woff':
             if (ext[4] == '\0')
                mime = "application/font-woff";
-            break;
-         case 'pdf\0':
-            mime = "application/pdf";
             break;
          case 'crt\0':
             mime = "application/x-x509-ca-cert";

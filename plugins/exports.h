@@ -39,13 +39,22 @@ typedef struct
 } Request;
 
 
+typedef struct Ranges
+{
+   llong  first, last;
+   struct Ranges *next;
+} Ranges;
+
+
 typedef struct
 {
-   llong contdyn;       // llong instead of boolean makes the whole struct vector aligned
-   llong contlen;
-   char *conttyp;
-   char *content;
-   char  conttag[64];   // etagLen is 54, however 64 keeps all cache structs in Sources aligned on 256bit boundaries
+   llong   contdyn;      // llong instead of boolean makes the whole struct vector aligned
+   llong   contlen;
+   Ranges *contrgs;
+   time_t  contdat;
+   char   *conttyp;
+   char   *content;
+   char   conttag[64];   // etagLen is 54, however 64 keeps all cache structs in Sources aligned on 256bit boundaries
 } Response;
 
 

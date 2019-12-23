@@ -2016,6 +2016,7 @@
 					/opt/local/include,
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_CFLAGS = "-fstack-protector";
 				WARNING_CFLAGS = (
 					"-Wno-multichar",
@@ -2069,6 +2070,7 @@
 					/opt/local/include,
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_CFLAGS = "-fstack-protector";
 				WARNING_CFLAGS = (
 					"-Wno-multichar",

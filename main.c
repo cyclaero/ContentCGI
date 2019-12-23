@@ -63,6 +63,7 @@
 
 
 #define DAEMON_NAME    "ContentCGI"
+
 const char *pidfname = "/var/run/"DAEMON_NAME".pid";
 const char *usocket  = "/tmp/"DAEMON_NAME".sock";
 
@@ -135,6 +136,7 @@ static void loadPlugins(const char *dir, size_t len)
                                  if (fread(plugin->cache.html.content, (size_t)st.st_size, 1, srcfile) == 1)
                                  {
                                     plugin->cache.html.content[plugin->cache.html.contlen = st.st_size] = '\0';
+                                    plugin->cache.html.contdat = st.st_mtimespec.tv_sec;
                                     httpETag(plugin->cache.html.conttag , &st, false);
                                     plugin->cache.html.conttyp = "text/html; charset=utf-8";
                                  }
@@ -152,6 +154,7 @@ static void loadPlugins(const char *dir, size_t len)
                                  if (fread(plugin->cache.css.content, (size_t)st.st_size, 1, srcfile) == 1)
                                  {
                                     plugin->cache.css.content[plugin->cache.css.contlen = st.st_size] = '\0';
+                                    plugin->cache.css.contdat = st.st_mtimespec.tv_sec;
                                     httpETag(plugin->cache.css.conttag , &st, false);
                                     plugin->cache.css.conttyp = "text/css; charset=utf-8";
                                  }
@@ -169,6 +172,7 @@ static void loadPlugins(const char *dir, size_t len)
                                  if (fread(plugin->cache.js.content, (size_t)st.st_size, 1, srcfile) == 1)
                                  {
                                     plugin->cache.js.content[plugin->cache.js.contlen = st.st_size] = '\0';
+                                    plugin->cache.js.contdat = st.st_mtimespec.tv_sec;
                                     httpETag(plugin->cache.js.conttag , &st, false);
                                     plugin->cache.js.conttyp = "application/x-javascript";
                                  }
@@ -186,6 +190,7 @@ static void loadPlugins(const char *dir, size_t len)
                                  if (fread(plugin->cache.png.content, (size_t)st.st_size, 1, srcfile) == 1)
                                  {
                                     plugin->cache.png.content[plugin->cache.png.contlen = st.st_size] = '\0';
+                                    plugin->cache.png.contdat = st.st_mtimespec.tv_sec;
                                     httpETag(plugin->cache.png.conttag , &st, false);
                                     plugin->cache.png.conttyp = "image/png";
                                  }
@@ -203,6 +208,7 @@ static void loadPlugins(const char *dir, size_t len)
                                  if (fread(plugin->cache.ico.content, (size_t)st.st_size, 1, srcfile) == 1)
                                  {
                                     plugin->cache.ico.content[plugin->cache.ico.contlen = st.st_size] = '\0';
+                                    plugin->cache.ico.contdat = st.st_mtimespec.tv_sec;
                                     httpETag(plugin->cache.ico.conttag , &st, false);
                                     plugin->cache.ico.conttyp = "image/x-icon";
                                  }
@@ -236,6 +242,7 @@ static void loadPlugins(const char *dir, size_t len)
                                                 if (fread(response->content, (size_t)st.st_size, 1, srcfile) == 1)
                                                 {
                                                    response->content[response->contlen = st.st_size] = '\0';
+                                                   response->contdat = st.st_mtimespec.tv_sec;
                                                    httpETag(response->conttag , &st, false);
                                                    response->conttyp = (char *)extensionToType(iep->d_name, iep->d_namlen);
                                                    value.p = response;
@@ -282,6 +289,7 @@ static void loadPlugins(const char *dir, size_t len)
                                                 if (fread(response->content, (size_t)st.st_size, 1, srcfile) == 1)
                                                 {
                                                    response->content[response->contlen = st.st_size] = '\0';
+                                                   response->contdat = st.st_mtimespec.tv_sec;
                                                    httpETag(response->conttag , &st, false);
                                                    response->conttyp = (char *)extensionToType(iep->d_name, iep->d_namlen);
                                                    value.p = response;

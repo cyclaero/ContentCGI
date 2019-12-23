@@ -1133,6 +1133,9 @@ static inline char *postDecode(char *element)
    return uriDecode(element);
 }
 
+#define dateLen 32
+char *httpDate(char *date, time_t tod);
+
 #define etagLen 54
 char *httpETag(char *etag, struct stat *st, boolean quotes);
 
