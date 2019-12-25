@@ -682,6 +682,7 @@ boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, 
              && fileCopy(artp, tmpp, &st) == no_error // the spider of the search-deleagte determines changes by observing the number of hard links for a given
              && unlink(artp) == no_error)             // inode. For this reason we cannot simply rename the deleted file, because its nlink value wont't change.
             {
+               rc = 303;
                if (!reindex(droot, drootl, base, bl, 0, request->serverTable, true))
                {
                   if (bl = strvlen(base))             // reindex may have changed the base path, so check its length
@@ -693,8 +694,6 @@ boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, 
                      else
                         rc = 500;
                }
-
-               rc = 303;
             }
             else
                rc = 404;
@@ -757,6 +756,7 @@ boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, 
       {
          pthread_mutex_lock(&EDIT_mutex);
 
+         rc = 303;
          if (reindex(droot, strvlen(droot), base, strvlen(base), 0, request->serverTable, false))
          {
             int bl;
@@ -769,8 +769,6 @@ boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, 
                else
                   rc = 500;
          }
-
-         rc = 303;
 
          pthread_mutex_unlock(&EDIT_mutex);
       }
@@ -967,6 +965,114 @@ char *nextFieldValue(char **field)
    return p;
 }
 
+time_t getDateTime(char *datetime)
+{
+   uint   i;
+   char  *p, *q;
+   struct tm dt;
+
+   for (p = datetime; isblank(*p); p++);
+
+   // first find out the date/time format
+   // which must be either one of the following:
+   // http://tools.ietf.org/html/rfc2616#section-3.3
+
+   for (q = p, i = 0; *q && *q != ','; q++, i++);
+
+   errno = 0;
+   if (i == 3)      // preferred Format - Sun, 06 Nov 1994 08:49:37 GMT
+   {
+      if ((dt.tm_mday = (int)strtoul(q+2, NULL, 10)) == 0 && errno == EINVAL) return 0;
+      switch (FourChars(q+4))
+      {
+         case ' Jan': dt.tm_mon = 0; break;
+         case ' Feb': dt.tm_mon = 1; break;
+         case ' Mar': dt.tm_mon = 2; break;
+         case ' Apr': dt.tm_mon = 3; break;
+         case ' May': dt.tm_mon = 4; break;
+         case ' Jun': dt.tm_mon = 5; break;
+         case ' Jul': dt.tm_mon = 6; break;
+         case ' Aug': dt.tm_mon = 7; break;
+         case ' Sep': dt.tm_mon = 8; break;
+         case ' Oct': dt.tm_mon = 9; break;
+         case ' Nov': dt.tm_mon =10; break;
+         case ' Dec': dt.tm_mon =11; break;
+         default: return 0;
+      }
+      if ((dt.tm_year = (int)strtoul(q+9,  NULL, 10)) == 0 && errno == EINVAL) return 0; else dt.tm_year -= 1900;
+      if ((dt.tm_hour = (int)strtoul(q+14, NULL, 10)) == 0 && errno == EINVAL) return 0;
+      if ((dt.tm_min  = (int)strtoul(q+17, NULL, 10)) == 0 && errno == EINVAL) return 0;
+      if ((dt.tm_sec  = (int)strtoul(q+20, NULL, 10)) == 0 && errno == EINVAL) return 0;
+   }
+
+   else if (i <= 9) // alternative Format - Sunday, 06-Nov-94 08:49:37 GMT, max. length of day name is 9 of Wednesday
+   {
+      if ((dt.tm_mday = (int)strtoul(q+2, NULL, 10)) == 0 && errno == EINVAL) return 0;
+      switch (FourChars(q+4))
+      {
+         case '-Jan': dt.tm_mon = 0; break;
+         case '-Feb': dt.tm_mon = 1; break;
+         case '-Mar': dt.tm_mon = 2; break;
+         case '-Apr': dt.tm_mon = 3; break;
+         case '-May': dt.tm_mon = 4; break;
+         case '-Jun': dt.tm_mon = 5; break;
+         case '-Jul': dt.tm_mon = 6; break;
+         case '-Aug': dt.tm_mon = 7; break;
+         case '-Sep': dt.tm_mon = 8; break;
+         case '-Oct': dt.tm_mon = 9; break;
+         case '-Nov': dt.tm_mon =10; break;
+         case '-Dec': dt.tm_mon =11; break;
+         default: return 0;
+      }
+      if ((dt.tm_year = (int)strtoul(q+9,  NULL, 10)) == 0 && errno == EINVAL) return 0; else if (dt.tm_year < 70) dt.tm_year += 100;
+      if ((dt.tm_hour = (int)strtoul(q+12, NULL, 10)) == 0 && errno == EINVAL) return 0;
+      if ((dt.tm_min  = (int)strtoul(q+15, NULL, 10)) == 0 && errno == EINVAL) return 0;
+      if ((dt.tm_sec  = (int)strtoul(q+18, NULL, 10)) == 0 && errno == EINVAL) return 0;
+   }
+
+   else             // asctime() Format - Sun Nov  6 08:49:37 1994
+   {
+      switch (FourChars(p+3))
+      {
+         case ' Jan': dt.tm_mon = 0; break;
+         case ' Feb': dt.tm_mon = 1; break;
+         case ' Mar': dt.tm_mon = 2; break;
+         case ' Apr': dt.tm_mon = 3; break;
+         case ' May': dt.tm_mon = 4; break;
+         case ' Jun': dt.tm_mon = 5; break;
+         case ' Jul': dt.tm_mon = 6; break;
+         case ' Aug': dt.tm_mon = 7; break;
+         case ' Sep': dt.tm_mon = 8; break;
+         case ' Oct': dt.tm_mon = 9; break;
+         case ' Nov': dt.tm_mon =10; break;
+         case ' Dec': dt.tm_mon =11; break;
+         default: return 0;
+      }
+      if ((dt.tm_mday = (int)strtoul(p+8,  NULL, 10)) == 0 && errno == EINVAL) return 0;
+      if ((dt.tm_hour = (int)strtoul(p+11, NULL, 10)) == 0 && errno == EINVAL) return 0;
+      if ((dt.tm_min  = (int)strtoul(p+14, NULL, 10)) == 0 && errno == EINVAL) return 0;
+      if ((dt.tm_sec  = (int)strtoul(p+17, NULL, 10)) == 0 && errno == EINVAL) return 0;
+      if ((dt.tm_year = (int)strtoul(p+20, NULL, 10)) == 0 && errno == EINVAL) return 0; else dt.tm_year -= 1900;
+   }
+
+   return timegm(&dt);
+}
+
+boolean rangeIsOutdated(char *ifrange, struct stat *st)
+{
+   if (*ifrange)
+      if (*ifrange == '"')
+      {
+         char etag[etagLen];
+         httpETag(etag, st);
+         return strstr(ifrange, etag) != ifrange+1;
+      }
+      else
+         return getDateTime(ifrange) != st->st_mtimespec.tv_sec;
+
+   return true;   // actually we can't tell, assume the safe case, i.e. the client's copy is outdated
+}
+
 
 long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Request *request, Response *response, Response *cache)
 {
@@ -985,9 +1091,10 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
 
    if (filesize = contstat(filep, &st, cache))
    {
-      FILE *file    = NULL;
-      char *content = NULL;
+      FILE *file = NULL;
       llong contlen, contpos = 0;
+      char *p, *q;
+      char *content = NULL;
       if ((content = allocate((contlen = filesize + 64 + 39 + STAMP_DATA_LEN + STAMP_VALUE_LEN + CLOSE_DATA_LEN + 69)+1, default_align, false))
        && (cache || (file = fopen(filep, "r"))))
       {
@@ -1003,7 +1110,7 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
             {
                pthread_mutex_lock(&EDIT_mutex);
 
-               char *p, *q, b[1536]; cpy8(b, "********"); b[1535] = 0;
+               char b[1536]; cpy8(b, "********"); b[1535] = 0;
 
                // inject the LINK tag of our content.css directly after the HEAD tag.
                for (p = NULL, q = b+8; ((l += m = contread(q, 1, sizeof(b)-9, file, cache, &contpos)), m) && !(p = strcasestr(b+2, "<HEAD>")); cpy8(b, q+m-8), n += m)
@@ -1112,21 +1219,21 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
          }
 
          if (contread(content, filesize, 1, file, cache, &contpos) == 1)
-            if ((node = findName(request->serverTable, "HTTP_RANGE", 10))
-             && cmp6(node->value.s, "bytes="))
+            if (((node = findName(request->serverTable, "HTTP_RANGE",    10)) && cmp6(p = node->value.s, "bytes="))
+             &&!((node = findName(request->serverTable, "HTTP_IF_RANGE", 13)) && rangeIsOutdated(node->value.s, &st)))
             {
-               char   *p, *chk, *bytes = node->value.s+6;
+               char   *v, *chk, *bytes = p+6;
                llong   first, last;
                Ranges *ranges, **next = &ranges;
 
                while (*bytes)
                {
                   *next = allocate(sizeof(Ranges), default_align, true);
-                  p = nextFieldValue(&bytes);
-                  if (*p == '-')
+                  v = nextFieldValue(&bytes);
+                  if (*v == '-')
                   {
-                     if ((last = strtoul(p+1, &chk, 10)) == 0)
-                        if (chk == p+1)
+                     if ((last = strtoul(v+1, &chk, 10)) == 0)
+                        if (chk == v+1)
                         {
                            rc = 416;
                            goto finish;
@@ -1140,15 +1247,15 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
 
                   else
                   {
-                     if ((first = strtoul(p, &chk, 10)) == 0 && chk == p)
+                     if ((first = strtoul(v, &chk, 10)) == 0 && chk == v)
                      {
                         rc = 400;
                         goto finish;
                      }
 
-                     if (*(p = chk+1) == '\0')
+                     if (*(v = chk+1) == '\0')
                         last = filesize - 1;
-                     else if ((last = strtoul(p, &chk, 10)) == 0 && chk == p)
+                     else if ((last = strtoul(v, &chk, 10)) == 0 && chk == v)
                      {
                         rc = 400;
                         goto finish;
