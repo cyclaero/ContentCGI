@@ -165,6 +165,8 @@ ContentEdit.DRAG_HOLD_DURATION = 750;
 ContentEdit.TRIM_WHITESPACE = false;
 ContentEdit.INDENT = '   ';
 
+HTMLString.Tag.SELF_CLOSING.source = true;
+
 window.addEventListener('load', function()
 {
    var editor;
