@@ -88,9 +88,7 @@ install: $(PRODUCT)
 	printf '\n\n' | cat ../../ContentTools/build/content-tools.min.js  - $(PROJECT).js  > "$(PLUGINS)/$(PROJECT)/$(PROJECT).js"  2>/dev/null ||:
 	cp -pr ../../ContentTools/build/images "$(PLUGINS)/$(PROJECT)/" 2>/dev/null ||:
 	cp -p  $(PROJECT).woff "$(PLUGINS)/$(PROJECT)/images/icons.woff" 2>/dev/null ||:
-	sed -e 's/if("editing"===a\._state&&b\.CANCEL_MESSAGE)/if("editing"===a._state\&\&a.history\&\&a.history._snapshotIndex\&\&b.CANCEL_MESSAGE)/' \
-	    -e 's/a\.target=this\._target/a.target=this._target,a.rel="noopener noreferrer"/' \
+	sed -e 's/a\.target=this\._target/a.target=this._target,a.rel="noopener noreferrer"/' \
 	    -e 's/{var d;return a\.parent()\.detach(a),/{var d;if(window.event.altKey){var xx=document.createElement("div");xx.innerHTML=a.html(),a=a.constructor.fromDOMElement(xx.children[0])}else a.parent().detach(a);return /' \
 	    -e 's/{var e,f,g,h,i,j,k,l;if(b\.parent()\.detach(b),/{var e,f,g,h,i,j,k,l;if(window.event.altKey){var xx=document.createElement("div");xx.innerHTML=b.html(),b=b.constructor.fromDOMElement(xx.children[0])}else b.parent().detach(b);if(/' \
-	    -e 's|m\.innerHTML=a,|m.innerHTML=a.replace(/<span( class="Apple-converted-space")?> <\\/span>/g," "),|' \
 	    -i "" "$(PLUGINS)/$(PROJECT)/$(PROJECT).js"

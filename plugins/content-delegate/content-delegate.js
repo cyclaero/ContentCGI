@@ -416,4 +416,5 @@ function imageUploader(dialog)
 
 ContentTools.IMAGE_UPLOADER = imageUploader;
 
-editor.ignition().edit();
+editor.start();
+editor.ignition().state('editing');
