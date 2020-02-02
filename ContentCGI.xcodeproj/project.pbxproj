@@ -1741,7 +1741,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "printf '\\n\\n' | cat \"$SRCROOT/ContentTools/build/content-tools.min.js\" - \"$SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.js\" > \"$INSTALL_DIR/$PRODUCT_NAME.js\"\nsed -e 's/a\\.target=this\\._target/a.target=this._target,a.rel=\"noopener noreferrer\"/' \\\n    -e 's/{var d;return a\\.parent()\\.detach(a),/{var d;if(window.event.altKey){var xx=document.createElement(\"div\");xx.innerHTML=a.html(),a=a.constructor.fromDOMElement(xx.children[0])}else a.parent().detach(a);return /' \\\n    -e 's/{var e,f,g,h,i,j,k,l;if(b\\.parent()\\.detach(b),/{var e,f,g,h,i,j,k,l;if(window.event.altKey){var xx=document.createElement(\"div\");xx.innerHTML=b.html(),b=b.constructor.fromDOMElement(xx.children[0])}else b.parent().detach(b);if(/' \\\n    -i \"\" \"$INSTALL_DIR/$PRODUCT_NAME.js\"\n";
+			shellScript = "printf '\\n\\n' | cat \"$SRCROOT/ContentTools/build/content-tools.min.js\" - \"$SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.js\" > \"$INSTALL_DIR/$PRODUCT_NAME.js\"\nsed -e 's/a\\.target=this\\._target/a.target=this._target,a.rel=\"noopener noreferrer\"/' \\\n    -i \"\" \"$INSTALL_DIR/$PRODUCT_NAME.js\"\n";
 			showEnvVarsInLog = 0;
 		};
 		7E71359F22C6DD460056990C /* ShellScript */ = {
@@ -1757,7 +1757,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp \"$SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.woff\" \"$INSTALL_DIR/images/icons.woff\"";
+			shellScript = "cp \"$SRCROOT/plugins/$PRODUCT_NAME/$PRODUCT_NAME.woff\" \"$INSTALL_DIR/images/icons.woff\"\n";
 			showEnvVarsInLog = 0;
 		};
 		7EE7B83220B90E2300D6DBCB /* ShellScript */ = {

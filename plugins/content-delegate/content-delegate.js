@@ -162,6 +162,7 @@ ContentTools.StylePalette.add([
 
 ContentTools.HIGHLIGHT_HOLD_DURATION = 4000;
 ContentEdit.DRAG_HOLD_DURATION = 750;
+ContentEdit.ENABLE_DRAG_CLONING = true;
 ContentEdit.TRIM_WHITESPACE = false;
 ContentEdit.INDENT = '   ';
 
