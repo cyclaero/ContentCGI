@@ -67,13 +67,30 @@ IMG.align-center      { margin-left:auto; margin-right:auto; }
 IMG.shade             { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; }
 IMG.shade-center      { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; margin-left:auto; margin-right:auto; }
 
+VIDEO                 { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; margin-left:auto; margin-right:auto; }
+
 TABLE                 { width:100%; table-layout:fixed; margin:9px 0; padding:0; }
+TABLE.back-gray       { background-color:#eaeaee; }
+TABLE.text-left       { text-align:left; }
+TABLE.text-center     { text-align:center; }
+TABLE.text-right      { text-align:right; }
+THEAD.back-gray       { background-color:#eaeaee; }
+THEAD.text-left       { text-align:left; }
+THEAD.text-center     { text-align:center; }
+THEAD.text-right      { text-align:right; }
+TBODY.back-gray       { background-color:#eaeaee; }
+TBODY.text-left       { text-align:left; }
+TBODY.text-center     { text-align:center; }
+TBODY.text-right      { text-align:right; }
 TR.back-gray          { background-color:#eaeaee; }
+TR.text-left          { text-align:left; }
+TR.text-center        { text-align:center; }
+TR.text-right         { text-align:right; }
 TH.back-gray          { background-color:#eaeaee; }
-TD.back-gray          { background-color:#eaeaee; }
 TH.text-left          { text-align:left; }
 TH.text-center        { text-align:center; }
 TH.text-right         { text-align:right; }
+TD.back-gray          { background-color:#eaeaee; }
 TD.text-left          { text-align:left; }
 TD.text-center        { text-align:center; }
 TD.text-right         { text-align:right; }

@@ -153,8 +153,11 @@ ContentTools.RESTRICTED_ATTRIBUTES['img'] = ['src', 'data-ce-max-width', 'data-c
 
 ContentTools.StylePalette.add([
    new ContentTools.Style('Stamp',           'stamp',        ['p']),
-   new ContentTools.Style('Gray background', 'back-gray',    ['p', 'tr', 'th', 'td']),
+   new ContentTools.Style('Gray background', 'back-gray',    ['p', 'table', 'thead', 'tbody', 'tr', 'th', 'td']),
    new ContentTools.Style('Full height',     'fullheight',   ['pre']),
+   new ContentTools.Style('Align left',      'text-left',    ['table', 'thead', 'tbody', 'tr', 'th', 'td']),
+   new ContentTools.Style('Align center',    'text-center',  ['table', 'thead', 'tbody', 'tr', 'th', 'td']),
+   new ContentTools.Style('Align right',     'text-right',   ['table', 'thead', 'tbody', 'tr', 'th', 'td']),
    new ContentTools.Style('Align center',    'align-center', ['img']),
    new ContentTools.Style('Shade',           'shade',        ['img']),
    new ContentTools.Style('Shade center',    'shade-center', ['img'])
