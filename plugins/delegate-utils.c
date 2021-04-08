@@ -2,7 +2,7 @@
 //  Responder Delegate plugins
 //
 //  Created by Dr. Rolf Jansen on 2018-05-15.
-//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2021 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -768,9 +768,9 @@ void *reallocate(void *p, ssize_t size, boolean cleanout, boolean free_on_error)
          {
             if (free_on_error)
             {
+               countAllocation(-a->size);
                if (cleanout)
                   memset((void *)a, 0, allocationMetaSize + align + a->size + sizeof(size_t));
-               countAllocation(-a->size);
                free(a);
             }
 
@@ -795,9 +795,9 @@ void *reallocate(void *p, ssize_t size, boolean cleanout, boolean free_on_error)
             *(uint8_t *)(q-1) = b->padis;
             memvcpy(q, p, (a->size <= size) ? a->size : size);
 
+            countAllocation(size - a->size);
             if (cleanout)
                memset((void *)a, 0, allocationMetaSize + align + a->size + sizeof(size_t));
-            countAllocation(size - a->size);
             free(a);
             return q;
          }
@@ -824,9 +824,9 @@ void deallocate(void **p, boolean cleanout)
          exit(EXIT_FAILURE);
       }
 
+      countAllocation(-a->size);
       if (cleanout)
          memset((void *)a, 0, allocationMetaSize + align + a->size + sizeof(size_t));
-      countAllocation(-a->size);
       free(a);
    }
 }
@@ -852,9 +852,9 @@ void deallocate_batch(int cleanout, ...)
             exit(EXIT_FAILURE);
          }
 
+         countAllocation(-a->size);
          if (cleanout)
             memset((void *)a, 0, allocationMetaSize + align + a->size + sizeof(size_t));
-         countAllocation(-a->size);
          free(a);
       }
 
@@ -870,7 +870,7 @@ ssize_t allocsize(void *p)
 
 
 // String concat to dst with variable number of src/len pairs, whereby each len
-// serves as the l parameter in strmlcpy(), i.e. strmlcpy(dst, src, ml, &len)
+// serves as the l parameter in strmlcpy(), i.e. strmlcpy(dst, src, m, *l[en])
 // m: Max. capacity of dst, including the final nul.
 //    If m == 0, then the sum of the length of all src strings is returned in l - nothing is copied though.
 // l: On entry, offset into dst or -1, when -1, the offset is the end of the initial string in dst

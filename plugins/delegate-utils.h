@@ -2,7 +2,7 @@
 //  Responder Delegate plugins
 //
 //  Created by Dr. Rolf Jansen on 2018-05-15.
-//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2021 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -145,20 +145,6 @@ typedef enum
 
    #endif
 
-   static inline uint32_t SwapTri24(uint32_t x)
-   {
-      uint32_t z;
-      char *p = (char *)&x;
-      char *q = (char *)&z;
-
-      q[0] = p[2];
-      q[1] = p[1];
-      q[2] = p[0];
-      q[3] = 0;
-
-      return z;
-   }
-
    #if defined(__x86_64__) && defined(__GNUC__)
 
       static inline uint64_t SwapInt64(uint64_t x)
@@ -265,6 +251,20 @@ typedef enum
 
 #endif
 
+static inline uint32_t SwapTri24(uint32_t x)
+{
+   uint32_t z;
+   char *p = (char *)&x;
+   char *q = (char *)&z;
+
+   q[0] = p[2];
+   q[1] = p[1];
+   q[2] = p[0];
+   q[3] = 0;
+
+   return z;
+}
+
 static inline double SwapDouble(double x)
 {
    double z;
@@ -362,7 +362,7 @@ static inline char *uppercase(char *s)
       if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_loadu_si128((__m128i *)str), nul16)))
          return __builtin_ctz(bmask);
 
-      for (int len = 16 - (intptr_t)str%16;; len += 16)
+      for (int len = 16 - (uintptr_t)str%16;; len += 16)
          if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&str[len]), nul16)))
             return len + __builtin_ctz(bmask);
    }
@@ -374,7 +374,7 @@ static inline char *uppercase(char *s)
       switch (n)
       {
          default:
-            if ((intptr_t)dst&0xF || (intptr_t)src&0xF)
+            if ((uintptr_t)dst&0xF || (uintptr_t)src&0xF)
                for (k = 0; k  < n>>4<<1; k += 2)
                   ((uint64_t *)dst)[k] = ((uint64_t *)src)[k], ((uint64_t *)dst)[k+1] = ((uint64_t *)src)[k+1];
             else
@@ -408,7 +408,7 @@ static inline char *uppercase(char *s)
                 | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_loadu_si128((__m128i *)line), lfd16)))
          return __builtin_ctz(bmask);
 
-      for (int len = 16 - (intptr_t)line%16;; len += 16)
+      for (int len = 16 - (uintptr_t)line%16;; len += 16)
          if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&line[len]), nul16))
                    | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&line[len]), lfd16)))
             return len + __builtin_ctz(bmask);
@@ -424,7 +424,7 @@ static inline char *uppercase(char *s)
                 | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_loadu_si128((__m128i *)sect), vtt16)))
          return __builtin_ctz(bmask);
 
-      for (int len = 16 - (intptr_t)sect%16;; len += 16)
+      for (int len = 16 - (uintptr_t)sect%16;; len += 16)
          if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&sect[len]), nul16))
                    | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&sect[len]), vtt16)))
             return len + __builtin_ctz(bmask);
@@ -440,7 +440,7 @@ static inline char *uppercase(char *s)
                 | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_loadu_si128((__m128i *)col), col16)))
          return __builtin_ctz(bmask);
 
-      for (int len = 16 - (intptr_t)col%16;; len += 16)
+      for (int len = 16 - (uintptr_t)col%16;; len += 16)
          if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&col[len]), nul16))
                    | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&col[len]), col16)))
             return len + __builtin_ctz(bmask);
@@ -456,7 +456,7 @@ static inline char *uppercase(char *s)
                 | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_loadu_si128((__m128i *)tag), grt16)))
          return __builtin_ctz(bmask);
 
-      for (int len = 16 - (intptr_t)tag%16;; len += 16)
+      for (int len = 16 - (uintptr_t)tag%16;; len += 16)
          if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&tag[len]), nul16))
                    | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&tag[len]), grt16)))
             return len + __builtin_ctz(bmask);
@@ -472,7 +472,7 @@ static inline char *uppercase(char *s)
                 | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_loadu_si128((__m128i *)field), vtl16)))
          return __builtin_ctz(bmask);
 
-      for (int len = 16 - (intptr_t)field%16;; len += 16)
+      for (int len = 16 - (uintptr_t)field%16;; len += 16)
          if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&field[len]), nul16))
                    | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&field[len]), vtl16)))
             return len + __builtin_ctz(bmask);
@@ -488,7 +488,7 @@ static inline char *uppercase(char *s)
                 | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_loadu_si128((__m128i *)domain), dot16)))
          return __builtin_ctz(bmask);
 
-      for (int len = 16 - (intptr_t)domain%16;; len += 16)
+      for (int len = 16 - (uintptr_t)domain%16;; len += 16)
          if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&domain[len]), nul16))
                    | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&domain[len]), dot16)))
             return len + __builtin_ctz(bmask);
@@ -504,7 +504,7 @@ static inline char *uppercase(char *s)
                 | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_loadu_si128((__m128i *)segm), sls16)))
          return __builtin_ctz(bmask);
 
-      for (int len = 16 - (intptr_t)segm%16;; len += 16)
+      for (int len = 16 - (uintptr_t)segm%16;; len += 16)
          if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&segm[len]), nul16))
                    | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&segm[len]), sls16)))
             return len + __builtin_ctz(bmask);
@@ -520,7 +520,7 @@ static inline char *uppercase(char *s)
                 | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_loadu_si128((__m128i *)vardef), amp16)))
          return __builtin_ctz(bmask);
 
-      for (int len = 16 - (intptr_t)vardef%16;; len += 16)
+      for (int len = 16 - (uintptr_t)vardef%16;; len += 16)
          if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&vardef[len]), nul16))
                    | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&vardef[len]), amp16)))
             return len + __builtin_ctz(bmask);
@@ -536,7 +536,7 @@ static inline char *uppercase(char *s)
                 | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_loadu_si128((__m128i *)varname), equ16)))
          return __builtin_ctz(bmask);
 
-      for (int len = 16 - (intptr_t)varname%16;; len += 16)
+      for (int len = 16 - (uintptr_t)varname%16;; len += 16)
          if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&varname[len]), nul16))
                    | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&varname[len]), equ16)))
             return len + __builtin_ctz(bmask);
@@ -551,7 +551,7 @@ static inline char *uppercase(char *s)
       if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(blk16, _mm_max_epu8(blk16, _mm_loadu_si128((__m128i *)word)))))
          return __builtin_ctz(bmask);      // ^^^^^^^ unsigned comparison (a >= b) is identical to a == maxu(a, b) ^^^^^^^
 
-      for (int len = 16 - (intptr_t)word%16;; len += 16)
+      for (int len = 16 - (uintptr_t)word%16;; len += 16)
          if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(blk16, _mm_max_epu8(blk16, _mm_load_si128((__m128i *)&word[len])))))
             return len + __builtin_ctz(bmask);
    }
@@ -566,7 +566,7 @@ static inline char *uppercase(char *s)
                 | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(obl16, _mm_min_epu8(obl16, _mm_loadu_si128((__m128i *)blank)))))
          return __builtin_ctz(bmask);      // ^^^^^^^ unsigned comparison (a <= b) is identical to a == minu(a, b) ^^^^^^^
 
-      for (int len = 16 - (intptr_t)blank%16;; len += 16)
+      for (int len = 16 - (uintptr_t)blank%16;; len += 16)
          if (bmask = (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(_mm_load_si128((__m128i *)&blank[len]), nul16))
                    | (unsigned)_mm_movemask_epi8(_mm_cmpeq_epi8(obl16, _mm_min_epu8(obl16, _mm_load_si128((__m128i *)&blank[len])))))
             return len + __builtin_ctz(bmask);
@@ -599,7 +599,7 @@ static inline char *uppercase(char *s)
       switch (n)
       {
          default:
-            if ((intptr_t)dst&0xF || (intptr_t)src&0xF)
+            if ((uintptr_t)dst&0xF || (uintptr_t)src&0xF)
                for (k = 0; k  < n>>4<<1; k += 2)
                   ((uint64_t *)dst)[k] = ((uint64_t *)src)[k], ((uint64_t *)dst)[k+1] = ((uint64_t *)src)[k+1];
             else
@@ -628,7 +628,7 @@ static inline char *uppercase(char *s)
 #else
 
    #define strvlen(s) (int)strlen(s)
-   #define memvcpy(d,s,n)  memcpy(d,s,n)
+   #define memvcpy(d,s,n) memcpy(d,s,n)
 
    static inline int linelen(const char *line)
    {

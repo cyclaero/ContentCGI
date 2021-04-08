@@ -2,7 +2,7 @@
 //  ContentCGI
 //
 //  Created by Dr. Rolf Jansen on 2018-05-08.
-//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2021 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -1123,9 +1123,9 @@ void *reallocate(void *p, ssize_t size, boolean cleanout, boolean free_on_error)
          {
             if (free_on_error)
             {
+               countAllocation(-a->size);
                if (cleanout)
                   memset((void *)a, 0, allocationMetaSize + align + a->size + sizeof(size_t));
-               countAllocation(-a->size);
                free(a);
             }
 
@@ -1150,9 +1150,9 @@ void *reallocate(void *p, ssize_t size, boolean cleanout, boolean free_on_error)
             *(uint8_t *)(q-1) = b->padis;
             memvcpy(q, p, (a->size <= size) ? a->size : size);
 
+            countAllocation(size - a->size);
             if (cleanout)
                memset((void *)a, 0, allocationMetaSize + align + a->size + sizeof(size_t));
-            countAllocation(size - a->size);
             free(a);
             return q;
          }
@@ -1179,9 +1179,9 @@ void deallocate(void **p, boolean cleanout)
          exit(EXIT_FAILURE);
       }
 
+      countAllocation(-a->size);
       if (cleanout)
          memset((void *)a, 0, allocationMetaSize + align + a->size + sizeof(size_t));
-      countAllocation(-a->size);
       free(a);
    }
 }
@@ -1207,9 +1207,9 @@ void deallocate_batch(int cleanout, ...)
             exit(EXIT_FAILURE);
          }
 
+         countAllocation(-a->size);
          if (cleanout)
             memset((void *)a, 0, allocationMetaSize + align + a->size + sizeof(size_t));
-         countAllocation(-a->size);
          free(a);
       }
 
