@@ -49,7 +49,7 @@
 void usage(const char *executable)
 {
    const char *r = executable + strvlen(executable);
-   while (--r >= executable && *r != '/'); r++;
+   while (--r >= executable && r && *r != '/'); r++;
    printf("\nusage: %s [-t timestamp] [-u basurl] <HTML article file>\n", r);
 }
 
@@ -182,7 +182,7 @@ int main(int argc, char *const argv[])
 
                char *o, *p, *q, *s, *t;
                o = content;
-               if ((p = strcasestr(o += 5, "<TITLE>"))
+               if ((p = strcasestr(o +  5, "<TITLE>"))
                 && (q = strcasestr(p += 7, "</TITLE>"))
                 && (s =     strstr(q +  8, "<!--e-->"))
                 && (t = strcasestr(s += 8, "</P>")))
