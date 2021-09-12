@@ -2,7 +2,7 @@
 //  content-delegate
 //
 //  Created by Dr. Rolf Jansen on 2018-05-08.
-//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2021 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -222,7 +222,8 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
          *t = '\0';
 
          char *filename, *imagtype;
-         for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++); *r = '\0'; r += 4;
+         for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++);
+         *r = '\0'; r += 4;
          if (r >= t)
             return rc;
 
@@ -232,7 +233,8 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
             imagtype = strstr(s, "Content-Type: ");
 
             char *p;
-            for (p = filename += 10; *p && *p != '"'; p++); *p = 0;
+            for (p = filename += 10; *p && *p != '"'; p++);
+            *p = 0;
             int fl = (int)(p-filename);
 
             if (imagtype)
@@ -278,7 +280,7 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
                         if ((image = PingBlob(imageInfo, r, t-r, &excepInfo))       // ping the blob first, however, some image formats can not
                          || (image = BlobToImage(imageInfo, r, t-r, &excepInfo)))   // be pinged from blob, so try again by reading the whole thing
                         {
-                           // only the image dimensions are neded in this stage
+                           // only the image dimensions are needed in this stage
                            ulong imgWidth  = image->columns;
                            ulong imgHeight = image->rows;
                            DestroyImage(image);
@@ -287,12 +289,20 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
                            DestroyMagick();
 
                            char *cp = imgp+rl-1;
-                           while (p = strstr(cp+1, "/"MEDIA_DIR"/"))
+
+                           if ((p = strstr(cp+1, "/"MEDIA_DIR"/"))
+                            || (p = strstr(cp+1, "/"FILES_DIR"/")))
                               cp = p;
-                           if (cp != imgp+rl-1)
+                           if (cp && cp != imgp+rl-1)
+                           {
+                              if (cmp(cp, "/"MEDIA_DIR"/", MEDIA_SEG_LEN))
                            {
                               for (p = cp-1; p > imgp+rl && *p != '/'; p--);
-                              cl = strvlen(cp = p+1);
+                                 cp = p+1;
+                              }
+                              else
+                                 cp++;
+                              cl = strvlen(cp);
                                                                  // vv -- max. string size of ulong is 20 -- 18446744073709551616
                               response->content = allocate(cl + 1 + 20 + 1 + 20, default_align, false);
                               strmlcpy(response->content, cp, 0, &cl);
@@ -398,20 +408,38 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
                      goto destroy;
                }
 
-               cpy5(working->filename+nl, ".png");
+               char *p = working->filename+nl;
+               if (cmp5(p-4, ".jpg") || cmp6(p-5, ".jpeg")
+                || cmp5(p-4, ".JPG") || cmp6(p-5, ".JPEG"))
+               {
+                  cpy5(p,              ".jpg");
+                  cpy4(working->magick, "JPG");
+               }
+               else
+               {
+                  cpy5(p,              ".png");
                cpy4(working->magick, "PNG");
+               }
+
                WriteImage(imageInfo, working);
                imgWidth  = working->columns;
                imgHeight = working->rows;
                DestroyImage(working);
 
-               char *p, *np = imgp+rl-1;
-               while (p = strstr(np+1, "/"MEDIA_DIR"/"))
+               char *np = imgp+rl-1;
+               if ((p = strstr(np+1, "/"MEDIA_DIR"/"))
+                || (p = strstr(np+1, "/"FILES_DIR"/")))
                   np = p;
-               if (np != imgp+rl-1)
+               if (np && np != imgp+rl-1)
+               {
+                  if (cmp(np, "/"MEDIA_DIR"/", MEDIA_SEG_LEN))
                {
                   for (p = np-1; p > imgp+rl && *p != '/'; p--);
-                  nl = strvlen(np = p+1);
+                     np = p+1;
+                  }
+                  else
+                     np++;
+                  nl = strvlen(np);
                                                      // vv -- max. string size of uint is 10 -- 4294967294
                   response->content = allocate(nl + 1 + 10 + 1 + 10, default_align, false);
                   strmlcpy(response->content, np, 0, &nl);
@@ -491,20 +519,38 @@ static pthread_mutex_t EDIT_mutex = PTHREAD_MUTEX_INITIALIZER;
                DestroyImage(original);
                if (working)
                {
-                  cpy5(working->filename+nl, ".png");
+                  char *p = working->filename+nl;
+                  if (cmp5(p-4, ".jpg") || cmp6(p-5, ".jpeg")
+                   || cmp5(p-4, ".JPG") || cmp6(p-5, ".JPEG"))
+                  {
+                     cpy5(p,              ".jpg");
+                     cpy4(working->magick, "JPG");
+                  }
+                  else
+               {
+                     cpy5(p,              ".png");
                   cpy4(working->magick, "PNG");
+                  }
+
                   WriteImage(imageInfo, working);
                   imgWidth  = working->columns;
                   imgHeight = working->rows;
                   DestroyImage(working);
 
-                  char *p, *np = imgp+rl-1;
-                  while (p = strstr(np+1, "/"MEDIA_DIR"/"))
+                  char *np = imgp+rl-1;
+                  if ((p = strstr(np+1, "/"MEDIA_DIR"/"))
+                   || (p = strstr(np+1, "/"FILES_DIR"/")))
                      np = p;
-                  if (np != imgp+rl-1)
+                  if (np && np != imgp+rl-1)
+                  {
+                     if (cmp(np, "/"MEDIA_DIR"/", MEDIA_SEG_LEN))
                   {
                      for (p = np-1; p > imgp+rl && *p != '/'; p--);
-                     nl = strvlen(np = p+1);
+                        np = p+1;
+                     }
+                     else
+                        np++;
+                     nl = strvlen(np);
                                                         // vv -- max. string size of uint is 10 -- 4294967294
                      response->content = allocate(nl + 1 + 10 + 1 + 10, default_align, false);
                      strmlcpy(response->content, np, 0, &nl);
@@ -575,7 +621,7 @@ boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, 
                char *titlpos = strstr(content, "CONTENT_TITLE");
                if (titlpos)
                {
-                  char *contitl = conTitle(request->serverTable);
+                  char *contitl = contTitle(request->serverTable);
                   int   titllen = strvlen(contitl);
                   modelData.contlen = contlen + titllen - 13;
                   modelData.content = allocate(modelData.contlen+1, default_align, false);
@@ -693,6 +739,8 @@ boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, 
                      }
                      else
                         rc = 500;
+                  else
+                     response->content = "index.html", response->contlen = 10;
                }
             }
             else
@@ -768,6 +816,8 @@ boolean  reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, 
                }
                else
                   rc = 500;
+            else
+               response->content = "index.html", response->contlen = 10;
          }
 
          pthread_mutex_unlock(&EDIT_mutex);
@@ -819,10 +869,10 @@ EXPORT long respond(char *entity, int el, Request *request, Response *response)
       if (*(entity += 6) != '\0')
          el -= 6;
       else
-         el  = 10, entity = "index.html";
+         el  = 10, entity = "entry.html";
 
       if (entity[el-1] == '/')
-         nl = strmlcat(name = alloca(OSP(el+10+1)), el+10+1, NULL, entity, el, "index.html", 10, NULL), entity = name, el = nl;
+         nl = strmlcat(name = alloca(OSP(el+10+1)), el+10+1, NULL, entity, el, "entry.html", 10, NULL), entity = name, el = nl;
       else
          name = strcpy(alloca(OSP((nl = el)+1)), entity);
 
@@ -1089,7 +1139,9 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
       strmlcat(filep, filepl+1, NULL, droot, drootl, "/", 1, entity, el, NULL);
    }
 
-   if (filesize = contstat(filep, &st, cache))
+   if ((filesize = contstat(filep, &st, cache))
+    || el >= 10 && cmp11(entity+el-10, "entry.html") && (cpy10(filep+drootl+1+el-10, "index.html"), true)
+    && (filesize = contstat(filep, &st, cache)))
    {
       FILE *file = NULL;
       llong contlen, contpos = 0;
@@ -1331,6 +1383,23 @@ long GEThandler(char *droot, int drootl, char *entity, int el, char *spec, Reque
 }
 
 
+int stripTags(char *s, ssize_t n)
+{
+   int i, j;
+
+   for (i = 0, j = 0; i < n; i++)
+      if (s[i] == '<')
+         for (i += 2; i < n && s[i] != '>'; i++);
+      else
+      {
+         if (i != j)
+            s[j] = s[i];
+         j++;
+      }
+
+   return j;
+}
+
 int stripATags(char *s, ssize_t n)
 {
    int i, j;
@@ -1341,12 +1410,12 @@ int stripATags(char *s, ssize_t n)
          case '<':
             if (s[i+1] == 'a' || s[i+1] == 'A')
             {
-               for (i += 2; s[i] != '>'; i++);
+               for (i += 2; i < n && s[i] != '>'; i++);
                break;
             }
             else if (cmp2(s+i+1, "/a") || cmp2(s+i+1, "/A"))
             {
-               for (i += 3; s[i] != '>'; i++);
+               for (i += 3; i < n && s[i] != '>'; i++);
                break;
             }
 
@@ -1357,7 +1426,6 @@ int stripATags(char *s, ssize_t n)
             break;
       }
 
-   s[j] = '\0';
    return j;
 }
 
@@ -1411,7 +1479,8 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
             {
                *(t -= boundlen) = '\0';
 
-               for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++); *r = '\0'; r += 3;     // leave 1 line feed at the beginning of the replacement text
+               for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++);
+               *r = '\0'; r += 3;     // leave 1 line feed at the beginning of the replacement text
                if (r >= t)
                   return rc;
 
@@ -1433,20 +1502,51 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                */
 
                   s = strstr(r, boundary) + boundlen;
-                  for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++); *r = '\0'; r += 3;  // leave 1 line feed at the beginning of the replacement text
+                  for (r = s; r < t && !cmp4(r, "\r\n\r\n"); r++);
+                  *r = '\0'; r += 3;  // leave 1 line feed at the beginning of the replacement text
                   if (r >= t)
                      return rc;
                }
 
                if (strstr(s, "name=\"content\""))
                {
-                  int stampl = 0;
+                  int  userl, stampl = 0;
                   char *user = NULL;
                   if (cache)
                   {
                      user   = ((node = findName(request->serverTable, "REMOTE_USER", 11)) && node->value.s) ? node->value.s : "";
+                     userl = strvlen(user);
+
+                     int i, n = 0;
+                     if (strchr(user, '@'))
+                        for (i = 0; i < userl; i++)
+                        {
+                           if (user[i] == '@') n += 3;
+                           if (user[i] == '.') n += 4;
+                        }
+
+                     if (n)
+                     {
+                        s = alloca(OSP(userl+n+1));
+                        for (i = 0, n = 0; i < userl; i++, n++)
+                        {
+                           if (user[i] == '@')
+                              cpy4(s+n, "[at]"),  n += 3;
+
+                           else if (user[i] == '.')
+                              cpy5(s+n, "[dot]"), n += 4;
+
+                           else
+                              s[n] = user[i];
+                        }
+
+                        s[n]  = '\0';
+                        user  = s;
+                        userl = n;
+                     }
+
                      stampl = STAMP_PREFIX_LEN
-                            + strvlen(user)
+                            + userl
                             + DATE_TIME_STAMP_LEN
                             + STAMP_SUFFIX_LEN;
 
@@ -1474,8 +1574,11 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                      char *o, *p, *q = b+8;
 
                      // find the heading in the replacement tag by purposely being restrictive on what to accept as a new title to be injected
-                     char *heading = (*replace == '\n' && cmp4(replace+1, "<h1>"))
-                                   ? skip(replace+5) : NULL;
+                     int   hoffset = 0;
+                     char *heading = (*replace == '\n'
+                                   && ( cmp4(replace+1, "<h1>")       && (hoffset =  5)
+                                    || cmp10(replace+1, "<h1 notoc>") && (hoffset = 11)))
+                                   ? skip(replace+hoffset) : NULL;
                      llong headlen = (heading && (p = strstr(heading, "</h1>")))
                                    ? bskip(p) - heading : 0;
 
@@ -1484,7 +1587,7 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
                      if (heading && headlen)
                      {
                         memvcpy(p = alloca(OSP(headlen+1)), heading, headlen);
-                        headlen = stripATags(heading = p, headlen);
+                        headlen = stripTags(heading = p, headlen);
                         p = NULL, n = 0;
 
                         char *tb, *te;
@@ -1496,6 +1599,8 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 
                            tb += 7;
                            memvcpy(content,   q, k = tb-q);                         n  = k;
+                           if (hoffset == 11)
+                              content[n++] = '\1';
                            memvcpy(content+n, heading, headlen);         m -= te-q, n += headlen;
                               cpy8(content+n, te);                q = te+8, m -= 8, n += 8;
 
@@ -1644,36 +1749,56 @@ long POSThandler(char *droot, int drootl, char *entity, int el, char *spec, Requ
 }
 
 
-void enumerateImageTags(Node **imageFileNames, char *contemp, time_t stamp, int prefixLen)
+typedef enum
 {
-   char cp, cq;
-   char *p, *q = contemp;
+   no_teaser,
+   teaser_left,
+   teaser_right,
+   teaser_top,
+   teaser_bottom
+} TeaserPos;
 
-   skip: while (p = strcasestr(q, "<img "))
+typedef struct
+{
+  TeaserPos imagePos;
+  int       imnamLen;
+  char     *imageSrc;
+} TeaserImgInfo;
+
+TeaserImgInfo enumerateImageTags(Node **imageFileNames, char *contemp, time_t stamp, int prefixLen)
+{
+   TeaserImgInfo teaser = {};
+
+   char cp, cq;
+   char *o, *p, *q = contemp;
+
+   skip: while (o = strcasestr(q, "<img "))
    {
       char *u, *v = q;
       while (u = strcasestr(v, "<pre"))
       {
-         if (u < p && p < (q = strcasestr(u, "</pre")))
+         if (u < o && o < (q = strcasestr(u, "</pre")))
             goto skip;
          v = u + 4;
       }
 
+      char *imgName = NULL;
+
       boolean sglq = false,
               dblq = false;
 
-      for (q = p += 5; *q != '>' || sglq || dblq; q++)
+      for (q = o += 5; *q != '>' || sglq || dblq; q++)
          if (*q == '\'')
             sglq = !sglq && !dblq;
          else if (*q == '"')
             dblq = !dblq && !sglq;
       cq = *q, *q = '\0';
 
-      if ((p = strcasestr(p, "src")) && p <= q)
+      if ((p = strcasestr(o, "src")) && p < q)
       {
          for (; *p != '\'' && *p != '"'; p++);
 
-         char *imgName = ++p;
+         imgName = ++p;
 
          if (*(p-1) == '\'')
             for (; *p != '\''; p++);
@@ -1681,14 +1806,48 @@ void enumerateImageTags(Node **imageFileNames, char *contemp, time_t stamp, int 
             for (; *p != '"'; p++);
          cp = *p, *p = '\0';
 
-         if (strtoul(imgName+prefixLen, NULL, 10) == stamp)
-            storeName(imageFileNames, uriDecode(imgName+prefixLen), 0, NULL);
+         if (imgName && strtoul(imgName+prefixLen, NULL, 10) == stamp)
+         {
+            int len = (int)(p - imgName);
+            storeName(imageFileNames, uriDecode(strcpy(alloca(len-prefixLen+1), imgName+prefixLen)), 0, NULL);
+
+            if (teaser.imagePos == no_teaser)
+               if ((u = strcasestr(o, "teaser-left")) && u < q)
+               {
+                  teaser.imagePos = teaser_left;
+                  teaser.imnamLen = len;
+                  teaser.imageSrc = imgName;
+               }
+
+               else if ((u = strcasestr(o, "teaser-right")) && u < q)
+               {
+                  teaser.imagePos = teaser_right;
+                  teaser.imnamLen = len;
+                  teaser.imageSrc = imgName;
+               }
+
+               else if ((u = strcasestr(o, "teaser-top")) && u < q)
+               {
+                  teaser.imagePos = teaser_top;
+                  teaser.imnamLen = len;
+                  teaser.imageSrc = imgName;
+               }
+
+               else if ((u = strcasestr(o, "teaser-bottom")) && u < q)
+               {
+                  teaser.imagePos = teaser_bottom;
+                  teaser.imnamLen = len;
+                  teaser.imageSrc = imgName;
+               }
+         }
 
          *p = cp;
       }
 
       *q++ = cq;
    }
+
+   return teaser;
 }
 
 #ifdef __APPLE__
@@ -1709,6 +1868,26 @@ void enumerateImageTags(Node **imageFileNames, char *contemp, time_t stamp, int 
 
 #endif
 
+
+void qupsort(time_t *a, int l, int r)
+{
+   time_t m = a[(l + r)/2];
+   int    i = l, j = r;
+
+   do
+   {
+      while (a[i] < m) i++;
+      while (a[j] > m) j--;
+      if (i <= j)
+      {
+         time_t b = a[i]; a[i] = a[j], a[j] = b;
+         i++; j--;
+      }
+   } while (j > i);
+
+   if (l < j) qupsort(a, l, j);
+   if (i < r) qupsort(a, i, r);
+}
 
 void qdownsort(time_t *a, int l, int r)
 {
@@ -1764,6 +1943,8 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
    }
    mdofs += articles_dir_len + 1;
 
+   boolean ok1 = false, ok2 = false;
+   FILE  *file;
    struct stat st;
    if (stat(adir, &st) == no_error && S_ISDIR(st.st_mode))
    {
@@ -1774,7 +1955,7 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
 
          char *idx = newDynBuffer();
          dynAddString(&idx, index_prefix, index_prefix_len);
-         dynAddString(&idx, conTitle(serverTable), 0);
+         dynAddString(&idx, contTitle(serverTable), 0);
          dynAddString(&idx, INDEX_BODY_FYI, INDEX_BODY_FYI_LEN);
 
          char *toc = newDynBuffer();
@@ -1787,9 +1968,9 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
          while (readdir_r(dp, &bp, &ep) == no_error && ep)
             if (ep->d_name[0] != '.' && (ep->d_type == DT_REG || ep->d_type == DT_LNK))
             {
-               char  *check;
-               time_t stamp = strtoul(ep->d_name, &check, 10);
-               if (stamp && check && cmp6(check, ".html"))
+                  char  *chk = NULL;
+                  time_t stamp = strtoul(ep->d_name, &chk, 10);
+                  if (stamp && chk && cmp6(chk, ".html"))
                {
                   if (fcnt == fcap)
                      stamps = reallocate(stamps, (fcap += 1024)*sizeof(time_t), false, false);
@@ -1805,7 +1986,6 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
          int idxcnt = 0;
          for (int j = 0; j < fcnt; j++)
          {
-            FILE  *file;
             intStr stamp;
             int    stmpl = int2str(stamp, stamps[j], intLen, 0);
             int    artpl = adirl+stmpl+5;
@@ -1823,17 +2003,21 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
 
                   if (fread(contemp, st.st_size, 1, file) == 1)
                   {
-                     char *o, *p, *q, *s, *t;
+                     char *o, *p, *q, *r, *s, *t;
                      o = (strcasestr(contemp, "<HTML lang=")) ?: contemp;
                      if ((p = strcasestr(o += 5, "<TITLE>"))
                       && (q = strcasestr(p += 7, "</TITLE>"))
                       && (s =     strstr(q +  8, "<!--e-->"))
-                      && (t = strcasestr(s += 8, "</P>")))
+                      && (t = strcasestr(s += 8, "</p>")))
                      {
-                        if (updtstamp == 0 || updtstamp == stamps[j])
-                           enumerateImageTags(imageFileNames, s, stamps[j], mdofs);
+                        *(r = t) = '\0';
+                        if (strstr(s, "<p class=\"author\""))
+                           t = (strcasestr(t + 4, "</p>")) ?: t;
+                        *r = '<';
 
-                        if (!cmp2(p, "##"))
+                        TeaserImgInfo teaser = enumerateImageTags(imageFileNames, s, stamps[j], mdofs);
+
+                        if (*p != '\1' && !cmp2(p, "##"))
                         {
                            boolean needEllipsis = !cmp16(t+6, "<p class=\"stamp\"");
                            boolean insertLangAttr = cmp7(o,   " lang=\"") && o[9] == '"';
@@ -1851,10 +2035,76 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
                            dynAddString(&idx, "/", 1);
                               dynAddInt(&idx, stamps[j]);
                            dynAddString(&idx, ".html\">\n", 8);
+
+                           if (teaser.imagePos != no_teaser)
+                           {
+                              int  tl = taglen(s);
+                              char tag[4] = {};
+                              cpy3(tag, s+tl-2);
+                              r = skip(strcasestr(s+tl, tag) + 3);
+                              if (r < t)
+                              {
+                                 dynAddString(&idx, s, stripATags(s, r-s));
+
+                                 switch (teaser.imagePos)
+                                 {
+                                    case teaser_left:
+                                       dynAddString(&idx, "<table class=\"teaser\"><tr><td>\n", 31);
+                                       dynAddString(&idx, "<img class=\"l\" src=\"", 20);
+                                       dynAddString(&idx, teaser.imageSrc, teaser.imnamLen);
+                                       dynAddString(&idx, "\"></td><td>\n", 12);
+                                       dynAddString(&idx, r, stripATags(r, t-r));
+                                       if (needEllipsis)
+                                          dynAddString(&idx, " ...", 4);
+                                       dynAddString(&idx, "\n</p>\n</td></tr></table>\n", 25);
+                                       break;
+
+                                    case teaser_right:
+                                       dynAddString(&idx, "<table class=\"teaser\"><tr><td>\n", 31);
+                                       dynAddString(&idx, r, stripATags(r, t-r));
+                                       if (needEllipsis)
+                                          dynAddString(&idx, " ...", 4);
+                                       dynAddString(&idx, "\n</p>\n", 6);
+                                       dynAddString(&idx, "<td><img class=\"r\" src=\"", 24);
+                                       dynAddString(&idx, teaser.imageSrc, teaser.imnamLen);
+                                       dynAddString(&idx, "\">\n</td></tr></table>\n", 22);
+                                       break;
+
+                                    case teaser_top:
+                                       dynAddString(&idx, "<img class=\"teaser\" src=\"", 25);
+                                       dynAddString(&idx, teaser.imageSrc, teaser.imnamLen);
+                                       dynAddString(&idx, "\">\n", 3);
+                                       dynAddString(&idx, r, stripATags(r, t-r));
+                                       if (needEllipsis)
+                                          dynAddString(&idx, " ...", 4);
+                                       dynAddString(&idx, "\n</p>\n", 6);
+                                       break;
+
+                                    case teaser_bottom:
+                                       dynAddString(&idx, r, stripATags(r, t-r));
+                                       if (needEllipsis)
+                                          dynAddString(&idx, " ...", 4);
+                                       dynAddString(&idx, "\n</p>\n<img class=\"teaser\" src=\"", 31);
+                                       dynAddString(&idx, teaser.imageSrc, teaser.imnamLen);
+                                       dynAddString(&idx, "\">\n", 3);
+                                       break;
+                                 }
+                              }
+                              else
+                                 goto noteaser;
+                           }
+
+                           else
+                           {
+                           noteaser:
                            dynAddString(&idx, s, stripATags(s, t-s));
                            if (needEllipsis)
                               dynAddString(&idx, " ...", 4);
-                           dynAddString(&idx, "\n</p>\n<P class=\"stamp\">", 23);
+                              dynAddString(&idx, "\n</p>\n", 6);
+                           }
+
+
+                           dynAddString(&idx, "<P class=\"stamp\">", 17);
                            dyninc(&idx, 28);
                            snprintf(idx+dynlen(idx)-28, 29, "%04d-%02d-%02d %02d:%02d:%02d</P></A>\n",
                                                                       tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
@@ -1883,7 +2133,7 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
          }
 
          if (idxcnt == 0)
-            if (create_empty || articles_dir == ARTICLES_DIR)
+            if (create_empty || articles_dir == (char *)&ARTICLES_DIR)
             {
                dynAddString(&idx, "<H1>No ", 7);
                dynAddString(&idx, articles_dir, articles_dir_len);
@@ -1905,7 +2155,7 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
 
          deallocate(VPR(stamps), false);
 
-         if (articles_dir == ARTICLES_DIR)
+         if (articles_dir == (char *)&ARTICLES_DIR)
             articles_dir = "", articles_dir_len = 0;
          else
             articles_dir_len++;
@@ -1914,8 +2164,6 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
          dyninc(&idx, index_suffix_len);
          snprintf(idx+dynlen(idx)-index_suffix_len, index_suffix_len+1, INDEX_SUFFIX, articles_dir);
          dynAddString(&toc, TOC_SUFFIX, TOC_SUFFIX_LEN);
-
-         boolean ok1 = false, ok2 = false;
 
          int  idxfl = drootl + 1 + bl + 10 + 1;
          int  tocfl = drootl + 1 + bl +  8 + 1;
@@ -1935,8 +2183,6 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
          if ((stat(idxf, &st) != no_error || S_ISREG(st.st_mode) && unlink(idxf) == no_error)   // remove an old index.html file
           || (stat(tocf, &st) != no_error || S_ISREG(st.st_mode) && unlink(tocf) == no_error))  // remove an old toc.html file
          {
-            FILE *file;
-
             if (file = fopen(idxf, "w"))
             {
                ok1 = fwrite(idx, dynlen(idx), 1, file) == 1;
@@ -1948,14 +2194,6 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
                ok2 = fwrite(toc, dynlen(toc), 1, file) == 1;
                fclose(file);
             }
-
-            // touch the re-index token in the zettair index directory
-            char *site = httpHost(serverTable);
-            int   slen = strvlen(site);
-            int   zlen = ZETTAIR_DB_PLEN + slen + 6;
-            char  zetp[OSP(zlen+1)]; strmlcat(zetp, zlen+1, NULL, ZETTAIR_DB_PATH, ZETTAIR_DB_PLEN, site, slen, "/token", 6, NULL);
-            if (file = fopen(zetp, "w"))
-               fclose(file);
          }
 
          freeDynBuffer(toc);
@@ -1993,10 +2231,16 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
                                  found++;
                               else
                               {
+                                 cpy5(mfil+mfl, ".jpg");
+                                 if (findImageName(imageFileNames, mfil+mdirl, ep->d_namlen + 1 + mep->d_namlen + 4))
+                                    found++;
+                                 else
+                                 {
                                  mfil[mfl] = '\0';
                                  unlink(mfil);
                               }
                            }
+                        }
                         }
 
                      closedir(mdp);
@@ -2010,10 +2254,16 @@ boolean reindex(char *droot, int drootl, char *base, int bl, time_t updtstamp, N
          }
 
          releaseTable(imageFileNames);
-
-         return ok1 && ok2;
       }
    }
 
-   return false;
-}
+   // touch the re-index token in the zettair index directory
+   char *site = httpHost(serverTable);
+   int   slen = strvlen(site);
+   int   zlen = ZETTAIR_DB_PLEN + slen + 6;
+   char  zetp[OSP(zlen+1)]; strmlcat(zetp, zlen+1, NULL, ZETTAIR_DB_PATH, ZETTAIR_DB_PLEN, site, slen, "/token", 6, NULL);
+   if (file = fopen(zetp, "w"))
+      fclose(file);
+
+         return ok1 && ok2;
+      }

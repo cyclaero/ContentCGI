@@ -367,6 +367,9 @@ static inline char *uppercase(char *s)
             return len + __builtin_ctz(bmask);
    }
 
+
+#ifndef __clang_analyzer__
+
    static inline void memvcpy(void *dst, const void *src, size_t n)
    {
       size_t k;
@@ -396,6 +399,12 @@ static inline char *uppercase(char *s)
             ;
       }
    }
+
+#else
+
+   #define memvcpy(d,s,n) memcpy(d,s,n)
+
+#endif
 
 
    static inline int linelen(const char *line)
@@ -1616,10 +1625,18 @@ static inline char *docRoot(Node **serverTable)
           : NULL;
 }
 
-static inline char *conTitle(Node **serverTable)
+static inline char *contTitle(Node **serverTable)
 {
    Node *node;
    return ((node = findName(serverTable, "CONTENT_TITLE", 13)) && node->value.s && *node->value.s)
           ? node->value.s
           : "Content";
+}
+
+static inline char *contLangs(Node **serverTable)
+{
+   Node *node;
+   return ((node = findName(serverTable, "CONTENT_LANGS", 13)) && node->value.s && *node->value.s)
+          ? node->value.s
+          : "";
 }

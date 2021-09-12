@@ -2,7 +2,7 @@
 //  content-delegate and search-delegate
 //
 //  Created by Dr. Rolf Jansen on 2018-05-08.
-//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2021 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -32,7 +32,12 @@
 
 #define MEDIA_DIR_LEN 5
 #define MEDIA_DIR_SIZ 6
+#define MEDIA_SEG_LEN 7
 #define MEDIA_DIR "media"
+
+#define FILES_DIR_LEN 5
+#define FILES_DIR_SIZ 6
+#define FILES_DIR "files"
 
 #define DATA_DIR_LEN 4
 #define DATA_DIR_SIZ 5

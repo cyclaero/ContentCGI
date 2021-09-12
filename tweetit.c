@@ -2,7 +2,7 @@
 //  tweetit
 //
 //  Created by Dr. Rolf Jansen on 2019-01-08.
-//  Copyright © 2019 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2019-2021 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -49,8 +49,8 @@
 void usage(const char *executable)
 {
    const char *r = executable + strvlen(executable);
-   while (--r >= executable && r && *r != '/'); r++;
-   printf("\nusage: %s [-t timestamp] [-u basurl] <HTML article file>\n", r);
+   while (--r >= executable && r && *r != '/');
+   printf("\nusage: %s [-t timestamp] [-u basurl] <HTML article file>\n", ++r);
 }
 
 int stripTags(uchar *s, ssize_t n)
@@ -101,14 +101,16 @@ int stripTags(uchar *s, ssize_t n)
                   || s[i+1] == 'h' || s[i+1] == 'H')
             {
                for (i += 2; s[i] != '>'; i++);
-               for (i += 1; s[i] <= ' '; i++); --i;
+               for (i += 1; s[i] <= ' '; i++);
+               --i;
             }
 
             else if (cmp2(s+i+1, "/h") || cmp2(s+i+1, "/H")
                   || cmp2(s+i+1, "/p") || cmp2(s+i+1, "/P"))
             {
                for (i += 3; s[i] != '>'; i++);
-               for (i += 1; s[i] <= ' '; i++); --i;
+               for (i += 1; s[i] <= ' '; i++);
+               --i;
             }
 
             else

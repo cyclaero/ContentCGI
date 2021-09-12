@@ -3,7 +3,7 @@
 //
 //  Defines for the FastCGI protocol.
 //  Copyright © 1995-1996 Open Market, Inc.
-//  Copyright © 2018 Dr. Rolf Jansen Ltda. All rights reserved.
+//  Copyright © 2018-2021 Dr. Rolf Jansen Ltda. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
