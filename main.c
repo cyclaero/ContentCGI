@@ -2,7 +2,7 @@
 //  ContentCGI
 //
 //  Created by Dr. Rolf Jansen on 2018-05-08.
-//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2021 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -512,7 +512,7 @@ void daemonize(DaemonKind kind)
 void usage(const char *executable)
 {
    const char *r = executable + strvlen(executable);
-   while (--r >= executable && *r != '/'); r++;
+   while (--r >= executable && r && *r != '/'); r++;
    printf("\nusage: %s [-f] [-n] [-l local port] [-a local IPv4] [-b local IPv6] [-s secure port] [-c cert dir] [-r plugins] [-w web root] [-u uid:gid] [-p pid file] [-u unix domain socket] [-h|?]\n", r);
    printf(" -f             foreground mode, don't fork off as a daemon.\n");
    printf(" -n             no console, don't fork off as a daemon - started/managed by launchd.\n");

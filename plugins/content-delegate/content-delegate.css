@@ -2,7 +2,7 @@
 /* Editor CSS of the Content Responder Delegate */
 
 .ct-widget.ct-ignition                    { top:3px; left:  3px; }
-.ct-widget.ct-toolbox                     { top:9px; left:999px; }
+.ct-widget.ct-toolbox                     { top:8px; left:999px; }
 
 .ct-widget .ct-tool--underline:before     { content:"\ea63"; }
 .ct-widget .ct-tool--subscript:before     { content:"\ea6c"; }

@@ -20,12 +20,17 @@ BODY.toc P            { margin:0; padding-top:8px; }
 DIV.page              { width:940px; margin:10px; padding:10px 10px 10px 30px; background-color:#FFF; box-shadow:0 3px 7px rgba(100, 100, 100, 0.25); }
 TABLE.page            { width:100%; table-layout:fixed; margin:0; padding:0; border-width:0; border-spacing:0; border-collapse:collapse; }
 
+DIV.promo             { width:250px; margin:10px; padding:10px; background-color:#F0F0F0; box-shadow:2px 3px 7px rgba(90, 90, 90, 0.25) inset; position:fixed; left:990px; top:0px; height:calc(100vh - 30px); }
+DIV.promo P           { font-family:verdana,sans-serif; font-size:11px; color:#777; margin:0; padding:0; text-align:center; }
+DIV.promo IMG         { width:250px; margin:3px 0 0 0; padding:0; border:0; opacity:0.25; }
+DIV.promo IMG:hover   { opacity:1.0; }
+
 TH.title              { width:676px; padding:0; }
 TH.title H1           { font-size:31px; padding:0; }
 TH.title H1 A         { color:#000 !important; }
 TH.title H1 A:hover   { color:#777 !important; }
 
-TH.fyi                { width:167px; padding:0; }
+TH.fyi                { width:168px; padding:0; }
 TH.fyi TABLE          { width:147px; margin:0 0 0 26px; font-size:11px; border-width:0; border-spacing:0; border-collapse:collapse; }
 TH.fyi TH             { font-weight:normal; text-align:left;  vertical-align:top; width:60px; }
 TH.fyi TD             { font-weight:normal; text-align:right; padding-right:15px; }
@@ -34,7 +39,7 @@ TH.logo               { width:96px; padding:0; }
 IMG.logo              { width:96px; margin:0 0 2px 2px; }
 IMG.mailto            { display:inline-block; margin:0; vertical-align:-50%; }
 
-TD.content            { vertical-align:top; }
+TD.content            { padding:0; vertical-align:top; }
 TD.found              { vertical-align:top; }
 TD.found SPAN         { color:#F70; }
 TD.toc                { vertical-align:top; padding:9px 2px 3px 27px; }
@@ -52,6 +57,7 @@ P,LI                  { margin:0; padding-top:12px; -webkit-hyphens:auto; -moz-h
 P.text-left           { text-align:left; }
 P.text-center         { text-align:center; }
 P.text-right          { text-align:right; }
+P.author              { font-style:italic; padding-top:2px; }
 P.stamp               { text-align:right; font-size:9px; padding-top:7px; color:#555; }
 P.back-gray           { background-color:#eaeaee; }
 
@@ -66,6 +72,14 @@ IMG                   { clear:both; display:block; margin:13px 0; max-width:100%
 IMG.align-center      { margin-left:auto; margin-right:auto; }
 IMG.shade             { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; }
 IMG.shade-center      { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; margin-left:auto; margin-right:auto; }
+IMG.body-hidden       { margin:0; padding:0; width:0px; height:0px; visibility:hidden; }
+IMG.teaser            { margin-left:auto; margin-right:auto; }
+
+TABLE.teaser          { margin:0; }
+TABLE.teaser TD       { padding:0; vertical-align:top; }
+TABLE.teaser IMG      { margin:4px 0 0 0; margin-left:auto; margin-right:auto; }
+TABLE.teaser IMG.l    { padding:12px 18px 0 0; max-width:317px; }
+TABLE.teaser IMG.r    { padding:12px 0 0 18px; max-width:317px; }
 
 VIDEO                 { box-shadow:rgba(0, 0, 0, 0.25) 3px 2px 7px 0px; border-radius:5px; margin-left:auto; margin-right:auto; }
 

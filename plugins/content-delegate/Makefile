@@ -1,7 +1,7 @@
 # Makefile for a ContentCGI Responder Delegate plugin
 #
 # Created by Dr. Rolf Jansen on 2018-05-05.
-# Copyright © 2018. All rights reserved.
+# Copyright © 2018-2021. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ CFLAGS += -fsigned-char
 .endif
 
 CFLAGS += -std=gnu11 -fpic -fvisibility=hidden -fstrict-aliasing -fstack-protector \
-          -Wno-multichar -Wno-parentheses -Wno-empty-body -Wno-switch -Wno-deprecated-declarations -Wshorten-64-to-32 \
+          -Wno-multichar -Wno-parentheses -Wno-switch -Wno-deprecated-declarations -Wshorten-64-to-32 \
           -I/usr/local/include -I/opt/local/include -I/usr/local/include/GraphicsMagick -I/opt/local/include/GraphicsMagick -I../
 LDFLAGS = -shared -L/opt/local/lib -L/usr/local/lib -L/usr/lib -lm -lpthread -liconv -lutf8proc -lGraphicsMagick -lobjc -rpath $(PLUGINS) -L$(PLUGINS) -lcyobj
 

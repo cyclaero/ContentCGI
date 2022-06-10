@@ -152,6 +152,7 @@ ContentTools.RESTRICTED_ATTRIBUTES['*']   = [];
 ContentTools.RESTRICTED_ATTRIBUTES['img'] = ['src', 'data-ce-max-width', 'data-ce-min-width'];
 
 ContentTools.StylePalette.add([
+   new ContentTools.Style('Author',          'author',        ['p']),
    new ContentTools.Style('Stamp',           'stamp',        ['p']),
    new ContentTools.Style('Gray background', 'back-gray',    ['p', 'table', 'thead', 'tbody', 'tr', 'th', 'td']),
    new ContentTools.Style('Full height',     'fullheight',   ['pre']),
@@ -160,7 +161,12 @@ ContentTools.StylePalette.add([
    new ContentTools.Style('Align right',     'text-right',   ['table', 'thead', 'tbody', 'tr', 'th', 'td']),
    new ContentTools.Style('Align center',    'align-center', ['img']),
    new ContentTools.Style('Shade',           'shade',        ['img']),
-   new ContentTools.Style('Shade center',    'shade-center', ['img'])
+   new ContentTools.Style('Shade center',    'shade-center',  ['img']),
+   new ContentTools.Style('Teaser left',     'teaser-left',   ['img']),
+   new ContentTools.Style('Teaser right',    'teaser-right',  ['img']),
+   new ContentTools.Style('Teaser top',      'teaser-top',    ['img']),
+   new ContentTools.Style('Teaser bottom',   'teaser-bottom', ['img']),
+   new ContentTools.Style('Body hidden',     'body-hidden',   ['img'])
 ]);
 
 ContentTools.HIGHLIGHT_HOLD_DURATION = 4000;
@@ -291,16 +297,21 @@ function imageUploader(dialog)
       formData.append('image', file);
 
       // Construct the upload path
-      var stamp, pathcomps = location.pathname.split('/');
+      var el, stamp, pathcomps = location.pathname.split('/');
       var i, n = pathcomps.length - 1;
       if (isNaN(stamp = parseInt(pathcomps[n])))
-         stamp = document.getElementById('stamp').value;
-      if (n > 2 && stamp >= 0)
+         if (el = document.getElementById('stamp'))
+            stamp = "/media/"+el.value;
+         else
+            stamp = "/files/"+pathcomps[n];
+      else
+         stamp = "/media/"+stamp;
+      if (n > 2 && stamp >= 0 || stamp != "")
       {
          var uppath = "/"+pathcomps[1]+"/upload";
          for (i = 2; i < n; i++)
             uppath += "/"+pathcomps[i];
-         uppath += "/media/"+stamp;
+         uppath += stamp;
 
          xhr = new XMLHttpRequest();
          xhr.upload.addEventListener('progress', xhrProgress);
@@ -331,7 +342,10 @@ function imageUploader(dialog)
             if (parseInt(ev.target.status) === 200)
             {
                var response = ev.target.responseText.split('\n');
-               image = {url:encodeURIComponent(response[0]+'.png').replace(/%2F/g, "/"), size:[response[1], response[2]]};
+               var imageext = response[0].split('.').pop();
+               imageext = (imageext == 'jpg' || imageext == 'jpeg' || imageext == 'JPG' || imageext == 'JPEG')
+                         ? '.jpg' : '.png';
+               image = {url:encodeURIComponent(response[0]+imageext).replace(/%2F/g, "/"), size:[response[1], response[2]]};
                dialog.populate(image.url+'?'+ + Date.now(), image.size);
             }
             else
@@ -345,9 +359,9 @@ function imageUploader(dialog)
          // Construct the rotate path
          var pathcomps = location.pathname.split('/');
          var rotpath = "/"+pathcomps[1]+"/rotate/";
-         var i = 2;
-         while (!original.url.startsWith(pathcomps[i], 0))
-            rotpath += pathcomps[i++]+"/";
+         var i, n = pathcomps.length-1;
+         for (i = 2; i < n && !original.url.startsWith(pathcomps[i], 0); i++)
+            rotpath += pathcomps[i]+"/";
          rotpath += original.url;
 
          xhr = new XMLHttpRequest();
@@ -386,7 +400,10 @@ function imageUploader(dialog)
          if (parseInt(ev.target.status) === 200)
          {
             var response = ev.target.responseText.split('\n');
-            image = {url:encodeURIComponent(response[0]+'.png').replace(/%2F/g, "/"), size:[response[1], response[2]]};
+            var imageext = response[0].split('.').pop();
+            imageext = (imageext == 'jpg' || imageext == 'jpeg' || imageext == 'JPG' || imageext == 'JPEG')
+                      ? '.jpg' : '.png';
+            image = {url:encodeURIComponent(response[0]+imageext).replace(/%2F/g, "/"), size:[response[1], response[2]]};
             if (image.size[0] > IMG_MAX_WIDTH)
             {
                image.size[1] = Math.round((IMG_MAX_WIDTH*image.size[1])/image.size[0]);
@@ -405,9 +422,9 @@ function imageUploader(dialog)
       // Construct the insert path
       var pathcomps = location.pathname.split('/');
       var inspath = "/"+pathcomps[1]+"/insert/";
-      var i = 2;
-      while (!original.url.startsWith(pathcomps[i], 0))
-         inspath += pathcomps[i++]+"/";
+      var i, n = pathcomps.length-1;
+      for (i = 2; i < n && !original.url.startsWith(pathcomps[i], 0); i++)
+         inspath += pathcomps[i]+"/";
       inspath += original.url;
 
       xhr = new XMLHttpRequest();

@@ -2,7 +2,7 @@
 //  search-delegate
 //
 //  Created by Dr. Rolf Jansen on 2018-06-11.
-//  Copyright © 2018-2019 Dr. Rolf Jansen. All rights reserved.
+//  Copyright © 2018-2021 Dr. Rolf Jansen. All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without modification,
 //  are permitted provided that the following conditions are met:
@@ -172,7 +172,7 @@ typedef struct
             {
                response->content = newDynBuffer();
                dynAddString(&response->content, SEARCH_PREFIX, SEARCH_PREFIX_LEN);
-               dynAddString(&response->content, conTitle(request->serverTable), 0);
+               dynAddString(&response->content, contTitle(request->serverTable), 0);
                dynAddString(&response->content, SEARCH_BODY_FYI, SEARCH_BODY_FYI_LEN);
 
                for (i = 0, k = 0; i < n; i++)
